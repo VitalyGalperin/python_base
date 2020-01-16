@@ -47,3 +47,4 @@ violator_songs_dict = {
 dict_songs_sum = round(violator_songs_dict.get('Sweetest Perfection') + violator_songs_dict.get('Policy of Truth') + violator_songs_dict.get('Blue Dress'),2)
 print('А другие три песни звучат ', dict_songs_sum, ' минут')
 
+# Зачет

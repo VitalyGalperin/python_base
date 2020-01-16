@@ -23,3 +23,5 @@ print('Рост отца ', my_family_height[0][1],' см')
 my_family_sum_height = my_family_height[0][1] + my_family_height[1][1] + my_family_height[2][1]
 
 print('Общий рост моей семьи ', my_family_sum_height,' см')
+
+# Зачет
