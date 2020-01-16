@@ -27,8 +27,7 @@ point_1 = (23, 34)
 #       квадратный корень - это возведение в степень 0.5
 #       операции сравнения дают булевы константы True и False
 
-# TODO Необходимо при расчетах брать значения из point_1
-distance_to_point = (23**2 + 34**2)**0.5
+distance_to_point = (point_1[0]**2 + point_1[1]**2)**0.5
 
 print(distance_to_point)
 print('Точка 1 лежит внутри круга - ',42-distance_to_point > 0)
@@ -39,8 +38,7 @@ point_2 = (30, 30)
 # Если точка point_2 лежит внутри круга (radius = 42), то выведите на консоль True,
 # Или False, если точка лежит вовне круга.
 
-# TODO Необходимо при расчетах брать значения из point_2
-distance_to_point = (30**2 + 30**2)**0.5
+distance_to_point = (point_2[0]**2 + point_2[1]**2)**0.5
 
 print(distance_to_point)
 print('Точка 2 лежит внутри круга - ',42-distance_to_point > 0)
