@@ -14,10 +14,8 @@ print(zoo)
 # добавьте птиц из списка birds в последние клетки зоопарка
 birds = ['rooster', 'ostrich', 'lark', ]
 #  и выведите список на консоль
-# TODO Необходимо использовать метод extend
-zoo.append(birds[0])
-zoo.append(birds[1])
-zoo.append(birds[2])
+
+zoo.extend(birds)
 print(zoo)
 
 # уберите слона
