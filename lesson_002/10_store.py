@@ -34,7 +34,6 @@ store = {
 # Рассчитать на какую сумму лежит каждого товара на складе
 # например для ламп
 
-lamps_cost = store[goods['Лампа']][0]['quantity'] * store[goods['Лампа']][0]['price']
 # или проще (/сложнее ?)
 lamp_code = goods['Лампа']
 lamps_item = store[lamp_code][0]
@@ -78,14 +77,14 @@ print('Диван -', sofas_quantity, 'шт, стоимость', sofas_cost, '�
 chairs_code = goods['Стул']
 chairs_item0 = store[chairs_code][0]
 chairs_item1 = store[chairs_code][1]
-chairs_item2 = store[chairs_code][1]
+chairs_item2 = store[chairs_code][2]
 chairs_quantity0 = chairs_item0['quantity']
 chairs_quantity1 = chairs_item1['quantity']
-chairs_quantity2 = chairs_item1['quantity']
+chairs_quantity2 = chairs_item2['quantity']
 chairs_quantity = chairs_quantity0 + chairs_quantity1 + chairs_quantity2
 chairs_price0 = chairs_item0['price']
 chairs_price1 = chairs_item1['price']
-chairs_price2 = chairs_item1['price']
+chairs_price2 = chairs_item2['price']
 chairs_cost = chairs_quantity0 * chairs_price0 + chairs_quantity1 * chairs_price1 + chairs_quantity2 * chairs_price2
 print('Стул -', chairs_quantity, 'шт, стоимость', chairs_cost, 'руб')
 chairs_cost = store[goods['Стул']][0]['quantity'] * store[goods['Стул']][0]['price']
@@ -98,5 +97,3 @@ chairs_cost = store[goods['Стул']][0]['quantity'] * store[goods['Стул']]
 # Как оформить попытку сдачи смотрите видео - https://youtu.be/qVpN0L-C3LU               #
 ##########################################################################################
 
-
-# TODO Результаты расчетов не корректны
