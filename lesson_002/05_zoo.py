@@ -28,3 +28,5 @@ print(zoo)
 
 print('Лев находится в клетке №', zoo.index('lion')+1)
 print('Жаворонок находится в клетке №', zoo.index('lark')+1)
+
+# Зачет
