@@ -15,9 +15,8 @@ print('Вы ввели', month)
 if month < 1 or month > 12:
     print('Некорректный номер месяца')
 elif month == 2:
-    print('В месяце №', month,' - 28 дней')
+    print('В месяце №', month, ' - 28 дней')
 elif month in (1, 3, 5, 7, 8, 10, 12):
-    print('В месяце №', month,' - 31 дней')
+    print('В месяце №', month, ' - 31 дней')
 else:
-    print('В месяце №', month,' - 30 дней')
-
+    print('В месяце №', month, ' - 30 дней')

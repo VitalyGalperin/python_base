@@ -55,21 +55,11 @@ store = {
 #     вывод на консоль количества и стоимости товара на складе
 
 for good in goods:
-    good_name=good
+    good_name = good
     good_in_store = goods[good]
     quantity_sum = 0
-    money_sum =0
+    money_sum = 0
     for good_in_store in store[good_in_store]:
         quantity_sum = quantity_sum + good_in_store['quantity']
-        money_sum =money_sum +good_in_store['quantity']*good_in_store['price']
-    print(good,' - ',quantity_sum,' шт, стоимость ',money_sum,' руб')
-
-
-
-
-
-
-
-
-
-
+        money_sum = money_sum + good_in_store['quantity'] * good_in_store['price']
+    print(good, ' - ', quantity_sum, ' шт, стоимость ', money_sum, ' руб')

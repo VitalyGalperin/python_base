@@ -50,7 +50,7 @@ sd.clear_screen()
 # Нарисовать 100 пузырьков в произвольных местах экрана случайными цветами
 for _ in range(100):
     point = sd.random_point()
-    step=random.randint(2,10)
+    step = random.randint(2, 10)
     bubble(point=point, step=step)
 
 sd.pause()
