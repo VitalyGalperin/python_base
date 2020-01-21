@@ -10,5 +10,10 @@
 #   Целочисленное деление ХХХ на YYY дает ZZZ
 
 a, b = 179, 37
+dividend, divider = a, b
+division_count = 0
+while dividend > divider:
+    dividend = dividend - divider
+    division_count += 1
 
-# TODO здесь ваш код
+print('Целочисленное деление ', a, ' на ', b, ' дает ', division_count, ' остаток равен ', dividend)
