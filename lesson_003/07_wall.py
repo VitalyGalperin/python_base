@@ -5,11 +5,11 @@ import simple_draw
 
 # Нарисовать стену из кирпичей. Размер кирпича - 100х50
 # Использовать вложенные циклы for
-simple_draw.background_color =  (255, 255, 255)
-for x in range(6):
+simple_draw.background_color = (255, 255, 255)
+for x in range(7):
     for y in range(12):
-        brick = simple_draw.rectangle(simple_draw.get_point(0 + x * 100 + y % 2 * 50, 0 + y * 50),
-                                      simple_draw.get_point(100 + x * 100 + y % 2 * 50, 50 + y * 50),
+        brick = simple_draw.rectangle(simple_draw.get_point(-50 + x * 100 + y % 2 * 50, 0 + y * 50),
+                                      simple_draw.get_point(50 + x * 100 + y % 2 * 50, 50 + y * 50),
                                       color=simple_draw.COLOR_BLACK, width=1)
 
 simple_draw.line(simple_draw.get_point(190,358),simple_draw.get_point(315,395),color=simple_draw.COLOR_RED, width=4)
