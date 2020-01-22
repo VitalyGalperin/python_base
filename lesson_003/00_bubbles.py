@@ -51,6 +51,8 @@ sd.clear_screen()
 for _ in range(100):
     point = sd.random_point()
     step = random.randint(2, 10)
+    # TODO необходимо доработать фукнцию bubble, чтобы она могла рисовать
+    #  пузыри в данном случае случайными цветами
     bubble(point=point, step=step)
 
 sd.pause()

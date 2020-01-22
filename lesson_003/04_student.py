@@ -19,3 +19,5 @@ while month < 11:
     month += 1
 
 print('Студенту надо попросить ', required_amount, '  рублей')
+
+# Зачет

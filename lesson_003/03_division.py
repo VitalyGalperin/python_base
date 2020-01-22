@@ -17,3 +17,5 @@ while dividend > divider:
     division_count += 1
 
 print('Целочисленное деление ', a, ' на ', b, ' дает ', division_count, ' остаток равен ', dividend)
+
+# Зачет
