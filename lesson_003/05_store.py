@@ -63,3 +63,5 @@ for good in goods:
         quantity_sum = quantity_sum + good_in_store['quantity']
         money_sum = money_sum + good_in_store['quantity'] * good_in_store['price']
     print(good, ' - ', quantity_sum, ' шт, стоимость ', money_sum, ' руб')
+
+# Зачет

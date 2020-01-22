@@ -11,6 +11,7 @@ import random
 # Параметры функции: кордината X, координата Y, цвет.
 # Вывести 10 смайликов в произвольных точках экрана.
 
+# TODO Аргменты фунции должны писаться в нижнем регистре
 def smile(X, Y):
     sd.ellipse(left_bottom=sd.get_point(X - 40, Y - 45), right_top=sd.get_point(X + 40, Y + 45),
                color=sd.random_color())
