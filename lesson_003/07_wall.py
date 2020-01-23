@@ -34,3 +34,7 @@ simple_draw.line(simple_draw.get_point(350,238),simple_draw.get_point(351,173),c
 simple_draw.line(simple_draw.get_point(352,173),simple_draw.get_point(376,186),color=simple_draw.COLOR_RED, width=4)
 
 simple_draw.pause()
+
+# Вас получилось отличное решение, мало кто пишет такой выразительный код!
+
+# Зачет
