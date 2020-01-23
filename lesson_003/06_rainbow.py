@@ -37,3 +37,5 @@ for _ in rainbow_colors:
     color_number += 1
 
 sd.pause()
+
+# Зачет
