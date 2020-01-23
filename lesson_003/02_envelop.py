@@ -20,8 +20,10 @@ paper_x, paper_y = 8, 9
 # paper_x, paper_y = 9, 11
 # (просто раскоментировать нужную строку и проверить свой код)
 
-# TODO Необходимо разбить это большое условие
-if (envelop_x >= paper_x and envelop_y >= paper_y) or (envelop_x >= paper_y and envelop_y >= paper_x):
+check_one_size = (envelop_x >= paper_x and envelop_y >= paper_y)
+check_two_size = (envelop_x >= paper_y and envelop_y >= paper_x)
+
+if check_one_size or check_two_size:
     print('Бумага в конверт поместится')
 else:
     print('Бумага в конверт НЕ поместится')
@@ -53,9 +55,11 @@ brick_x, brick_y, brick_z = 3, 11, 6
 
 # (просто раскоментировать нужную строку и проверить свой код)
 
-# TODO Необходимо разбить это большое условие на несколко блоков elif
-if (hole_x >= brick_x and hole_y >= brick_y) or (hole_x >= brick_x and hole_y >= brick_z) or (
-        hole_x >= brick_y and hole_y >= brick_z):
+check_one = (hole_x >= brick_x and hole_y >= brick_y)
+check_two = (hole_x >= brick_x and hole_y >= brick_z)
+check_three = (hole_x >= brick_y and hole_y >= brick_z)
+
+if check_one or check_two or check_three:
     print('Кирпч проходит в отверстие')
 else:
     print('Кирпич НЕ проходит в отверстие')
