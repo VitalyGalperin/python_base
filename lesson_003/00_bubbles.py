@@ -57,3 +57,5 @@ for _ in range(100):
     bubble(point=point, step=step, random_color=True)
 
 sd.pause()
+
+# Зачет

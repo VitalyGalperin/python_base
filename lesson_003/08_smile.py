@@ -33,3 +33,5 @@ for _ in range(10):
     smile(x=random.randint(40, 560), y=random.randint(45, 555))
 
 sd.pause()
+
+# Зачет

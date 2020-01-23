@@ -19,7 +19,8 @@ paper_x, paper_y = 8, 9
 # paper_x, paper_y = 11, 9
 # paper_x, paper_y = 9, 11
 # (просто раскоментировать нужную строку и проверить свой код)
-
+# TODO Условия разбиты на блоки правильно, но необходимо все эти условия
+#  описывать не в одном if, а использовать elif
 check_one_size = (envelop_x >= paper_x and envelop_y >= paper_y)
 check_two_size = (envelop_x >= paper_y and envelop_y >= paper_x)
 
@@ -55,6 +56,8 @@ brick_x, brick_y, brick_z = 3, 11, 6
 
 # (просто раскоментировать нужную строку и проверить свой код)
 
+# TODO Условия разбиты на блоки правильно, но необходимо все эти условия
+#  описывать не в одном if, а использовать elif
 check_one = (hole_x >= brick_x and hole_y >= brick_y)
 check_two = (hole_x >= brick_x and hole_y >= brick_z)
 check_three = (hole_x >= brick_y and hole_y >= brick_z)
