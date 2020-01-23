@@ -17,11 +17,14 @@ sd.clear_screen()
 
 
 # Написать функцию рисования пузырька, принммающую 2 (или более) параметра: точка рисовании и шаг
-def bubble(point, step):
+def bubble(point, step, random_color=False):
     radius = 50
     for _ in range(3):
         radius += step
-        sd.circle(center_position=point, radius=radius, color=sd.random_color())
+        if random_color:
+            sd.circle(center_position=point, radius=radius, color=sd.random_color())
+        else:
+            sd.circle(center_position=point, radius=radius, color=sd.COLOR_YELLOW)
 
 
 point = sd.get_point(100, 100)
@@ -51,8 +54,6 @@ sd.clear_screen()
 for _ in range(100):
     point = sd.random_point()
     step = random.randint(2, 10)
-    # TODO необходимо доработать фукнцию bubble, чтобы она могла рисовать
-    #  пузыри в данном случае случайными цветами
-    bubble(point=point, step=step)
+    bubble(point=point, step=step, random_color=True)
 
 sd.pause()
