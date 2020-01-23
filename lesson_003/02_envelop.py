@@ -19,12 +19,13 @@ paper_x, paper_y = 8, 9
 # paper_x, paper_y = 11, 9
 # paper_x, paper_y = 9, 11
 # (просто раскоментировать нужную строку и проверить свой код)
-# TODO Условия разбиты на блоки правильно, но необходимо все эти условия
-#  описывать не в одном if, а использовать elif
+
 check_one_size = (envelop_x >= paper_x and envelop_y >= paper_y)
 check_two_size = (envelop_x >= paper_y and envelop_y >= paper_x)
 
-if check_one_size or check_two_size:
+if check_one_size:
+    print('Бумага в конверт поместится')
+elif check_two_size:
     print('Бумага в конверт поместится')
 else:
     print('Бумага в конверт НЕ поместится')
@@ -56,13 +57,15 @@ brick_x, brick_y, brick_z = 3, 11, 6
 
 # (просто раскоментировать нужную строку и проверить свой код)
 
-# TODO Условия разбиты на блоки правильно, но необходимо все эти условия
-#  описывать не в одном if, а использовать elif
-check_one = (hole_x >= brick_x and hole_y >= brick_y)
-check_two = (hole_x >= brick_x and hole_y >= brick_z)
-check_three = (hole_x >= brick_y and hole_y >= brick_z)
+check_x_y = (hole_x >= brick_x and hole_y >= brick_y)
+check_x_z = (hole_x >= brick_x and hole_y >= brick_z)
+check_y_z = (hole_x >= brick_y and hole_y >= brick_z)
 
-if check_one or check_two or check_three:
+if check_x_y:
+    print('Кирпч проходит в отверстие')
+elif check_x_z:
+    print('Кирпч проходит в отверстие')
+elif check_y_z:
     print('Кирпч проходит в отверстие')
 else:
     print('Кирпич НЕ проходит в отверстие')
