@@ -16,7 +16,7 @@ import simple_draw as sd
 # и константы COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_CYAN, COLOR_BLUE, COLOR_PURPLE
 # Результат решения см lesson_004/results/exercise_02_global_color.jpg
 
-def triangle(point, angle=0, length=200,color=sd.COLOR_YELLOW):
+def triangle(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v1 = sd.get_vector(start_point=point, angle=angle, length=length)
     v1.draw(color=color)
 
@@ -26,6 +26,7 @@ def triangle(point, angle=0, length=200,color=sd.COLOR_YELLOW):
     v3 = sd.get_vector(start_point=v2.end_point, angle=angle + 240, length=length)
     v3.draw(color=color)
     v_corr = sd.line(start_point=v3.end_point, end_point=point)
+
 
 def square(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v1 = sd.get_vector(start_point=point, angle=angle, length=length)
@@ -42,7 +43,8 @@ def square(point, angle=0, length=200, color=sd.COLOR_YELLOW):
 
     v_corr = sd.line(start_point=v4.end_point, end_point=point, color=color)
 
-def pentagon(point, angle=0, length=200,color=sd.COLOR_YELLOW):
+
+def pentagon(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v1 = sd.get_vector(start_point=point, angle=angle, length=length)
     v1.draw(color=color)
 
@@ -60,7 +62,8 @@ def pentagon(point, angle=0, length=200,color=sd.COLOR_YELLOW):
 
     v_corr = sd.line(start_point=v5.end_point, end_point=point, color=color)
 
-def hexagon(point, angle=0, length=200,color=sd.COLOR_YELLOW):
+
+def hexagon(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v1 = sd.get_vector(start_point=point, angle=angle, length=length)
     v1.draw(color=color)
 

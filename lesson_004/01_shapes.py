@@ -92,7 +92,8 @@ def hexagon(point, angle=0, length=200):
 
     v_corr = sd.line(start_point=v6.end_point, end_point=point)
 
-point_triangle = sd.get_point(100,100)
+
+point_triangle = sd.get_point(100, 100)
 point_square = sd.get_point(400, 100)
 point_pentagon = sd.get_point(100, 400)
 point_hexagon = sd.get_point(400, 350)
