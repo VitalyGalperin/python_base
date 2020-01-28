@@ -82,6 +82,7 @@ def hexagon(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v_corr = sd.line(start_point=v6.end_point, end_point=point, color=color)
 
 
+# TODO В данном случае нет необхожимости в функции
 def get_shape(point):
     print('Возможные фигуры:')
     print('   0 : треугольник ')
@@ -91,7 +92,6 @@ def get_shape(point):
 
     while True:
         shape = input('Введите желаемую фигуру: ')
-
         if shape == '0':
             triangle(point=point, angle=30, length=160)
             return shape

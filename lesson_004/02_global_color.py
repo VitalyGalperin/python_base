@@ -84,6 +84,7 @@ def hexagon(point, angle=0, length=200, color=sd.COLOR_YELLOW):
 
     v_corr = sd.line(start_point=v6.end_point, end_point=point, color=color)
 
+# TODO Лучше назвать функцию select_color
 def get_color():
     print('Возможные цвета:')
     print('   0 : red ')
@@ -97,6 +98,7 @@ def get_color():
     while True:
         color_number = input('Введите желаемый цвет: ')
 
+        # TODO Необходимо оптимизировать данное рещение при помощи списков
         if color_number == '0':
             getting_color = sd.COLOR_RED
             return getting_color
