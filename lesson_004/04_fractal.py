@@ -90,3 +90,5 @@ draw_branches(start_point=root_point, angle=90, length=100, is_random=random_tre
 
 
 sd.pause()
+
+# Зачет
