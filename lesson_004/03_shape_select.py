@@ -82,33 +82,29 @@ def hexagon(point, angle=0, length=200, color=sd.COLOR_YELLOW):
     v_corr = sd.line(start_point=v6.end_point, end_point=point, color=color)
 
 
-# TODO В данном случае нет необхожимости в функции
-def get_shape(point):
-    print('Возможные фигуры:')
-    print('   0 : треугольник ')
-    print('   1 : квадрат ')
-    print('   2 : пятиугольник ')
-    print('   3 : шестиугольник ')
-
-    while True:
-        shape = input('Введите желаемую фигуру: ')
-        if shape == '0':
-            triangle(point=point, angle=30, length=160)
-            return shape
-        elif shape == '1':
-            square(point=point, angle=30, length=130)
-            return shape
-        elif shape == '2':
-            pentagon(point=point, angle=30, length=110)
-            return shape
-        elif shape == '3':
-            hexagon(point=point, angle=30, length=90)
-            return shape
-        else:
-            print('Некорректный ввод')
-
-
 start_point = sd.get_point(300, 220)
-shape = get_shape(point=start_point)
+
+print('Возможные фигуры:')
+print('   0 : треугольник ')
+print('   1 : квадрат ')
+print('   2 : пятиугольник ')
+print('   3 : шестиугольник ')
+
+while True:
+    shape = input('Введите желаемую фигуру: ')
+    if shape == '0':
+        triangle(point=start_point, angle=30, length=160)
+        break
+    elif shape == '1':
+        square(point=start_point, angle=30, length=130)
+        break
+    elif shape == '2':
+        pentagon(point=start_point, angle=30, length=110)
+        break
+    elif shape == '3':
+        hexagon(point=start_point, angle=30, length=90)
+        break
+    else:
+        print('Некорректный ввод')
 
 sd.pause()
