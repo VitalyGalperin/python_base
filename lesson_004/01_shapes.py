@@ -163,3 +163,5 @@ sd.pause()
 
 
 sd.pause()
+
+# Зачет
