@@ -29,15 +29,12 @@ import simple_draw as sd
 
 
 def figure_drawing(point, angle=0, length=200, corner_numbers=3):
-    # TODO В один момент времени реально нужно использовать только 1 значение
-    #  из списка, по этому необходимо оптимизироватьрешение и отказаться от
-    #  списка (хранить нужно просто 1 точку).
-    angle_coordinates = [point]
+    current_point = point
     for i in range(corner_numbers):
-        vector = sd.get_vector(start_point=angle_coordinates[i], angle=angle + 360 / corner_numbers * i, length=length)
+        vector = sd.get_vector(start_point=current_point, angle=angle + 360 / corner_numbers * i, length=length)
         vector.draw()
-        angle_coordinates.append(vector.end_point)
-    sd.line(start_point=point, end_point=angle_coordinates[corner_numbers])
+        current_point =vector.end_point
+    sd.line(start_point=point, end_point=current_point)
 
 
 def triangle(point, angle=0, length=200):
