@@ -27,10 +27,11 @@ import simple_draw as sd
 # sd.line()
 # Результат решения см lesson_004/results/exercise_01_shapes.jpg
 
-#TODO  Сделал код оптимальным, без повторов
-
 
 def figure_drawing(point, angle=0, length=200, corner_numbers=3):
+    # TODO В один момент времени реально нужно использовать только 1 значение
+    #  из списка, по этому необходимо оптимизироватьрешение и отказаться от
+    #  списка (хранить нужно просто 1 точку).
     angle_coordinates = [point]
     for i in range(corner_numbers):
         vector = sd.get_vector(start_point=angle_coordinates[i], angle=angle + 360 / corner_numbers * i, length=length)

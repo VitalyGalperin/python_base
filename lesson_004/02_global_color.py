@@ -73,3 +73,5 @@ pentagon(point=point_pentagon, angle=30, length=100, figure_color=color)
 hexagon(point=point_hexagon, angle=30, length=100, figure_color=color)
 
 sd.pause()
+
+# Зачет
