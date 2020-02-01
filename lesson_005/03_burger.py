@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from my_burger import ingredients
 
 # Создать модуль my_burger. В нем определить функции добавления инградиентов:
 #  - булочки
@@ -15,4 +16,16 @@
 # Создать рецепт своего бургера, по вашему вкусу.
 # Если не хватает инградиентов - создать соответствующие функции в модуле my_burger
 
-# TODO здесь ваш код
+ingredients.add_bun()
+ingredients.add_cutlet()
+ingredients.add_chees()
+ingredients.add_cutlet()
+ingredients.add_chees()
+ingredients.add_cucumber()
+ingredients.add_tomato()
+ingredients.add_onion()
+ingredients.add_mayonnaise()
+ingredients.add_sauce()
+ingredients.add_mustard()
+ingredients.add_cover()
+ingredients.service()
