@@ -30,7 +30,7 @@ def add_mayonnaise():
     smear_up()
 
 def add_sauce():
-    print('ББерём порцию соуса')
+    print('Берём порцию соуса')
     smear_up()
 
 def add_mustard():
