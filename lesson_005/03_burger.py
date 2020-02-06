@@ -29,3 +29,5 @@ ingredients.add_sauce()
 ingredients.add_mustard()
 ingredients.add_cover()
 ingredients.service()
+
+# Зачет
