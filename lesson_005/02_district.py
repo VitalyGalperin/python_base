@@ -15,3 +15,5 @@ from district.soviet_street.house2.room2 import folks as folks8
 
 print('На районе живут:', ', '.join(folks1), ',', ', '.join(folks2), ',', ', '.join(folks3), ',', ', '.join(folks4),
       ',', ', '.join(folks5), ',', ', '.join(folks6), ',', ', '.join(folks7), ',', ', '.join(folks8))
+
+# Зачет
