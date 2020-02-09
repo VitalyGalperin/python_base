@@ -43,4 +43,37 @@
 # Это пример применения SOLID принципа (см https://goo.gl/GFMoaI) в архитектуре программ.
 # Точнее, в этом случае важен принцип единственной ответственности - https://goo.gl/rYb3hT
 
-# TODO здесь ваш код...
+from mastermind_engine import make_number, check_number
+from termcolor import cprint
+
+while True:
+    game_number = make_number()
+    cprint('Задумано число: XXXX', color='red', attrs=['bold', 'reverse'])
+    attempts_number = 0
+    while True:
+        cprint('Введите 4-х значное число:', color='green', attrs=['bold'])
+        get_number = input()
+        check_result = check_number(get_number, game_number)
+        if not check_result:
+            cprint('Некорректный ввод', color='red', attrs=['bold'])
+        else:
+            attempts_number += 1
+            if check_result.get('bulls') == 4:
+                cprint('ПОЗДРАВЛЯЮ!!!! ВЫ ПОБЕДИЛИ!!!', color='red', attrs=['bold', 'reverse'])
+                print('Количество попыток: ', attempts_number)
+                break
+            else:
+                print('Быки - ', check_result.get('bulls'), '   Коровы - ', check_result.get('cows'))
+    game_over = False
+    while True:
+        cprint('Хотите еще партию? Y/N', color='cyan', attrs=['bold'])
+        answer = input()
+        if answer == 'Y' or answer == 'y':
+            break
+        elif answer == 'N' or answer == 'n':
+            game_over = True
+            break
+        else:
+            print('Некорректный ввод, введите Y для новой игры  или N для завершения')
+    if game_over:
+        break
