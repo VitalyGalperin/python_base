@@ -42,7 +42,8 @@
 # Движок игры реализует только саму функциональность игры.
 # Это пример применения SOLID принципа (см https://goo.gl/GFMoaI) в архитектуре программ.
 # Точнее, в этом случае важен принцип единственной ответственности - https://goo.gl/rYb3hT
-
+# TODO Данный импорт не вилиден. сейчас код не рабочий. Необходимо вынести
+#  модуль mastermind_engine из папки mastermind_engine и удалить папку.
 from mastermind_engine import make_number, check_number
 from termcolor import cprint
 
@@ -65,6 +66,7 @@ while True:
             else:
                 print('Быки - ', check_result.get('bulls'), '   Коровы - ', check_result.get('cows'))
     game_over = False
+    # TODO Проверка пользовательского ввода необходимо вынести в отдельную фунцию
     while True:
         cprint('Хотите еще партию? Y/N', color='cyan', attrs=['bold'])
         answer = input()
