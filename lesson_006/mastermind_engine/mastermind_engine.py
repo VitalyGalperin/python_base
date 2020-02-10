@@ -10,7 +10,6 @@ def make_number():
             if game_number.find(new_digit) == -1:
                 game_number += new_digit
                 break
-    print(game_number, 'game_number')
     return game_number
 
 
