@@ -42,10 +42,22 @@
 # Движок игры реализует только саму функциональность игры.
 # Это пример применения SOLID принципа (см https://goo.gl/GFMoaI) в архитектуре программ.
 # Точнее, в этом случае важен принцип единственной ответственности - https://goo.gl/rYb3hT
-# TODO Данный импорт не вилиден. сейчас код не рабочий. Необходимо вынести
-#  модуль mastermind_engine из папки mastermind_engine и удалить папку.
-from mastermind_engine import make_number, check_number
+
 from termcolor import cprint
+from mastermind_engine import make_number, check_number, compare_numbers
+
+
+def game_continue_request():
+    while True:
+        cprint('Хотите ещё партию? Y/N? ', color='cyan', attrs=['bold'])
+        answer = input()
+        if answer == 'Y' or answer == 'y':
+            return False
+        elif answer == 'N' or answer == 'n':
+            return True
+        else:
+            print('Некорректный ввод. Введите Y для новой игры или N для завершения')
+
 
 while True:
     game_number = make_number()
@@ -54,28 +66,19 @@ while True:
     while True:
         cprint('Введите 4-х значное число:', color='green', attrs=['bold'])
         get_number = input()
-        check_result = check_number(get_number, game_number)
+        check_result = check_number(get_number)
         if not check_result:
             cprint('Некорректный ввод', color='red', attrs=['bold'])
         else:
+            bulls, cows = compare_numbers(game_number, get_number)
             attempts_number += 1
-            if check_result.get('bulls') == 4:
+            if bulls == 4:
                 cprint('ПОЗДРАВЛЯЮ!!!! ВЫ ПОБЕДИЛИ!!!', color='red', attrs=['bold', 'reverse'])
                 print('Количество попыток: ', attempts_number)
                 break
             else:
-                print('Быки - ', check_result.get('bulls'), '   Коровы - ', check_result.get('cows'))
-    game_over = False
-    # TODO Проверка пользовательского ввода необходимо вынести в отдельную фунцию
-    while True:
-        cprint('Хотите еще партию? Y/N', color='cyan', attrs=['bold'])
-        answer = input()
-        if answer == 'Y' or answer == 'y':
-            break
-        elif answer == 'N' or answer == 'n':
-            game_over = True
-            break
-        else:
-            print('Некорректный ввод, введите Y для новой игры  или N для завершения')
-    if game_over:
+                print('Быки - ', bulls, '   Коровы - ', cows)
+    if game_continue_request():
         break
+
+

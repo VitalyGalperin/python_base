@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import simple_draw as sd
-# TODO Данный импорт не вилиден. сейчас код не рабочий. Необходимо вынести
-#  модуль snowfall из папки snowfall и удалить папку.
+
 from snowfall import create_snows, draw_snows, move_snows, fallen_snows, delete_snows
 
 sd.resolution = (900, 600)
