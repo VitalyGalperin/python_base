@@ -3,8 +3,8 @@ import random
 
 def make_number():
     game_number = random.sample(range(10), 4)
-    while game_number[0] == 0:
-        game_number = random.sample(range(10), 4)
+    if game_number[0] == 0:
+        game_number.reverse()
     return game_number
 
 
