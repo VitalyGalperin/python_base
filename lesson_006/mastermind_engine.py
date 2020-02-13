@@ -2,12 +2,8 @@ import random
 
 
 def make_number():
-    # TODO В данном месте должен использоваться random.sample (нужно перенести
-    #  8 строку сюда)
-    game_number = [0, 0, 0, 0]
-    # TODO Сдесь должен быть не цикл, а условие проверяющие, что первое число 0
+    game_number = random.sample(range(10), 4)
     while game_number[0] == 0:
-        # TODO Если первое число 0, то нужно делать развор списка и все
         game_number = random.sample(range(10), 4)
     return game_number
 
