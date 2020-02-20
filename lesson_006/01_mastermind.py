@@ -81,4 +81,4 @@ while True:
     if game_continue_request():
         break
 
-
+# Зачет
