@@ -35,7 +35,7 @@ class Man:
         self.name = name
         self.fullness = 50
         self.house = None
-        self.cat = []
+        self.cats = []
 
     def __str__(self):
         return 'Я - {}, сытость {}'.format(
@@ -73,10 +73,10 @@ class Man:
             cprint('{} деньги кончились!'.format(self.name), color='red')
 
     def cat_shopping(self):
-        if self.house.money >= 50:
+        if self.house.money >= 50 * len(self.cats):
             cprint('{} сходила в магазин за кошачьей едой'.format(self.name), color='magenta')
-            self.house.money -= 50
-            self.house.cat_food += 50
+            self.house.money -= 50 * len(self.cats)
+            self.house.cat_food += 50 * len(self.cats)
             self.fullness -= 10
         else:
             cprint('{} деньги кончились!'.format(self.name), color='red')
@@ -87,11 +87,12 @@ class Man:
         self.house.dirt -= 100
 
     def get_cat(self):
-        self.cat = Cat()
-        self.fullness -= 10
-        self.cat.house = my_sweet_home
+        new_cat = Cat()
+        new_cat.fullness -= 10
+        new_cat.house = my_sweet_home
+        self.cats.append(new_cat)
         cprint('{} взял в дом кота'.format(self.name), color='cyan')
-        return self.cat
+        return new_cat
 
     def act(self):
         dice = randint(1, 6)
@@ -100,16 +101,16 @@ class Man:
             return
         if self.fullness < 20:
             self.eat()
-        elif self.house.money < 50:
+        elif self.house.money < 50 + len(self.cats) * 20:
             self.work()
         elif self.house.food < 30:
             self.shopping()
-        elif self.house.cat_food < 30:
+        elif self.house.cat_food < len(self.cats) * 20:
             self.cat_shopping()
         elif self.house.dirt >= 100 and self.fullness > 20:
             self.cleaning()
         elif self.house.money > 500:
-            self.get_cat()
+            return self.get_cat()
         elif dice == 1:
             self.work()
         elif dice == 2:
@@ -156,10 +157,12 @@ class Cat:
     def sleep(self):
         cprint('{} спал'.format(self.name), color='magenta')
         self.fullness -= 10
+        self.house.cat_food -= 10
 
     def tear_wallpaper(self):
         cprint('{} драл обои'.format(self.name), color='blue')
         self.fullness -= 10
+        self.house.cat_food -= 10
         self.house.dirt += 5
 
     def act(self):
@@ -176,21 +179,25 @@ class Cat:
         else:
             self.sleep()
 
-person = Man(name='Ирина Марковна')
 
+person = Man(name='Ирина Марковна')
 my_sweet_home = House()
 person.go_to_the_house(house=my_sweet_home)
-cats = person.get_cat()
+cats = [person.get_cat()]
 
 for day in range(1, 366):
     print('================ день {} =================='.format(day))
     print(person)
-    person.act()
-    print(cats)
-    cats.act()
+    result = person.act()
+    if isinstance(result, Cat):
+        cats.append(result)
+    for cat in cats:
+        print(cat)
+        cat.act()
     print('--- в конце дня ---')
     print(my_sweet_home)
-
+    for cat in cats:
+        print(cat)
 # Усложненное задание (делать по желанию)
 # Создать несколько (2-3) котов и подселить их в дом к человеку.
 # Им всем вместе так же надо прожить 365 дней.
