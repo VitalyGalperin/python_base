@@ -14,6 +14,8 @@ sd.resolution = (900, 600)
 class Snowflake:
 
     def __init__(self):
+        # TODO Лучше использовать несколько переменных, а не список, так код
+        #  будет гораздо лучше читаться
         self.snow = [sd.random_number(0, 900), 300 + sd.random_number(0, 600), sd.random_number(3, 20),
                      sd.random_number(1, 10) * 0.1, sd.random_number(1, 50) * 0.01, sd.random_number(1, 90)]
 
@@ -31,6 +33,7 @@ class Snowflake:
                      factor_a=self.snow[3], factor_b=self.snow[4], factor_c=self.snow[5], color=sd.COLOR_WHITE)
 
     def can_fall(self):
+        # TODO Гораздо проще возвращать просто результат сравнения
         if self.snow[1] > 0:
             return True
         else:
