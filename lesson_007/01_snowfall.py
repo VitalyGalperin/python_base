@@ -14,10 +14,13 @@ sd.resolution = (900, 600)
 class Snowflake:
 
     def __init__(self):
-        # TODO Лучше использовать несколько переменных, а не список, так код
-        #  будет гораздо лучше читаться
-        self.snow = [sd.random_number(0, 900), 300 + sd.random_number(0, 600), sd.random_number(3, 20),
-                     sd.random_number(1, 10) * 0.1, sd.random_number(1, 50) * 0.01, sd.random_number(1, 90)]
+        x_coordinate = sd.random_number(0, 900)
+        y_coordinate = 300 + sd.random_number(0, 600)
+        length = sd.random_number(3, 20)
+        place_of_rays = sd.random_number(1, 10) * 0.1
+        ray_length = sd.random_number(1, 50) * 0.01
+        deflection_angle = sd.random_number(1, 90)
+        self.snow = [x_coordinate, y_coordinate, length, place_of_rays, ray_length, deflection_angle]
 
     def clear_previous_picture(self):
         sd.snowflake(center=sd.get_point(self.snow[0], self.snow[1]), length=self.snow[2],
@@ -33,11 +36,7 @@ class Snowflake:
                      factor_a=self.snow[3], factor_b=self.snow[4], factor_c=self.snow[5], color=sd.COLOR_WHITE)
 
     def can_fall(self):
-        # TODO Гораздо проще возвращать просто результат сравнения
-        if self.snow[1] > 0:
-            return True
-        else:
-            return False
+        return self.snow[1]
 
 
 def get_flakes(snow_numbers):
