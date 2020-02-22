@@ -20,6 +20,8 @@ class Snowflake:
         place_of_rays = sd.random_number(1, 10) * 0.1
         ray_length = sd.random_number(1, 50) * 0.01
         deflection_angle = sd.random_number(1, 90)
+        # TODO Вам не нужна данный список, его необходимо удалить и обращаться
+        #  в коде напрямую к нужным атрибутам класса
         self.snow = [x_coordinate, y_coordinate, length, place_of_rays, ray_length, deflection_angle]
 
     def clear_previous_picture(self):
