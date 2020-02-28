@@ -3,6 +3,7 @@
 from termcolor import cprint
 from random import randint
 
+
 ######################################################## Часть первая
 #
 # Создать модель жизни небольшой семьи.
@@ -53,13 +54,10 @@ class House:
         return 'В доме {} денег, {} еды, {} грязи'.format(self.money, self.food, self.mud)
 
 
-class Husband:
-    # TODO Эти атрибуты в целом относятся ко всем людям, по этому их нужно
-    #  вынести в базовый класс (человек). Кроме этого в базовый класс нужно
-    #  вынести все общие для всех людей методы (реализация которых одинакова и
-    #  у мужа и у жены, один из примеров это метод __str__).
-    eaten_food = 0
+class Human:
     earned_money = 0
+    eaten_food = 0
+    bought_fur_coats = 0
 
     def __init__(self, name):
         self.name = name
@@ -69,11 +67,25 @@ class Husband:
 
     def __str__(self):
         return '{} сытость {}, довольство {}'.format(self.name, self.fullness, self.happiness)
-        # return super().__str__()
 
-    def go_to_the_house(self,house):
+    def eat(self):
+        self.fullness += 30
+        self.house.food -= 30
+        self.eaten_food += 30
+        cprint('{} поел(а)'.format(self.name), color='yellow')
+
+    def go_to_the_house(self, house):
         self.house = house
-        cprint('{} поселился в доме'.format(self.name), color='yellow')
+        cprint('{} терерь живёт в доме'.format(self.name), color='yellow')
+
+
+class Husband(Human):
+
+    def __init__(self, name):
+        super().__init__(name=name)
+
+    def __str__(self):
+        return super().__str__()
 
     def act(self):
         self.house.mud += 5
@@ -95,12 +107,6 @@ class Husband:
         else:
             self.gaming()
 
-    def eat(self):
-        self.fullness += 30
-        self.house.food -= 30
-        Husband.eaten_food += 30
-        cprint('{} поел'.format(self.name), color='yellow')
-
     def work(self):
         self.fullness -= 10
         self.happiness -= 10
@@ -114,26 +120,14 @@ class Husband:
         cprint('{} играл в WoT'.format(self.name), color='yellow')
 
 
-class Wife:
-    # TODO Эти атрибуты в целом относятся ко всем людям, по этому их нужно
-    #  вынести в базовый класс (человек)
-    eaten_food = 0
-    bought_fur_coats = 0
- 
+class Wife(Human):
+
     def __init__(self, name):
-        self.name = name
-        self.fullness = 30
-        self.happiness = 100
+        super().__init__(name=name)
         self.fur_coats = 0
-        self.house = None
 
     def __str__(self):
-        return '{} сытость {}, довольство {}'.format(self.name, self.fullness, self.happiness)
-        # return super().__str__()
-
-    def go_to_the_house(self,house):
-        self.house = house
-        cprint('{} поселилась в доме'.format(self.name), color='yellow')
+        return super().__str__()
 
     def act(self):
         dice = randint(1, 6)
@@ -159,12 +153,6 @@ class Wife:
             self.shopping()
         else:
             self.watch_TV()
-
-    def eat(self):
-        self.fullness += 30
-        self.house.food -= 30
-        Wife.eaten_food += 30
-        cprint('{} поела'.format(self.name), color='yellow')
 
     def shopping(self):
         self.fullness -= 10
@@ -209,9 +197,8 @@ for day in range(365):
 
 cprint('================== Прошел год ==================', color='blue')
 cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
-cprint('Съедено еды {}'.format(Husband.eaten_food + Wife.eaten_food), color='blue')
+cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
 cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
-
 
 ######################################################## Часть вторая
 #
@@ -334,4 +321,3 @@ cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 #       for salary in range(50, 401, 50):
 #           max_cats = life.experiment(salary)
 #           print(f'При зарплате {salary} максимально можно прокормить {max_cats} котов')
-
