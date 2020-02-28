@@ -200,6 +200,8 @@ cprint('Заработано денег {}'.format(Husband.earned_money), color=
 cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
 cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 
+# Первая часть зачтена
+
 ######################################################## Часть вторая
 #
 # После подтверждения учителем первой части надо
