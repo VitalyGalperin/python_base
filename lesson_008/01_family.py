@@ -48,13 +48,14 @@ class House:
     def __init__(self):
         self.money = 100
         self.food = 50
+        self.cat_food = 50
         self.mud = 0
 
     def __str__(self):
         return 'В доме {} денег, {} еды, {} грязи'.format(self.money, self.food, self.mud)
 
 
-class Human:
+class Creature:
     earned_money = 0
     eaten_food = 0
     bought_fur_coats = 0
@@ -79,7 +80,7 @@ class Human:
         cprint('{} терерь живёт в доме'.format(self.name), color='yellow')
 
 
-class Husband(Human):
+class Husband(Creature):
 
     def __init__(self, name):
         super().__init__(name=name)
@@ -120,7 +121,7 @@ class Husband(Human):
         cprint('{} играл в WoT'.format(self.name), color='yellow')
 
 
-class Wife(Human):
+class Wife(Creature):
 
     def __init__(self, name):
         super().__init__(name=name)
@@ -181,25 +182,6 @@ class Wife(Human):
         cprint('{} смотрела телевизор'.format(self.name), color='yellow')
 
 
-home = House()
-serge = Husband(name='Сережа')
-serge.go_to_the_house(home)
-masha = Wife(name='Маша')
-masha.go_to_the_house(home)
-
-for day in range(365):
-    cprint('================== День {} =================='.format(day), color='red')
-    serge.act()
-    masha.act()
-    cprint(serge, color='cyan')
-    cprint(masha, color='cyan')
-    cprint(home, color='cyan')
-
-cprint('================== Прошел год ==================', color='blue')
-cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
-cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
-cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
-
 ######################################################## Часть вторая
 #
 # После подтверждения учителем первой части надо
@@ -225,19 +207,27 @@ cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 # Если кот дерет обои, то грязи становится больше на 5 пунктов
 
 
-class Cat:
+class Cat(Creature):
 
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        super().__init__(name=name)
+        self.eaten_cat_food = 0
+
+    def __str__(self):
+        return super().__str__()
 
     def act(self):
         pass
 
     def eat(self):
-        pass
+        self.fullness += 20
+        self.house.cat_food -= 10
+        self.eaten_cat_food += 10
+        cprint('{} поел(а)'.format(self.name), color='yellow')
 
     def sleep(self):
-        pass
+        self.fullness -= 10
+        cprint('{} спал'.format(self.name), color='yellow')
 
     def soil(self):
         pass
@@ -272,7 +262,7 @@ class Cat:
 #         pass
 #
 #
-# # TODO после реализации второй части - отдать на проверку учителем две ветки
+
 #
 
 ######################################################## Часть третья
@@ -281,23 +271,32 @@ class Cat:
 # влить в мастер все коммиты из ветки develop и разрешить все конфликты
 # отправить на проверку учителем.
 
-#
-# home = House()
-# serge = Husband(name='Сережа')
-# masha = Wife(name='Маша')
+
+home = House()
+serge = Husband(name='Сережа')
+serge.go_to_the_house(home)
+masha = Wife(name='Маша')
+masha.go_to_the_house(home)
 # kolya = Child(name='Коля')
-# murzik = Cat(name='Мурзик')
-#
-# for day in range(365):
-#     cprint('================== День {} =================='.format(day), color='red')
-#     serge.act()
-#     masha.act()
-#     kolya.act()
-#     murzik.act()
-#     cprint(serge, color='cyan')
-#     cprint(masha, color='cyan')
+murzik = Cat(name='Мурзик')
+murzik.go_to_the_house(home)
+
+for day in range(365):
+    cprint('================== День {} =================='.format(day), color='red')
+    serge.act()
+    masha.act()
+#    kolya.act()
+    murzik.act()
+    cprint(serge, color='cyan')
+    cprint(masha, color='cyan')
 #     cprint(kolya, color='cyan')
-#     cprint(murzik, color='cyan')
+    cprint(murzik, color='cyan')
+
+cprint('================== Прошел год ==================', color='blue')
+cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
+cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
+cprint('Съедено кошачьей еды {}'.format(murzik.eaten_cat_food), color='blue')
+cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 
 
 # Усложненное задание (делать по желанию)
