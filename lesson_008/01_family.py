@@ -181,24 +181,24 @@ class Wife(Human):
         cprint('{} смотрела телевизор'.format(self.name), color='yellow')
 
 
-home = House()
-serge = Husband(name='Сережа')
-serge.go_to_the_house(home)
-masha = Wife(name='Маша')
-masha.go_to_the_house(home)
-
-for day in range(365):
-    cprint('================== День {} =================='.format(day), color='red')
-    serge.act()
-    masha.act()
-    cprint(serge, color='cyan')
-    cprint(masha, color='cyan')
-    cprint(home, color='cyan')
-
-cprint('================== Прошел год ==================', color='blue')
-cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
-cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
-cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
+# home = House()
+# serge = Husband(name='Сережа')
+# serge.go_to_the_house(home)
+# masha = Wife(name='Маша')
+# masha.go_to_the_house(home)
+#
+# for day in range(365):
+#     cprint('================== День {} =================='.format(day), color='red')
+#     serge.act()
+#     masha.act()
+#     cprint(serge, color='cyan')
+#     cprint(masha, color='cyan')
+#     cprint(home, color='cyan')
+#
+# cprint('================== Прошел год ==================', color='blue')
+# cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
+# cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
+# cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 
 # Первая часть зачтена
 
@@ -256,26 +256,56 @@ cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 # отличия от взрослых - кушает максимум 10 единиц еды,
 # степень счастья  - не меняется, всегда ==100 ;)
 #
-class Child:
+class Child(Human):
 
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        super().__init__(name=name)
 
     def __str__(self):
         return super().__str__()
 
     def act(self):
-        pass
+        if self.fullness <= 0:
+            cprint('{} умер от голода'.format(self.name), color='red')
+            return
+        if self.fullness <= 5:
+            self.eat()
+        else:
+            self.sleep()
 
     def eat(self):
-        pass
+        self.fullness += 10
+        self.house.food -= 10
+        self.eaten_food += 10
+        cprint('{} поел(а)'.format(self.name), color='yellow')
 
     def sleep(self):
-        pass
+        self.fullness -= 5
+        cprint('{} спал'.format(self.name), color='yellow')
 
 
-# # TODO после реализации второй части - отдать на проверку учителем две ветки
-#
+home = House()
+serge = Husband(name='Сережа')
+serge.go_to_the_house(home)
+masha = Wife(name='Маша')
+masha.go_to_the_house(home)
+kolya = Child(name='Коля')
+kolya.go_to_the_house(home)
+
+for day in range(365):
+    cprint('================== День {} =================='.format(day), color='red')
+    serge.act()
+    masha.act()
+    kolya.act()
+    cprint(serge, color='cyan')
+    cprint(masha, color='cyan')
+    cprint(kolya, color='cyan')
+    cprint(home, color='cyan')
+
+cprint('================== Прошел год ==================', color='blue')
+cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
+cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food + kolya.eaten_food), color='blue')
+cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 
 ######################################################## Часть третья
 #
