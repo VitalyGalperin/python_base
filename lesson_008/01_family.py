@@ -84,6 +84,8 @@ class Husband(Human):
     def __init__(self, name):
         super().__init__(name=name)
 
+    # TODO В данной операции нет необходимости, метод будет наследоваться по
+    #  умолчанию
     def __str__(self):
         return super().__str__()
 
@@ -126,6 +128,8 @@ class Wife(Human):
         super().__init__(name=name)
         self.fur_coats = 0
 
+    # TODO В данной операции нет необходимости, метод будет наследоваться по
+    #  умолчанию
     def __str__(self):
         return super().__str__()
 
@@ -261,6 +265,8 @@ class Child(Human):
     def __init__(self, name):
         super().__init__(name=name)
 
+    # TODO В данной операции нет необходимости, метод будет наследоваться по
+    #  умолчанию
     def __str__(self):
         return super().__str__()
 
