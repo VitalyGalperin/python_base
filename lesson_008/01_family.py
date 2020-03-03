@@ -82,9 +82,6 @@ class Human(Creature):
     def __init__(self, name):
         super().__init__(name=name)
 
-    def __str__(self):
-        return super().__str__()
-
     def pet_cat(self):
         self.happiness += 5
         cprint('{} гладил(а) кота'.format(self.name), color='yellow')
@@ -95,9 +92,6 @@ class Husband(Human):
 
     def __init__(self, name):
         super().__init__(name=name)
-
-    def __str__(self):
-        return super().__str__()
 
     def act(self):
         self.house.mud += 5
@@ -140,9 +134,6 @@ class Wife(Human):
     def __init__(self, name):
         super().__init__(name=name)
         self.fur_coats = 0
-
-    def __str__(self):
-        return super().__str__()
 
     def act(self):
         dice = randint(1, 6)
@@ -241,9 +232,6 @@ class Cat(Creature):
     def __init__(self, name):
         super().__init__(name=name)
         self.eaten_cat_food = 0
-
-    def __str__(self):
-        return super().__str__()
 
     def act(self):
         dice = randint(1, 6)
