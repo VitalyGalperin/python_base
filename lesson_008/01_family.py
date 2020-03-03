@@ -84,11 +84,6 @@ class Husband(Human):
     def __init__(self, name):
         super().__init__(name=name)
 
-    # TODO В данной операции нет необходимости, метод будет наследоваться по
-    #  умолчанию
-    def __str__(self):
-        return super().__str__()
-
     def act(self):
         self.house.mud += 5
         dice = randint(1, 6)
@@ -127,11 +122,6 @@ class Wife(Human):
     def __init__(self, name):
         super().__init__(name=name)
         self.fur_coats = 0
-
-    # TODO В данной операции нет необходимости, метод будет наследоваться по
-    #  умолчанию
-    def __str__(self):
-        return super().__str__()
 
     def act(self):
         dice = randint(1, 6)
@@ -264,11 +254,6 @@ class Child(Human):
 
     def __init__(self, name):
         super().__init__(name=name)
-
-    # TODO В данной операции нет необходимости, метод будет наследоваться по
-    #  умолчанию
-    def __str__(self):
-        return super().__str__()
 
     def act(self):
         if self.fullness <= 0:
