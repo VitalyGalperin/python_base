@@ -155,7 +155,8 @@ class Wife(Human):
             self.clean_house()
         elif dice == 1:
             self.eat()
-        elif dice == 2 or dice == 3:
+
+        elif dice == 2 or dice == 3 or dice == 4:
             self.pet_cat()
         else:
             self.watch_TV()
@@ -201,7 +202,7 @@ class Wife(Human):
         self.fullness -= 10
         cprint('{} смотрела телевизор'.format(self.name), color='yellow')
 
-
+#
 # home = House()
 # serge = Husband(name='Сережа')
 # serge.go_to_the_house(home)
@@ -220,8 +221,6 @@ class Wife(Human):
 # cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
 # cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food), color='blue')
 # cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
-
-# Первая часть зачтена
 
 ######################################################## Часть вторая
 #
@@ -261,9 +260,9 @@ class Cat(Creature):
             return
         if self.fullness <= 20:
             self.eat()
-        elif dice == 1 or dice == 2:
+        elif dice == 1 or dice == 2 or dice == 3:
             self.sleep()
-        elif dice == 3 or dice == 4:
+        elif dice == 4:
             self.eat()
         else:
             self.soil()
@@ -358,6 +357,33 @@ cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 # отправить на проверку учителем.
 
 
+home = House()
+serge = Husband(name='Сережа')
+serge.go_to_the_house(home)
+masha = Wife(name='Маша')
+masha.go_to_the_house(home)
+kolya = Child(name='Коля')
+kolya.go_to_the_house(home)
+murzik = Cat(name='Мурзик')
+murzik.go_to_the_house(home)
+
+for day in range(365):
+    cprint('================== День {} =================='.format(day), color='red')
+    serge.act()
+    masha.act()
+    kolya.act()
+    murzik.act()
+    cprint(serge, color='cyan')
+    cprint(masha, color='cyan')
+    cprint(kolya, color='cyan')
+    cprint(murzik, color='cyan')
+    cprint(home, color='cyan')
+
+cprint('================== Прошел год ==================', color='blue')
+cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
+cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food + kolya.eaten_food), color='blue')
+cprint('Съедено кошачьей еды {}'.format(murzik.eaten_cat_food), color='blue')
+cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
 
 # Усложненное задание (делать по желанию)
 #
