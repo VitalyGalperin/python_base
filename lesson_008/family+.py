@@ -44,6 +44,7 @@ from random import randint, sample
 
 
 class House:
+    cats = []
 
     def __init__(self):
         self.money = 100
@@ -51,8 +52,8 @@ class House:
         self.cat_food = 50
         self.mud = 0
 
-    def __str__(self):
-        return 'В доме {} денег, {} еды, {} грязи'.format(self.money, self.food, self.mud)
+    # def __str__(self):
+    #     return 'В доме {} денег, {} еды, {} грязи'.format(self.money, self.food, self.mud)
 
     def food_incident(self):
         self.food = round(self.food / 2, -1)
@@ -74,11 +75,11 @@ class Creature:
         self.happiness = 100
         self.house = None
 
-    def __str__(self):
-        if self.is_live:
-            return '{} сытость {}, довольство {}'.format(self.name, self.fullness, self.happiness)
-        else:
-            return '{} умер(ла)'
+    # def __str__(self):
+    #     if self.is_live:
+    #         return '{} сытость {}, довольство {}'.format(self.name, self.fullness, self.happiness)
+    #     else:
+    #         return '{} умер(ла)'
 
     def eat(self):
         self.fullness += 30
@@ -96,8 +97,9 @@ class Human(Creature):
         super().__init__(name=name)
 
     def pet_cat(self):
-        self.happiness += 5
-        # cprint('{} гладил(а) кота'.format(self.name), color='yellow')
+        if self.house.cats:
+            self.happiness += 5
+            # cprint('{} гладил(а) кота'.format(self.name), color='yellow')
 
 
 class Husband(Human):
@@ -112,11 +114,11 @@ class Husband(Human):
         dice = randint(1, 6)
         if self.fullness <= 0:
             self.is_live = False
-            cprint('{} умер от голода'.format(self.name), color='red')
+            # cprint('{} умер от голода'.format(self.name), color='red')
             return
         if self.happiness <= 0:
             self.is_live = False
-            cprint('{} умер от депрессии'.format(self.name), color='red')
+            # cprint('{} умер от депрессии'.format(self.name), color='red')
             return
         if self.fullness <= 20:
             self.eat()
@@ -154,11 +156,11 @@ class Wife(Human):
         dice = randint(1, 6)
         if self.fullness <= 0:
             self.is_live = False
-            cprint('{} умерла от голода'.format(self.name), color='red')
+            # cprint('{} умерла от голода'.format(self.name), color='red')
             return
         if self.happiness <= 0:
             self.is_live = False
-            cprint('{} умерла от депрессии'.format(self.name), color='red')
+            # cprint('{} умерла от депрессии'.format(self.name), color='red')
             return
         if self.fullness <= 20:
             self.eat()
@@ -265,7 +267,7 @@ class Child(Human):
     def act(self):
         if self.fullness <= 0:
             self.is_live = False
-            cprint('{} умер от голода'.format(self.name), color='red')
+            # cprint('{} умер от голода'.format(self.name), color='red')
             return
         if self.fullness <= 5:
             self.eat()
@@ -308,11 +310,15 @@ class Child(Human):
 
 
 class Simulation:
-    cats = []
 
-    def __init__(self,money_incidents, food_incidents):
+    def __init__(self, money_incidents=0, food_incidents=0):
         self.money_incidents = money_incidents
         self.food_incidents = food_incidents
+
+    def add_cats(self, home, cat_numbers):
+        cat = Cat(name='Кот №{}'.format(cat_numbers))
+        home.cats.append(cat)
+        cat.go_to_the_house(home)
 
     def experiment(self, salary):
         home = House()
@@ -327,30 +333,44 @@ class Simulation:
         Wife.bought_fur_coats = 0
         food_incident_days = sample(range(365), self.food_incidents)
         money_incident_days = sample(range(365), self.money_incidents)
-        for day in range(365):
-            if day in money_incident_days:
-                home.money_incident()
-            if day in food_incident_days:
-                home.food_incident()
-            serge.act()
-            masha.act()
-            kolya.act()
-            if not serge.is_live or not masha.is_live or not kolya.is_live:
-                return 0
-        # cprint('================== Прошел год ==================', color='blue')
-        # cprint('Заработано денег {}'.format(Husband.earned_money), color='blue')
-        # cprint('Съедено еды {}'.format(serge.eaten_food + masha.eaten_food + kolya.eaten_food), color='blue')
-        # cprint('Куплено шуб {}'.format(Wife.bought_fur_coats), color='blue')
+        for cat_numbers in range(100):
+            self.add_cats(home, cat_numbers)
+            for day in range(365):
+                if day in money_incident_days:
+                    home.money_incident()
+                if day in food_incident_days:
+                    home.food_incident()
+                serge.act()
+                masha.act()
+                kolya.act()
+                if not serge.is_live or not masha.is_live or not kolya.is_live:
+                    return cat_numbers - 1
+                for cat in home.cats:
+                    cat.act()
+                    if not cat.is_live:
+                        return cat_numbers - 1
 
 
 for food_incidents in range(6):
     for money_incidents in range(6):
         cprint('==================================================', color='blue')
-        cprint('Пропаж еды {}, пропаж денег {}'.format(food_incidents, money_incidents), color='yellow')
         life = Simulation(money_incidents, food_incidents)
         for salary in range(50, 401, 50):
             cprint('-----------------------------------------------------', color='blue')
             for test_number in range(3):
-                print('Зарплата {}, тест № {}'.format(salary, test_number + 1))
                 max_cats = life.experiment(salary)
-                print(f'При зарплате {salary} максимально можно прокормить {max_cats} котов')
+                if max_cats == -1:
+                    cprint(
+                        'Зарплата {}, пропаж еды {}, пропаж денег {}. Тест № {} недостаточно людям'.format(salary,
+                                                                                                           food_incidents,
+                                                                                                           money_incidents,
+                                                                                                           test_number + 1),
+                        color='red')
+                else:
+                    cprint(
+                        'Зарплата {}, пропаж еды {}, пропаж денег {}. Тест № {} Максимум котов: {}'.format(salary,
+                                                                                                           food_incidents,
+                                                                                                           money_incidents,
+                                                                                                           test_number + 1,
+                                                                                                           max_cats),
+                        color='yellow')
