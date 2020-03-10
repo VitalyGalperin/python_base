@@ -52,6 +52,8 @@ class House:
         self.cat_food = 50
         self.mud = 0
 
+    # TODO В финальном решении не должно быть ни каких закоментированных строк
+    #  кода. Необходимо исправить этот недочет во всем задании
     # def __str__(self):
     #     return 'В доме {} денег, {} еды, {} грязи'.format(self.money, self.food, self.mud)
 
@@ -360,6 +362,7 @@ for food_incidents in range(6):
             for test_number in range(3):
                 max_cats = life.experiment(salary)
                 if max_cats == -1:
+                    # TODO Необходимо, чтобы длина строки не превышала 80 символов
                     cprint(
                         'Зарплата {}, пропаж еды {}, пропаж денег {}. Тест № {} недостаточно людям'.format(salary,
                                                                                                            food_incidents,
@@ -367,6 +370,7 @@ for food_incidents in range(6):
                                                                                                            test_number + 1),
                         color='red')
                 else:
+                    # TODO Необходимо, чтобы длина строки не превышала 80 символов
                     cprint(
                         'Зарплата {}, пропаж еды {}, пропаж денег {}. Тест № {} Максимум котов: {}'.format(salary,
                                                                                                            food_incidents,
