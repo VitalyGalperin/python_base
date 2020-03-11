@@ -347,4 +347,4 @@ for food_incidents in range(6):
                                                                max_cats),
                         color='yellow')
 
-#
+# Зачет
