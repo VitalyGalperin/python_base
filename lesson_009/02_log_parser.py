@@ -21,10 +21,64 @@
 
 import time
 
-# TODO здесь ваш код
-
 # После выполнения первого этапа нужно сделать группировку событий
 #  - по часам
 #  - по месяцу
 #  - по году
 # Для этого пригодится шаблон проектирование "Шаблонный метод" см https://goo.gl/Vz4828
+
+
+class Parser:
+
+    def __init__(self, log_file, result_file, group_interval='minute',):
+        self.log_file = log_file
+        self.result_file = result_file
+        self.group_interval = group_interval
+
+    def log_parsing(self):
+        group_file = open(self.result_file, mode='w', encoding='utf8')
+        with open(self.log_file, mode='r', encoding='utf8') as file:
+            log_datetime = []
+            event_count = 0
+            date_slice = self._time_interval_choice()
+            for line in file:
+                if log_datetime == line[1:date_slice]:
+                    if line[29] == 'N':
+                        event_count += 1
+                else:
+                    if event_count > 0:
+                        group_file.write(f'[{log_datetime}] {event_count}\n')
+                    log_datetime = line[1:date_slice]
+                    if line[29] == 'N':
+                        event_count = 1
+                    else:
+                        event_count = 0
+            group_file.write(f'[{log_datetime}] {event_count}\n')
+        group_file.close()
+
+    def _time_interval_choice(self):
+        if self.group_interval == 'minute':
+            date_slice = 17
+        elif self.group_interval == 'hour':
+            date_slice = 14
+        elif self.group_interval == 'day':
+            date_slice = 11
+        elif self.group_interval == 'month':
+            date_slice = 8
+        elif self.group_interval == 'year':
+            date_slice = 5
+        else:
+            date_slice = 20
+        return date_slice
+
+
+log_minute = Parser(log_file='events.txt', result_file='statistics_minute.txt', group_interval='minute')
+log_minute.log_parsing()
+log_hour = Parser(log_file='events.txt', result_file='statistics_hour.txt', group_interval='hour')
+log_hour.log_parsing()
+log_day = Parser(log_file='events.txt', result_file='statistics_day.txt', group_interval='day')
+log_day.log_parsing()
+log_month = Parser(log_file='events.txt', result_file='statistics_month.txt', group_interval='month')
+log_month.log_parsing()
+log_year = Parser(log_file='events.txt', result_file='statistics_year.txt', group_interval='year')
+log_year.log_parsing()
