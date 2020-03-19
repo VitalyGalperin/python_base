@@ -90,5 +90,3 @@ chatterer.sort_statistic(key='alphabet')
 chatterer.sort_statistic(key='alphabet', reverse=True)
 chatterer.sort_statistic(key='quantity')
 chatterer.sort_statistic(key='quantity', reverse=True)
-
-

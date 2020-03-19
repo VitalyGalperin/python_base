@@ -75,31 +75,24 @@ class FileOrder:
 
     def archive_sort(self):
         source_zip = zipfile.ZipFile(self.source_file)
-        #copy_zip = source_zip.open(source_zip)
         for file_name in source_zip.infolist():
             name, extension = os.path.splitext(file_name.filename)
-            file_name.filename = os.path.split(name)[1]
-            print(file_name.filename)
-            only_name = os.path.split(name)[1]
             if extension in self.image_extension:
-                struct_path = 'icons_by_year/' + str(file_name.date_time[0]) + '/' + str(
+                target_path = 'icons_by_year/' + str(file_name.date_time[0]) + '/' + str(
                     file_name.date_time[1]) + '/'
-                file_name.filename = os.path.basename(file_name.filename)
-                if not os.path.isdir(struct_path):
-                    os.makedirs(struct_path)
-                if not os.path.isfile(struct_path + only_name):
-                    print(file_name.filename)
-                    # copyfileobj(file_name.filename, struct_path)
-                    source_zip.extract(file_name.filename, struct_path)
+                target_file = target_path + os.path.split(name)[1] + extension
+                if not os.path.isdir(target_path):
+                    os.makedirs(target_path)
+                if not os.path.isfile(target_file):
+                    with source_zip.open(file_name.filename) as source, open(target_file, 'wb') as target:
+                        copyfileobj(source, target)
 
 
+sort_dir = FileOrder()
+sort_dir.directory_sort()
 
-
-# sort_dir = FileOrder()
-# sort_dir.directory_sort()
-
-# Для проверки работы с ZIP-файлом надо удалить директории /icons и /icons_by_year
-# и закомментировать две предыдущие строки кода
+# Для проверки работы с ZIP-файлом удалить директории /icons и /icons_by_year
+# и закомментировать две предыдущие строки кода (так как вся структура создается предыдущим блоком)
 
 sort_zip = FileOrder(source_file='icons.zip')
 sort_zip.archive_sort()
