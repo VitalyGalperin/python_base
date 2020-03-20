@@ -100,16 +100,17 @@ def one_day():
 
 day_count = 0
 total_carma = 0
-while True:
-    try:
-        day_count += 1
-        total_carma += one_day()
-        print(f'День {day_count}, Фил отработал {total_carma} кармы')
-    except LifeError as exc:
-        print(exc)
-    if total_carma >= ENLIGHTENMENT_CARMA_LEVEL:
-        break
-print('Фил вышел из Круга!!!!')
+with open('groundhog_day', 'w', encoding='utf8') as file:
+    while True:
+        try:
+            day_count += 1
+            total_carma += one_day()
+            file.write(f'День {day_count}, Фил отработал {total_carma} кармы\n')
+        except LifeError as exc:
+            file.write(str(exc) + '\n')
+        if total_carma >= ENLIGHTENMENT_CARMA_LEVEL:
+            break
+    file.write('Фил вышел из Круга!!!!\n')
 
 
 # https://goo.gl/JnsDqu
