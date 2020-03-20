@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from random import randint
+
 # День сурка
 #
 # Напишите функцию one_day() которая возвращает количество кармы от 1 до 7
@@ -19,6 +21,95 @@
 
 ENLIGHTENMENT_CARMA_LEVEL = 777
 
-# TODO здесь ваш код
+
+class LifeError(Exception):
+    def __init__(self):
+        self.message = 'Фил не отработал кармы'
+
+    def __str__(self):
+        return self.message
+
+
+class IamGodError(LifeError):
+    def __init__(self):
+        self.message = 'Фил - БоГ!!!'
+
+    def __str__(self):
+        return self.message
+
+
+class DrunkError(LifeError):
+    def __init__(self):
+        self.message = 'Фил напился'
+
+    def __str__(self):
+        return self.message
+
+
+class CarCrashError(LifeError):
+    def __init__(self):
+        self.message = 'Фил разбился на машине'
+
+    def __str__(self):
+        return self.message
+
+
+class GluttonyError(LifeError):
+    def __init__(self):
+        self.message = 'Фил обожрался'
+
+    def __str__(self):
+        return self.message
+
+
+class DepressionError(LifeError):
+    def __init__(self):
+        self.message = 'Фил впал в депрессию'
+
+    def __str__(self):
+        return self.message
+
+
+class SuicideError(LifeError):
+    def __init__(self):
+        self.message = 'Фил самоубился'
+
+    def __str__(self):
+        return self.message
+
+
+def one_day():
+    day_carma = randint(1, 7)
+    life_error = randint(1, 13)
+    if life_error == 13:
+        life_error_number = randint(1, 6)
+        if life_error_number == 1:
+            raise IamGodError()
+        elif life_error_number == 2:
+            raise DrunkError()
+        elif life_error_number == 3:
+            raise CarCrashError()
+        elif life_error_number == 4:
+            raise GluttonyError()
+        elif life_error_number == 5:
+            raise DepressionError()
+        elif DepressionError == 6:
+            raise SuicideError()
+    return day_carma
+
+
+day_count = 0
+total_carma = 0
+while True:
+    try:
+        day_count += 1
+        total_carma += one_day()
+        print(f'День {day_count}, Фил отработал {total_carma} кармы')
+    except LifeError as exc:
+        print(exc)
+    if total_carma >= ENLIGHTENMENT_CARMA_LEVEL:
+        break
+print('Фил вышел из Круга!!!!')
+
 
 # https://goo.gl/JnsDqu
