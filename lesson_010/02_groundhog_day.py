@@ -100,7 +100,7 @@ def one_day():
 
 day_count = 0
 total_carma = 0
-with open('groundhog_day', 'w', encoding='utf8') as file:
+with open('groundhog_day.txt', 'w', encoding='utf8') as file:
     while True:
         try:
             day_count += 1
