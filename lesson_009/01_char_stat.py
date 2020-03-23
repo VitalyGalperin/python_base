@@ -34,7 +34,7 @@ class Chatterer:
 
     def __init__(self, file_name):
         self.file_name = file_name
-        self.stat = {}
+        self.stat = {}  # TODO удобнее defaultdict from collections
         self.printing_stat = ()
 
     def unzip(self):
@@ -49,7 +49,7 @@ class Chatterer:
         with open(self.file_name, 'r', encoding='cp1251') as file:
             for line in file:
                 self._collect_for_line(line=line[:-1])
-        self.printing_stat = list(self.stat.items())
+        self.printing_stat = list(self.stat.items())  # TODO self.stat.items() можно сортировать напрямую
 
     def _collect_for_line(self, line):
         for char in line:
@@ -60,14 +60,18 @@ class Chatterer:
                     self.stat[char] = 1
 
     def sort_statistic(self, key='alphabet', reverse=False):
+        # TODO сделали почти правильно, хотелось бы увидеть паттерн шаблонный метод с базовым классом
+        #  и 4 наследниками
         if key == 'quantity' and not reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: -item[1])
+            self.printing_stat = sorted(self.stat.items(), key=lambda item: -item[1])  # TODO параметр reverse
+            # более информативен
         elif key == 'quantity' and reverse:
             self.printing_stat = sorted(self.stat.items(), key=lambda item: item[1])
         elif key == 'alphabet' and not reverse:
             self.printing_stat = sorted(self.stat.items(), key=lambda item: item[0])
         elif key == 'alphabet' and reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: -ord(item[0]))
+            self.printing_stat = sorted(self.stat.items(), key=lambda item: -ord(item[0]))  # TODO параметр reverse
+            # более информативен
         self._print_statistic()
 
     def _print_statistic(self):

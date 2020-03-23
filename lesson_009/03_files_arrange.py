@@ -66,8 +66,8 @@ class FileOrder:
                     source_full_path = os.path.join(dirpath, file_name)
                     struct_file_date = time.gmtime(os.path.getmtime(source_full_path))
                     struct_path = 'icons_by_year/' + str(struct_file_date.tm_year) + '/' + str(
-                        struct_file_date.tm_mon) + '/'
-                    if not os.path.isdir(struct_path):
+                        struct_file_date.tm_mon) + '/'   # TODO os.path.join - для переносимости, у меня windows например,
+                    if not os.path.isdir(struct_path):  # TODO makedirs имеет параметр
                         os.makedirs(struct_path)
                     recipient_full_path = struct_path + file_name
                     if not os.path.isfile(recipient_full_path):
@@ -79,9 +79,9 @@ class FileOrder:
             name, extension = os.path.splitext(file_name.filename)
             if extension in self.image_extension:
                 target_path = 'icons_by_year/' + str(file_name.date_time[0]) + '/' + str(
-                    file_name.date_time[1]) + '/'
+                    file_name.date_time[1]) + '/'  # TODO os.path.join
                 target_file = target_path + os.path.split(name)[1] + extension
-                if not os.path.isdir(target_path):
+                if not os.path.isdir(target_path): # TODO makedirs имеет параметр
                     os.makedirs(target_path)
                 if not os.path.isfile(target_file):
                     with source_zip.open(file_name.filename) as source, open(target_file, 'wb') as target:

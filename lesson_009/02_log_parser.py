@@ -57,7 +57,7 @@ class Parser:
         group_file.close()
 
     def _time_interval_choice(self):
-        if self.group_interval == 'minute':
+        if self.group_interval == 'minute':  # TODO тоже самое - шаблонный метод
             date_slice = 17
         elif self.group_interval == 'hour':
             date_slice = 14
