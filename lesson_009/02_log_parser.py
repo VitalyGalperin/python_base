@@ -21,6 +21,7 @@
 
 import time
 
+
 # После выполнения первого этапа нужно сделать группировку событий
 #  - по часам
 #  - по месяцу
@@ -30,7 +31,7 @@ import time
 
 class Parser:
 
-    def __init__(self, log_file, result_file, group_interval='minute',):
+    def __init__(self, log_file, result_file, group_interval='minute', ):
         self.log_file = log_file
         self.result_file = result_file
         self.group_interval = group_interval
