@@ -57,18 +57,42 @@ class Parser:
         group_file.close()
 
     def _time_interval_choice(self):
-        if self.group_interval == 'minute':  # TODO тоже самое - шаблонный метод
-            date_slice = 17
+        if self.group_interval == 'minute':
+            date_slice = self._minute_slice()
         elif self.group_interval == 'hour':
-            date_slice = 14
+            date_slice = self._hour_slice()
         elif self.group_interval == 'day':
-            date_slice = 11
+            date_slice = self._day_slice()
         elif self.group_interval == 'month':
-            date_slice = 8
+            date_slice = self._month_slice()
         elif self.group_interval == 'year':
-            date_slice = 5
+            date_slice = self._year_slice()
         else:
-            date_slice = 20
+            date_slice = self._withot_slice()
+        return date_slice
+
+    def _withot_slice(self):
+        date_slice = 20
+        return date_slice
+
+    def _year_slice(self):
+        date_slice = 5
+        return date_slice
+
+    def _month_slice(self):
+        date_slice = 8
+        return date_slice
+
+    def _day_slice(self):
+        date_slice = 11
+        return date_slice
+
+    def _hour_slice(self):
+        date_slice = 14
+        return date_slice
+
+    def _minute_slice(self):
+        date_slice = 17
         return date_slice
 
 
