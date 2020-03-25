@@ -28,14 +28,16 @@
 # Для этого пригодится шаблон проектирование "Шаблонный метод" см https://goo.gl/Vz4828
 
 import zipfile
+from collections import defaultdict, Counter
 
 
 class Chatterer:
 
     def __init__(self, file_name):
         self.file_name = file_name
-        self.stat = {}  # TODO удобнее defaultdict from collections
-        self.printing_stat = ()
+        self.stat = defaultdict(lambda: 1)
+        self.stat_dic = {}
+        self.statistic_sum = 0
 
     def unzip(self):
         zfile = zipfile.ZipFile(self.file_name, 'r')
@@ -49,43 +51,48 @@ class Chatterer:
         with open(self.file_name, 'r', encoding='cp1251') as file:
             for line in file:
                 self._collect_for_line(line=line[:-1])
-        self.printing_stat = list(self.stat.items())  # TODO self.stat.items() можно сортировать напрямую
 
     def _collect_for_line(self, line):
         for char in line:
             if char.isalpha():
-                if char in self.stat:
-                    self.stat[char] += 1
-                else:
-                    self.stat[char] = 1
+                self.stat[char] += 1
 
     def sort_statistic(self, key='alphabet', reverse=False):
-        # TODO сделали почти правильно, хотелось бы увидеть паттерн шаблонный метод с базовым классом
-        #  и 4 наследниками
-        if key == 'quantity' and not reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: -item[1])  # TODO параметр reverse
-            # более информативен
-        elif key == 'quantity' and reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: item[1])
-        elif key == 'alphabet' and not reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: item[0])
-        elif key == 'alphabet' and reverse:
-            self.printing_stat = sorted(self.stat.items(), key=lambda item: -ord(item[0]))  # TODO параметр reverse
-            # более информативен
-        self._print_statistic()
-
-    def _print_statistic(self):
-        global char
-        statistic_sum = 0
+        self.statistic_sum = 0
         print('+---------+----------+')
         print('|  буква  | частота  |')
         print('+---------+----------+')
-        for char, quantity in self.printing_stat:
-            statistic_sum += quantity
+        if key == 'quantity' and not reverse:
+            self._quantity_direct_sort()
+        elif key == 'quantity' and reverse:
+            self._quantity_revers_sort()
+        elif key == 'alphabet' and not reverse:
+            self._alphabet_direct_sort()
+        elif key == 'alphabet' and reverse:
+            self._alphabet_reverse_sort()
+        print('+---------+----------+')
+        print(f'|  Итого  | {self.statistic_sum:8d} |')
+        print('+---------+----------+')
+
+    def _alphabet_direct_sort(self):
+        for char, quantity in sorted(self.stat.items()):
+            self.statistic_sum += quantity
             print(f'|    {char}    | {quantity:8d} |')
-        print('+---------+----------+')
-        print(f'|  Итого  | {statistic_sum:8d} |')
-        print('+---------+----------+')
+
+    def _alphabet_reverse_sort(self):
+        for char, quantity in sorted(self.stat.items(), reverse=True):
+            self.statistic_sum += quantity
+            print(f'|    {char}    | {quantity:8d} |')
+
+    def _quantity_direct_sort(self):
+        for char, quantity in Counter(self.stat).most_common():
+            self.statistic_sum += quantity
+            print(f'|    {char}    | {quantity:8d} |')
+
+    def _quantity_revers_sort(self):
+        for char, quantity in Counter(self.stat).most_common()[::-1]:
+            self.statistic_sum += quantity
+            print(f'|    {char}    | {quantity:8d} |')
 
 
 chatterer = Chatterer(file_name='voyna-i-mir.txt.zip')
