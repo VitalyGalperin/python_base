@@ -44,7 +44,7 @@ with open('registrations.txt', 'r', encoding='utf8') as source, \
             name, email, age = line.split(' ')
             if not name.isalpha():
                 raise NotNameError()
-            if email.find('@') == -1 and email.find('.') == -1:  # TODO почему and?
+            if email.find('@') == -1 or email.find('.') == -1:
                 raise NotEmailError()
             if not 10 <= int(age) <= 99:
                 raise AgeValueError()
