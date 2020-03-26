@@ -57,3 +57,4 @@ with open('registrations.txt', 'r', encoding='utf8') as source, \
             bad_log.write(f'{original_line[:-1]:40} поле емейл НЕ содержит @ и .(точку)\n')
         except AgeValueError as exc:
             bad_log.write(f'{original_line[:-1]:40} поле возраст НЕ является числом от 10 до 99\n')
+# Зачет!
