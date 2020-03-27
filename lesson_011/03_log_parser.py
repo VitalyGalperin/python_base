@@ -14,4 +14,28 @@
 #
 # [2018-05-17 01:57] 1234
 
-# TODO здесь ваш код
+
+def file_group_events(log_file):
+    date_slice = 17
+    with open(log_file, mode='r', encoding='utf8') as file:
+        nok_count = 0
+        log_datetime = []
+        for line in file:
+            if log_datetime == line[1:date_slice]:
+                if line[29] == 'N':
+                    nok_count += 1
+            else:
+                if nok_count > 0:
+                    yield log_datetime, nok_count
+                log_datetime = line[1:date_slice]
+                if line[29] == 'N':
+                    nok_count = 1
+                else:
+                    nok_count = 0
+        if nok_count > 0:
+            yield log_datetime, nok_count
+
+
+grouped_events = file_group_events(log_file='events.txt')
+for group_time, event_count in grouped_events:
+    print(f'[{group_time}] {event_count}')
