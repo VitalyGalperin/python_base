@@ -32,12 +32,12 @@ def log_errors(log_file='function_errors.log'):
 
 
 # Проверить работу на следующих функциях
-@log_errors(log_file='function_errors1.log')
+@log_errors(log_file='function_errors.log')
 def perky(param):
     return param / 0
 
 
-@log_errors(log_file='function_errors1.log')
+@log_errors(log_file='function_errors.log')
 def check_line(line):
     name, email, age = line.split(' ')
     if not name.isalpha():
