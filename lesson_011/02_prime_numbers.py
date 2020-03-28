@@ -33,7 +33,7 @@ class PrimeNumbers:
         return self
 
     def __next__(self):
-        self.number += 1
+        self.number += 1  # TODO 2 тоже простое число,а 4 нет
         if self.number > self.n:
             raise StopIteration()
         for prime in self.prime_numbers:
