@@ -7,26 +7,37 @@
 # Формат лога: <имя функции> <параметры вызова> <тип ошибки> <текст ошибки>
 # Лог файл открывать каждый раз при ошибке в режиме 'a'
 
+# Усложненное задание (делать по желанию).
+# Написать декоратор с параметром - именем файла
+#
+# @log_errors('function_errors.log')
+# def func():
+#     pass
 
-def log_errors(func):
-    def log_errors_inner(*args, **kwargs):
-        with open('function_errors.log', 'a', encoding='utf8') as log:
-            try:
-                result = func(*args, **kwargs)
-                return result
-            except Exception as exc:
-                log.write(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
-                print(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
-    return log_errors_inner
+
+def log_errors(log_file='function_errors.log'):
+    def log_errors_func(func):
+        def log_errors_inner(*args, **kwargs):
+            with open(log_file, 'a', encoding='utf8') as log:
+                try:
+                    result = func(*args, **kwargs)
+                    return result
+                except Exception as exc:
+                    log.write(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
+                    print(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
+
+        return log_errors_inner
+
+    return log_errors_func
 
 
 # Проверить работу на следующих функциях
-@log_errors
+@log_errors(log_file='function_errors1.log')
 def perky(param):
     return param / 0
 
 
-@log_errors
+@log_errors(log_file='function_errors1.log')
 def check_line(line):
     name, email, age = line.split(' ')
     if not name.isalpha():
@@ -51,12 +62,3 @@ for line in lines:
     except Exception as exc:
         print(f'Invalid format: {exc}')
 perky(param=42)
-
-
-# Усложненное задание (делать по желанию).
-# Написать декоратор с параметром - именем файла
-#
-# @log_errors('function_errors.log')
-# def func():
-#     pass
-
