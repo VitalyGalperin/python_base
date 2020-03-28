@@ -9,8 +9,15 @@
 
 
 def log_errors(func):
-    pass
-    # TODO здесь ваш код
+    def log_errors_inner(*args, **kwargs):
+        with open('function_errors.log', 'a', encoding='utf8') as log:
+            try:
+                result = func(*args, **kwargs)
+                return result
+            except Exception as exc:
+                log.write(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
+                print(f'<{func.__name__}> <{str(*args)} {dict(**kwargs)}> <{exc.__class__.__name__}> <{exc}>\n')
+    return log_errors_inner
 
 
 # Проверить работу на следующих функциях
