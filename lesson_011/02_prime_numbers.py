@@ -25,27 +25,30 @@ def get_prime_numbers(n):
 class PrimeNumbers:
 
     def __init__(self, n):
-        self.number, self.n = 2, n
+        self.number, self.n = 1, n
         self.prime_numbers = []
 
     def __iter__(self):
-        self.number = 2
+        self.number = 1
         return self
 
     def __next__(self):
-        self.number += 1  # TODO 2 тоже простое число,а 4 нет
-        if self.number > self.n:
-            raise StopIteration()
-        for prime in self.prime_numbers:
-            if self.number % prime == 0:
-                break
-        else:
-            self.prime_numbers.append(self.number)
-        return self.number
+        self.number += 1
+        for i in range(self.number, self.n + 1):
+            if i >= self.n:
+                raise StopIteration()
+            for prime in self.prime_numbers:
+                if i % prime == 0:
+                    break
+            else:
+                self.prime_numbers.append(i)
+                self.number = i
+                return self.number
 
 
 prime_number_iterator = PrimeNumbers(n=10000)
 for number in prime_number_iterator:
+    # if number:
     print(number)
 
 # TODO после подтверждения части 1 преподователем, можно делать

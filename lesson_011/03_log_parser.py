@@ -28,15 +28,17 @@ def file_group_events(log_file):
                 if nok_count > 0:
                     yield log_datetime, nok_count
                 log_datetime = line[1:date_slice]
-                if line[29] == 'N':  # TODO если переформатировать
-                    # код то line[29] == 'N' и line[1:date_slice] можно вызывать один раз.
-                    # Постарайтесь избегать дублирования логики
+                if line[29] == 'N':
                     nok_count = 1
                 else:
                     nok_count = 0
         if nok_count > 0:
             yield log_datetime, nok_count
 
+
+# TODO если переформатировать
+# код то line[29] == 'N' и line[1:date_slice] можно вызывать один раз.
+# Постарайтесь избегать дублирования логики
 
 grouped_events = file_group_events(log_file='events.txt')
 for group_time, event_count in grouped_events:
