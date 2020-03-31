@@ -2,6 +2,7 @@
 
 
 # Есть функция генерации списка простых чисел
+from functools import reduce
 
 
 def get_prime_numbers(n):
@@ -48,22 +49,31 @@ class PrimeNumbers:
 
 prime_number_iterator = PrimeNumbers(n=10000)
 for number in prime_number_iterator:
-    # if number:
     print(number)
 
-# TODO после подтверждения части 1 преподователем, можно делать
+
 # Часть 2
 # Теперь нужно создать генератор, который выдает последовательность простых чисел до n
 # Распечатать все простые числа до 10000 в столбик
 
 
-# def prime_numbers_generator(n):
-#     pass
-#     # TODO здесь ваш код
-#
-#
-# for number in prime_numbers_generator(n=10000):
-#     print(number)
+def prime_numbers_generator(n):
+    prime_numbers = []
+    number = 2
+    for i in range(number, n + 1):
+        if i >= n:
+            return
+        for prime in prime_numbers:
+            if i % prime == 0:
+                break
+        else:
+            prime_numbers.append(i)
+            number = i
+            yield number
+
+
+for number in prime_numbers_generator(n=10000):
+    print(number)
 
 
 # Часть 3
@@ -81,3 +91,62 @@ for number in prime_number_iterator:
 # простых счастливых палиндромных чисел и так далее. Придумать не менее 2х способов.
 #
 # Подсказка: возможно, нужно будет добавить параметр в итератор/генератор.
+
+
+def numbers_generator(n, happy=False, palindrome=False, order=False):
+    prime_numbers = []
+    number = 2
+    for i in range(number, n + 1):
+        if i >= n:
+            return
+        for prime in prime_numbers:
+            if i % prime == 0:
+                break
+        else:
+            prime_numbers.append(i)
+            number = i
+            if happy and not check_happy(number, happy):
+                continue
+            if palindrome and not check_palindrome(number, palindrome):
+                continue
+            if order and not check_order(number, order):
+                continue
+            yield number
+
+
+def check_happy(number, happy):
+    number = str(number)
+    half_len = len(number) // 2
+    if sum(map(int, number[:half_len])) == sum(map(int, number[len(number) - half_len::])):
+        return True
+    else:
+        return False
+
+
+def check_palindrome(number, palindrome):
+    if str(number) == str(number)[::-1]:
+        return True
+    else:
+        return False
+
+
+# В числе есть как цифры, идущие продяд в естественном порядке (23, 56, 89)
+def check_order(number, order):
+    number = str(number)
+    for char in number[:len(number) - 1]:
+        if int(char) + 1 == int(number[number.find(char) + 1]):
+            return True
+    return False
+
+
+for number in numbers_generator(n=14000, happy=True, palindrome=False, order=False):
+    print(number, ' Счастливое число')
+
+for number in numbers_generator(n=14000, happy=False, palindrome=True, order=False):
+    print(number, ' Число - полиндром')
+
+for number in numbers_generator(n=14000, happy=True, palindrome=True, order=False):
+    print(number, ' Счастливое Число - полиндром')
+
+for number in numbers_generator(n=10000, happy=False, palindrome=False, order=True):
+    print(number, 'есть последовательные цифры в числе')
