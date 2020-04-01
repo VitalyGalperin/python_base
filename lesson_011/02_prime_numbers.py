@@ -143,3 +143,4 @@ for number in numbers_generator(n=14000, happy=True, palindrome=True, order=Fals
 
 for number in numbers_generator(n=10000, happy=False, palindrome=False, order=True):
     print(number, 'есть последовательные цифры в числе')
+# Зачет
