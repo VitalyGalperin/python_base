@@ -36,9 +36,6 @@ class PrimeNumbers:
     def __next__(self):
         self.number += 1
         for i in range(self.number, self.n + 1):
-            if i >= self.n:  # TODO почему >=? почему эта проверка под циклом?
-                # посмотрите на range i <= self.n всегда
-                raise StopIteration()
             for prime in self.prime_numbers:
                 if i % prime == 0:
                     break
@@ -46,6 +43,7 @@ class PrimeNumbers:
                 self.prime_numbers.append(i)
                 self.number = i
                 return self.number
+        raise StopIteration()
 
 
 prime_number_iterator = PrimeNumbers(n=10000)
@@ -118,17 +116,11 @@ def numbers_generator(n, happy=False, palindrome=False, order=False):
 def check_happy(number, happy):
     number = str(number)
     half_len = len(number) // 2
-    if sum(map(int, number[:half_len])) == sum(map(int, number[len(number) - half_len::])):  # TODO это уже бул
-        return True
-    else:
-        return False
+    return sum(map(int, number[:half_len])) == sum(map(int, number[len(number) - half_len::]))
 
 
-def check_palindrome(number, palindrome): # TODO это уже бул
-    if str(number) == str(number)[::-1]:
-        return True
-    else:
-        return False
+def check_palindrome(number, palindrome):
+    return str(number) == str(number)[::-1]
 
 
 # В числе есть как цифры, идущие продяд в естественном порядке (23, 56, 89)
