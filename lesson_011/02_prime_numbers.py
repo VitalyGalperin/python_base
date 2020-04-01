@@ -36,7 +36,8 @@ class PrimeNumbers:
     def __next__(self):
         self.number += 1
         for i in range(self.number, self.n + 1):
-            if i >= self.n:
+            if i >= self.n:  # TODO почему >=? почему эта проверка под циклом?
+                # посмотрите на range i <= self.n всегда
                 raise StopIteration()
             for prime in self.prime_numbers:
                 if i % prime == 0:
@@ -117,13 +118,13 @@ def numbers_generator(n, happy=False, palindrome=False, order=False):
 def check_happy(number, happy):
     number = str(number)
     half_len = len(number) // 2
-    if sum(map(int, number[:half_len])) == sum(map(int, number[len(number) - half_len::])):
+    if sum(map(int, number[:half_len])) == sum(map(int, number[len(number) - half_len::])):  # TODO это уже бул
         return True
     else:
         return False
 
 
-def check_palindrome(number, palindrome):
+def check_palindrome(number, palindrome): # TODO это уже бул
     if str(number) == str(number)[::-1]:
         return True
     else:
