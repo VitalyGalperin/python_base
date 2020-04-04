@@ -65,12 +65,46 @@
 #
 # Для плавного перехода к мультипоточности, код оформить в обьектном стиле, используя следующий каркас
 #
-# class <Название класса>:
-#
-#     def __init__(self, <параметры>):
-#         <сохранение параметров>
-#
-#     def run(self):
-#         <обработка данных>
+import os
 
-# TODO написать код в однопоточном/однопроцессорном стиле
+
+class VolatilityMeter:
+
+    def __init__(self):
+        self.path = self._make_path()
+        self.dirpath = ''
+        self.dirnames = ''
+        self.filenames = ''
+        self.tickers = {}
+
+    def run(self):
+        for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
+            for filename in self.filenames:
+                self._ticker_processing(filename)
+
+    def _ticker_processing(self, filename):
+        with open(os.path.join(self.dirpath, filename), mode='r', encoding='utf8') as file:
+            min_price = max_price = 0
+            for line in file:
+                ticker, time, price, volume = line.split(',')
+                try:
+                    price = float(price)
+                except ValueError:
+                    continue
+                if not min_price:
+                    min_price = price
+                if price < min_price:
+                    min_price = price
+                if price > max_price:
+                    max_price = price
+            average_price = (max_price + min_price) / 2
+            volatility = ((max_price - min_price) / average_price) * 100
+            self.tickers[ticker] = volatility
+
+    def _make_path(self):
+        return os.path.join(os.getcwd(), 'trades')
+
+
+volatility_handler = VolatilityMeter()
+volatility_handler.run()
+print(volatility_handler.tickers)
