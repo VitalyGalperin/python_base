@@ -72,15 +72,16 @@ class VolatilityMeter:
 
     def __init__(self):
         self.path = self._make_path()
-        self.dirpath = ''
-        self.dirnames = ''
-        self.filenames = ''
+        self.dirpath = self.dirnames = self.filenames = ''
         self.tickers = {}
 
     def run(self):
         for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
             for filename in self.filenames:
                 self._ticker_processing(filename)
+            self._print_max_tickers(tickers_number=3)
+            self._print_min_tickers(tickers_number=3)
+            self._print_zero_tickers()
 
     def _ticker_processing(self, filename):
         with open(os.path.join(self.dirpath, filename), mode='r', encoding='utf8') as file:
@@ -91,9 +92,7 @@ class VolatilityMeter:
                     price = float(price)
                 except ValueError:
                     continue
-                if not min_price:
-                    min_price = price
-                if price < min_price:
+                if not min_price or price < min_price:
                     min_price = price
                 if price > max_price:
                     max_price = price
@@ -104,7 +103,26 @@ class VolatilityMeter:
     def _make_path(self):
         return os.path.join(os.getcwd(), 'trades')
 
+    def _print_max_tickers(self, tickers_number=0):
+        print('Максимальная волатильность:')
+        for ticker, volatility in sorted(self.tickers.items(), key=lambda x: x[1], reverse=True)[0:tickers_number]:
+            print(f'    {ticker} -{volatility:6.2f} %')
+
+    def _print_min_tickers(self, tickers_number=0):
+        print('Минимальная волатильность:')
+        filtered_tickers = filter(lambda x: x[1] != 0, self.tickers.items())
+        for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[1])[0:tickers_number]:
+            print(f'    {ticker} -{volatility:6.2f} %')
+
+    def _print_zero_tickers(self):
+        print('Нулевая волатильность:')
+        filtered_tickers = filter(lambda x: x[1] == 0, self.tickers.items())
+        print_tickers = ''
+        for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[0]):
+            print_tickers += ticker + ' '
+        print(print_tickers)
+
 
 volatility_handler = VolatilityMeter()
 volatility_handler.run()
-print(volatility_handler.tickers)
+
