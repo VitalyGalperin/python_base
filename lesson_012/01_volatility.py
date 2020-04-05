@@ -67,25 +67,17 @@
 #
 import os
 
+
 # TODO код нужно разделить, для того чтобы потом удобно перейти к много поточности. Отдельный класс,
 #  который обрабатывает один файл, и основной код получения списка файлов и вывода результата
-class VolatilityMeter:
 
-    def __init__(self):
-        self.path = self._make_path()
-        self.dirpath = self.dirnames = self.filenames = ''
-        self.tickers = {}
 
-    def run(self):
-        for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
-            for filename in self.filenames:
-                self._ticker_processing(filename)
-            self._print_max_tickers(tickers_number=3)
-            self._print_min_tickers(tickers_number=3)
-            self._print_zero_tickers()
+class FileHandler:
+    def __init__(self, full_path):
+        self.full_path = full_path
 
-    def _ticker_processing(self, filename):
-        with open(os.path.join(self.dirpath, filename), mode='r', encoding='utf8') as file:
+    def processing(self):
+        with open(self.full_path, mode='r', encoding='utf8') as file:
             min_price = max_price = 0
             for line in file:
                 ticker, time, price, volume = line.split(',')
@@ -98,8 +90,30 @@ class VolatilityMeter:
                 if price > max_price:
                     max_price = price
             average_price = (max_price + min_price) / 2
-            volatility = ((max_price - min_price) / average_price) * 100  # TODO может быть деление на 0
-            self.tickers[ticker] = volatility
+            try:
+                volatility = ((max_price - min_price) / average_price) * 100
+            except ZeroDivisionError:
+                volatility = 0
+            return ticker, volatility
+
+
+class VolatilityMeter:
+
+    def __init__(self):
+        self.path = self._make_path()
+        self.dirpath = self.dirnames = self.filenames = ''
+        self.tickers = {}
+
+    def run(self):
+        for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
+            for filename in self.filenames:
+                full_path = os.path.join(self.dirpath, filename)
+                file = FileHandler(full_path)
+                ticker, volatility = file.processing()
+                self.tickers[ticker] = volatility
+            self._print_max_tickers(tickers_number=3)
+            self._print_min_tickers(tickers_number=3)
+            self._print_zero_tickers()
 
     def _make_path(self):
         return os.path.join(os.getcwd(), 'trades')
@@ -126,4 +140,3 @@ class VolatilityMeter:
 
 volatility_handler = VolatilityMeter()
 volatility_handler.run()
-
