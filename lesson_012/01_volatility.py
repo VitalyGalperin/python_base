@@ -67,7 +67,8 @@
 #
 import os
 
-
+# TODO код нужно разделить, для того чтобы потом удобно перейти к много поточности. Отдельный класс,
+#  который обрабатывает один файл, и основной код получения списка файлов и вывода результата
 class VolatilityMeter:
 
     def __init__(self):
@@ -97,7 +98,7 @@ class VolatilityMeter:
                 if price > max_price:
                     max_price = price
             average_price = (max_price + min_price) / 2
-            volatility = ((max_price - min_price) / average_price) * 100
+            volatility = ((max_price - min_price) / average_price) * 100  # TODO может быть деление на 0
             self.tickers[ticker] = volatility
 
     def _make_path(self):
