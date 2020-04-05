@@ -120,13 +120,13 @@ class VolatilityMeter:
 
     def _print_max_tickers(self, tickers_number=0):
         print('Максимальная волатильность:')
-        for ticker, volatility in sorted(self.tickers.items(), key=lambda x: x[1], reverse=True)[0:tickers_number]:
+        for ticker, volatility in sorted(self.tickers.items(), key=lambda x: x[1], reverse=True)[:tickers_number]:
             print(f'    {ticker} -{volatility:6.2f} %')
 
     def _print_min_tickers(self, tickers_number=0):
         print('Минимальная волатильность:')
         filtered_tickers = filter(lambda x: x[1] != 0, self.tickers.items())
-        for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[1])[0:tickers_number]:
+        for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[1])[:tickers_number]:
             print(f'    {ticker} -{volatility:6.2f} %')
 
     def _print_zero_tickers(self):
@@ -134,9 +134,10 @@ class VolatilityMeter:
         filtered_tickers = filter(lambda x: x[1] == 0, self.tickers.items())
         print_tickers = ''
         for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[0]):
-            print_tickers += ticker + ' '
+            print_tickers += ticker + ' '  # TODO используйте ' '.join
         print(print_tickers)
 
 
 volatility_handler = VolatilityMeter()
 volatility_handler.run()
+# Зачет
