@@ -127,12 +127,8 @@
 #
 #     def _print_zero_tickers(self):
 #         print('Нулевая волатильность:')
-#         filtered_tickers = filter(lambda x: x[1] == 0, self.tickers.items())
-#         print_tickers = ''
-#         print(' '.join(self.tickers.keys()))
-#         for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[0]):
-#             print_tickers += ticker + ' '  # TODO используйте ' '.join
-#         print(print_tickers)
+#         filtered_tickers = dict(filter(lambda x: x[1] == 0, self.tickers.items()))
+#         print(' '.join(filtered_tickers.keys()))
 #
 #
 # volatility_handler = VolatilityMeter()
@@ -186,8 +182,7 @@ class VolatilityMeter:
         for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
             file_list = []
             for filename in self.filenames:
-                full_path = os.path.join(self.dirpath, filename)
-                file_list.append(full_path)
+                file_list.append(os.path.join(self.dirpath, filename))
             for file in file_list:
                 self.file_treads.append(FileHandler(file))
             for tread in self.file_treads:
@@ -216,12 +211,8 @@ class VolatilityMeter:
 
     def _print_zero_tickers(self):
         print('Нулевая волатильность:')
-        filtered_tickers = filter(lambda x: x[1] == 0, self.tickers.items())
-        print_tickers = ''
-        print(' '.join(self.tickers.keys()))
-        for ticker, volatility in sorted(filtered_tickers, key=lambda x: x[0]):
-            print_tickers += ticker + ' '  # TODO используйте ' '.join
-        print(print_tickers)
+        filtered_tickers = dict(filter(lambda x: x[1] == 0, self.tickers.items()))
+        print(' '.join(filtered_tickers.keys()))
 
 
 volatility_handler = VolatilityMeter()
