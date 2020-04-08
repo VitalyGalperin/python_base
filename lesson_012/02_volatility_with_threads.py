@@ -23,7 +23,8 @@ import os
 
 
 class FileHandler(Thread):
-    def __init__(self, full_path, *args, **kwargs):
+    def __init__(self, full_path, *args, **kwargs):  # TODO для обучения хочется увидеть решение
+        # через общий контейнер и мьютекс
         super().__init__(*args, **kwargs)
         self.full_path = full_path
         self.ticker = ''
@@ -64,13 +65,13 @@ class VolatilityMeter:
             file_list = []
             for filename in self.filenames:
                 file_list.append(os.path.join(self.dirpath, filename))
-            for file in file_list:
+            for file in file_list:  # TODO можно объединить с циклом выше
                 self.file_treads.append(FileHandler(file))
             for tread in self.file_treads:
                 tread.start()
             for tread in self.file_treads:
                 tread.join()
-            for tread in self.file_treads:
+            for tread in self.file_treads: # TODO можно объединить с циклом выше
                 self.tickers[tread.ticker] = tread.volatility
             self._print_max_tickers(tickers_number=3)
             self._print_min_tickers(tickers_number=3)
