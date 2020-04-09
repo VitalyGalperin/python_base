@@ -95,3 +95,4 @@ class VolatilityMeter:
 
 volatility_handler = VolatilityMeter()
 volatility_handler.process()
+# Зачет
