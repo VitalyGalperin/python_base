@@ -327,7 +327,7 @@ class Fisher(Thread):
     def run(self):
         self.catch = defaultdict(int)
         for worm in range(self.worms):
-            time.sleep(0.01)  # TODO тут вызов системной функции
+            time.sleep(0.01)
             fish = random.choice(FISH)
             if fish is not None:
                 self.catch[fish] += 1

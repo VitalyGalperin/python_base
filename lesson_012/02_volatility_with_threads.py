@@ -18,17 +18,16 @@
 # Волатильности указывать в порядке убывания. Тикеры с нулевой волатильностью упорядочить по имени.
 #
 
-from threading import Thread
+from threading import Thread, Lock
 import os
 
 
 class FileHandler(Thread):
-    def __init__(self, full_path, *args, **kwargs):  # TODO для обучения хочется увидеть решение
-        # через общий контейнер и мьютекс
+    def __init__(self, full_path, lock, tickers, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.full_path = full_path
-        self.ticker = ''
-        self.volatility = 0
+        self.tickers = tickers
+        self.lock = lock
 
     def run(self):
         with open(self.full_path, mode='r', encoding='utf8') as file:
@@ -48,7 +47,8 @@ class FileHandler(Thread):
                 volatility = ((max_price - min_price) / average_price) * 100
             except ZeroDivisionError:
                 volatility = 0
-            self.ticker, self.volatility = ticker, volatility
+            with self.lock:
+                self.tickers[ticker] = volatility
 
 
 class VolatilityMeter:
@@ -56,23 +56,19 @@ class VolatilityMeter:
     def __init__(self):
         self.path = self._make_path()
         self.dirpath = self.dirnames = self.filenames = ''
-        self.tickers = {}
         self.file_treads = []
+        self.lock = Lock()
+        self.tickers = {}
 
     def process(self):
-
         for self.dirpath, self.dirnames, self.filenames in os.walk(self.path):
-            file_list = []
             for filename in self.filenames:
-                file_list.append(os.path.join(self.dirpath, filename))
-            for file in file_list:  # TODO можно объединить с циклом выше
-                self.file_treads.append(FileHandler(file))
+                self.file_treads.append(
+                    FileHandler(os.path.join(self.dirpath, filename), lock=self.lock, tickers=self.tickers))
             for tread in self.file_treads:
                 tread.start()
             for tread in self.file_treads:
                 tread.join()
-            for tread in self.file_treads: # TODO можно объединить с циклом выше
-                self.tickers[tread.ticker] = tread.volatility
             self._print_max_tickers(tickers_number=3)
             self._print_min_tickers(tickers_number=3)
             self._print_zero_tickers()
@@ -99,4 +95,3 @@ class VolatilityMeter:
 
 volatility_handler = VolatilityMeter()
 volatility_handler.process()
-
