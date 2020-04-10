@@ -98,3 +98,4 @@ class VolatilityMeter:
 if __name__ == '__main__':
     volatility_handler = VolatilityMeter()
     volatility_handler.process()
+# Зачет
