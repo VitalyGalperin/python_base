@@ -3,6 +3,7 @@
 from _token import token
 import vk_api
 import vk_api.bot_longpoll
+import random
 
 group_id = 194114072
 
@@ -13,16 +14,21 @@ class Bot:
         self.token = token
         self.vk = vk_api.VkApi(token=token)
         self.long_poller = vk_api.bot_longpoll.VkBotLongPoll(self.vk, self.group_id)
+        self.api = self.vk.get_api()
 
     def run(self):
         for event in self.long_poller.listen():
-            print('1')
-            self.on_event(event)
-            print('2')
+            try:
+                self.on_event(event)
+            except Exception as err:
+                print(err)
 
     def on_event(self, event):
         if event.type == vk_api.bot_longpoll.VkBotEventType.MESSAGE_NEW:
             print(event.object.text)
+            self.api.messages.send(message=event.object.text,
+                                   random_id=random.randint(0, 2 ** 20),
+                                   peer_id=event.object.peer_id,)
         else:
             print(event)
 
