@@ -20,22 +20,22 @@ class Bot:
     def run(self):
         for event in self.long_poller.listen():
             try:
-                print(event)
                 self.on_event(event)
             except Exception as err:
                 print(err)
 
     def on_event(self, event):
         if event.type == vk_api.bot_longpoll.VkBotEventType.MESSAGE_NEW:
-            if not event.object.text:
-                a = 'В сообщении отсутствует текст'
-                self.on_send(event, a)
-            elif len(event.object.text) > 499:
-                a = 'Максимальная длина текста для перевода: 500 знаков'
-                self.on_send(event, a)
-            else:
-                a = self.on_translate(event)
-                self.on_send(event, a)
+            try:
+                if not event.object.text:
+                    send_message = 'В сообщении отсутствует текст'
+                elif len(event.object.text) > 500:
+                    send_message = 'Максимальная длина текста для перевода: 500 знаков'
+                else:
+                    send_message = self.on_translate(event)
+                self.on_send(event, send_message)
+            except Exception as err:
+                print(err)
 
     def on_translate(self, event, from_lang='ru', to_lang='en'):
         translator = Translator(to_lang, from_lang)
@@ -45,8 +45,8 @@ class Bot:
             translation = 'Перевод не удался'
         return translation
 
-    def on_send(self, event, a):
-        self.api.messages.send(message=a,
+    def on_send(self, event, send_message):
+        self.api.messages.send(message=send_message,
                                random_id=random.randint(0, 2 ** 20),
                                peer_id=event.object.peer_id, )
 
