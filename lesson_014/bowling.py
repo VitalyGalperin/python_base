@@ -1,34 +1,80 @@
+from abc import ABCMeta, abstractmethod
+
+
+class StrikeError(Exception):
+    pass
+
+
+class SpareError(Exception):
+    pass
+
+
+class FrameCountError(Exception):
+    pass
+
+
+class State(metaclass=ABCMeta):
+
+    @abstractmethod
+    def throw_calculation(self, string, prev_score, frame_count):
+        """Расчет очков"""
+
+
+class FirstThrow(State):
+    def throw_calculation(self, string, prev_score, frame_count):
+        if string == 'Х':
+            score = 20
+            frame_count += 1
+            game_state = FirstThrow()
+            return score, game_state, frame_count
+        elif string == '/':
+            raise SpareError
+        elif string == '-':
+            score = 0
+        elif string.isdigit:
+            score = int(string)
+        else:
+            raise ValueError
+        game_state = SecondThrow()
+        return score, game_state, frame_count
+
+
+class SecondThrow(State):
+    def throw_calculation(self, string, prev_score, frame_count):
+        if string == 'Х':
+            raise StrikeError
+        elif string == '/':
+            score = 15 - prev_score
+        elif string == '-':
+            score = 0
+        elif string.isdigit:
+            score = int(string)
+        else:
+            raise ValueError
+        frame_count += 1
+        game_state = FirstThrow()
+        return score, game_state, frame_count
+
+
 def get_score(game_result):
-    score = 0
-    prev_step_score = 0
+    game_score = prev_score = frame_count = 0
+    game_state = FirstThrow()
     try:
         for string in game_result:
-            if string == 'Х':
-                score += 20
-            elif string == '/':
-                score -= prev_step_score
-                score += 15
-            elif string == '-':
-                score += 0
-                prev_step_score = 0
-            elif string.isdigit:
-                score += int(string)
-                prev_step_score = int(string)
-            else:
-                raise ValueError
+            score, game_state, frame_count = game_state.throw_calculation(string, prev_score, frame_count)
+            game_score += score
+            prev_score = score
+            if frame_count > 10:
+                raise FrameCountError
     except ValueError:
-        print(f'Некорректные данные')
-        score = 0
-    print(f'Количество очков для результатов: {game_result}  -  {score}')
-    return score
-
-
-# TODO ваше решение считает след. входные данные валидными для игры с 10 фреймами
-# 'Х'* 9
-# 'Х'* 9 + '1'
-# 'Х'* 9 + '1Х'
-# 'Х'* 9 + '/1'
-# 'Х'* 9 + '55'
+        print('Некорректный символ в данных. Допустимо использовать Цифры, "-". "/", "Х"')
+    except StrikeError:
+        print('Strike может быть только первым броском фрейма')
+    except SpareError:
+        print('Spare может быть только вторым броском фрейма')
+    except FrameCountError:
+        print('Игра состоит не более чем из 10 фреймов')
+    print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
 
 
 
