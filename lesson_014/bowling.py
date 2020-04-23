@@ -68,13 +68,14 @@ def get_score(game_result):
                 raise FrameCountError
     except ValueError:
         print('Некорректный символ в данных. Допустимо использовать Цифры, "-". "/", "Х"')
+        game_score = frame_count = 0
     except StrikeError:
-        print('Strike может быть только первым броском фрейма')
+        print('Некорректные данные. Strike может быть только первым броском фрейма')
+        game_score = frame_count = 0
     except SpareError:
-        print('Spare может быть только вторым броском фрейма')
+        print('Некорректные данные. Spare может быть только вторым броском фрейма')
+        game_score = frame_count = 0
     except FrameCountError:
-        print('Игра состоит не более чем из 10 фреймов')
+        print('Игра состоит более чем из 10 фреймов')
     print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
-
-
-
+    print('===============================================================================')
