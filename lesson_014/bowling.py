@@ -66,7 +66,8 @@ def get_score(game_result):
             prev_score = score
             if frame_count > 10:
                 raise FrameCountError
-    except ValueError:
+    except ValueError:  # TODO если вы здесь перехватываете все исключения,
+        # как вы их хотите протестить? - в библиотеке это не нужно делать
         print('Некорректный символ в данных. Допустимо использовать Цифры, "-". "/", "Х"')
         game_score = frame_count = 0
     except StrikeError:
@@ -80,3 +81,9 @@ def get_score(game_result):
     print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
     print('===============================================================================')
     return game_score
+
+# TODO принимаются след не валидные строки
+"Х"*9 + '1'
+"Х"*9 + '56'
+"Х"*9 + '111'
+
