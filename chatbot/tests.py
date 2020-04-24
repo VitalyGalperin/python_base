@@ -13,7 +13,7 @@ class Test1(TestCase):
                             'random_id': 0, 'attachments': [], 'is_hidden': False}, 'group_id': 194114072,
                  'event_id': '42aff60c0a9e7fd9f563ca8b6231b15ab8f3045c'}
 
-    def test_ok(self):
+    def test_run(self):
         count = 5
         obj = {'a': 1}
         events = [obj] * count
@@ -45,3 +45,7 @@ class Test1(TestCase):
                                           random_id=ANY,
                                           peer_id=self.RAW_EVENT['object']['peer_id']
                                           )
+
+
+if __name__ == '__main__':
+    unittest.main()

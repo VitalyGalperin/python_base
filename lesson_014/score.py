@@ -5,6 +5,8 @@ if __name__ == '__main__':
     game_score = get_score(game_result)
     game_result = '15-/Х1/42'
     game_score = get_score(game_result)
+    game_result = 'Х4/34-452Х-/729---'
+    game_score = get_score(game_result)
     game_result = '141/FA457X'
     game_score = get_score(game_result)
     game_result = 'ХХХХХХХХХ'
@@ -20,8 +22,4 @@ if __name__ == '__main__':
     game_result = 'ХХХХХХХХХ/1'
     game_score = get_score(game_result)
 
-    # 'Х'* 9
-    # 'Х'* 9 + '1'
-    # 'Х'* 9 + '1Х'
-    # 'Х'* 9 + '/1'
-    # 'Х'* 9 + '55'
+    # python 01_score.py --result Х4/34-4
