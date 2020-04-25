@@ -40,22 +40,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
 args = parser.parse_args()
 try:
-    get_score(args.game_result)
-except ValueError as exc:
-    print(exc)
-except bowling.FrameCountError as exc:
-    print(exc)
-except bowling.StrikeError as exc:
-    print(exc)
-except bowling.SpareError as exc:
-    print(exc)
-except bowling.TotalScoreError as exc:
-    print(exc)
-except bowling.UnfinishedFrameWarning as exc:
+    print("Результат игры:", get_score(args.game_result))
+except Exception as exc:
+    print("Неверные входные данные")
     print(exc)
 
 
-# При написании кода помнить, что заказчик может захотеть доработок и новых возможностей...
-# И, возможно, вам пригодится паттерн проектирования "Состояние",
-#   см https://clck.ru/Fudd8 и https://refactoring.guru/ru/design-patterns/state
+# Зачет
 
