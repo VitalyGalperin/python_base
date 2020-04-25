@@ -34,11 +34,26 @@
 
 import argparse
 from bowling import get_score
+import bowling
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
 args = parser.parse_args()
-get_score(args.game_result)  # TODO а вот сюда нужно было добавить обработку исключений как мы договаривались
+try:
+    get_score(args.game_result)
+except ValueError as exc:
+    print(exc)
+except bowling.FrameCountError as exc:
+    print(exc)
+except bowling.StrikeError as exc:
+    print(exc)
+except bowling.SpareError as exc:
+    print(exc)
+except bowling.TotalScoreError as exc:
+    print(exc)
+except bowling.UnfinishedFrameWarning as exc:
+    print(exc)
+
 
 # При написании кода помнить, что заказчик может захотеть доработок и новых возможностей...
 # И, возможно, вам пригодится паттерн проектирования "Состояние",
