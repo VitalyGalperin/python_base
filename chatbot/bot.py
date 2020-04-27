@@ -77,8 +77,8 @@ class Bot:
         """
         Перевод переданного сообщения
         :param event: VkBotMessageEvent
-        :param from_lang: исходный язык, формат Windows (EN, RU, HE ...), по умолчанию RU
-        :param to_lang: язык перевода, формат Windows (EN, RU, HE ...), по умолчанию EN
+        :param from_lang: исходный язык, по умолчанию RU
+        :param to_lang: язык перевода, по умолчанию EN
         :return: str, переведённый текст
         """
         translator = Translator(to_lang, from_lang)

@@ -7,11 +7,18 @@ from bot import Bot
 
 
 class Test1(TestCase):
-    RAW_EVENT = {'type': 'message_new',
+    SEND_EVENT = {'type': 'message_new',
+                  'object': {'date': 1587198847, 'from_id': 184926257, 'id': 308, 'out': 0, 'peer_id': 184926257,
+                             'text': 'Тест', 'conversation_message_id': 307, 'fwd_messages': [], 'important': False,
+                             'random_id': 0, 'attachments': [], 'is_hidden': False}, 'group_id': 194114072,
+                  'event_id': '42aff60c0a9e7fd9f563ca8b6231b15ab8f3045c'}
+
+    GET_EVENT = {'type': 'message_new',
                  'object': {'date': 1587198847, 'from_id': 184926257, 'id': 308, 'out': 0, 'peer_id': 184926257,
-                            'text': 'Pear', 'conversation_message_id': 307, 'fwd_messages': [], 'important': False,
+                            'text': 'Test', 'conversation_message_id': 307, 'fwd_messages': [], 'important': False,
                             'random_id': 0, 'attachments': [], 'is_hidden': False}, 'group_id': 194114072,
                  'event_id': '42aff60c0a9e7fd9f563ca8b6231b15ab8f3045c'}
+
 
     def test_run(self):
         count = 5
@@ -32,18 +39,18 @@ class Test1(TestCase):
                 assert bot.on_event.call_count == count
 
     def test_on_event(self):
-        event = VkBotMessageEvent(raw=self.RAW_EVENT)
+        event = VkBotMessageEvent(raw=self.SEND_EVENT)
         send_mock = Mock()
-
         with patch('bot.vk_api.VkApi'):
             with patch('bot.VkBotLongPoll'):
                 bot = Bot('', '')
+                bot.on_translate = Mock(return_value=self.GET_EVENT['object']['text'])
                 bot.api = Mock()
                 bot.api.messages.send = send_mock
                 bot.on_event(event)
-        send_mock.assert_called_once_with(message=self.RAW_EVENT['object']['text'],
+        send_mock.assert_called_once_with(message=self.GET_EVENT['object']['text'],
                                           random_id=ANY,
-                                          peer_id=self.RAW_EVENT['object']['peer_id']
+                                          peer_id=self.GET_EVENT['object']['peer_id']
                                           )
 
 
