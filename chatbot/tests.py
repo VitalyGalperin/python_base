@@ -19,7 +19,6 @@ class Test1(TestCase):
                             'random_id': 0, 'attachments': [], 'is_hidden': False}, 'group_id': 194114072,
                  'event_id': '42aff60c0a9e7fd9f563ca8b6231b15ab8f3045c'}
 
-
     def test_run(self):
         count = 5
         obj = {'a': 1}
@@ -33,7 +32,6 @@ class Test1(TestCase):
                 bot = Bot('', '')
                 bot.on_event = Mock()
                 bot.run()
-
                 bot.on_event.assert_called()
                 bot.on_event.assert_any_call(obj)
                 assert bot.on_event.call_count == count
@@ -52,6 +50,16 @@ class Test1(TestCase):
                                           random_id=ANY,
                                           peer_id=self.GET_EVENT['object']['peer_id']
                                           )
+
+    def test_on_translate(self):
+        event = VkBotMessageEvent(raw=self.SEND_EVENT)
+        with patch('bot.vk_api.VkApi'):
+        # with patch('translator.translate', return_value='Test'):
+            bot = Bot('', '')
+            bot.translator = Mock()
+            bot.translator.translate.return_value = 'Test'
+            bot.on_translate(event)
+            assert bot.translator.translate(event) == 'Test'
 
 
 if __name__ == '__main__':

@@ -93,6 +93,7 @@ class Chatterer:
 
 
 chatterer = Chatterer(file_name='voyna-i-mir.txt.zip')
+# chatterer = Chatterer(file_name='3.-Неуловимый-Хабба-Хэн.txt')
 chatterer.collect()
 chatterer.prepare()
 chatterer.chat(N=10000, out_file_name='out.txt')

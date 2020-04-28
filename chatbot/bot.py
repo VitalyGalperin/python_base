@@ -11,6 +11,7 @@ from translate import Translator
 
 log = logging.getLogger('bot')
 
+
 def config_log():
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
@@ -28,17 +29,21 @@ class Bot:
     Бот-переводчик VK
     Python version 3.7
     """
-    def __init__(self, GROUP_ID, TOKEN):
+
+    def __init__(self, GROUP_ID, TOKEN, to_lang='en', from_lang='ru'):
         """
 
         :param GROUP_ID: ID группы VK
         :param TOKEN: секретный токен
+        :param from_lang: исходный язык, по умолчанию RU
+        :param to_lang: язык перевода, по умолчанию EN
         """
         self.group_id = GROUP_ID
         self.token = TOKEN
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
+        self.translator = Translator(to_lang, from_lang)
 
     def run(self):
         """
@@ -73,21 +78,17 @@ class Bot:
         else:
             log.debug('Сообщения такого типа не обрабатываются %s', event.type)
 
-    def on_translate(self, event, from_lang='ru', to_lang='en'):
+    def on_translate(self, event):
         """
         Перевод переданного сообщения
         :param event: VkBotMessageEvent
-        :param from_lang: исходный язык, по умолчанию RU
-        :param to_lang: язык перевода, по умолчанию EN
         :return: str, переведённый текст
         """
-        translator = Translator(to_lang, from_lang)
         try:
-            translation = translator.translate(event.object.text)
+            translation = self.translator.translate(event.object.text)
         except Exception as err:
             translation = 'Перевод не удался'
         return translation
-
 
 
 if __name__ == "__main__":
