@@ -21,6 +21,10 @@ class UnfinishedFrameWarning(Exception):
     pass
 
 
+class NoSpareWarning(Exception):
+    pass
+
+
 class State(metaclass=ABCMeta):
 
     @abstractmethod
@@ -30,7 +34,7 @@ class State(metaclass=ABCMeta):
 
 class FirstThrow(State):
     def throw_calculation(self, string, prev_score, frame_count):
-        if string == 'Х':
+        if string == 'Х' or string == 'X':
             score = 20
             frame_count += 1
             game_state = FirstThrow()
@@ -42,7 +46,8 @@ class FirstThrow(State):
         elif string.isdigit():
             score = int(string)
         else:
-            raise ValueError('Некорректный символ в данных. Допустимо использовать Цифры, "-". "/", "Х"')
+            raise ValueError(
+                f"Некорректный символ в данных {string}. Допустимо использовать Цифры, \"-\", \"/\", \"Х\"")
         frame_count += 1
         game_state = SecondThrow()
         return score, game_state, frame_count
@@ -50,7 +55,7 @@ class FirstThrow(State):
 
 class SecondThrow(State):
     def throw_calculation(self, string, prev_score, frame_count):
-        if string == 'Х':
+        if string == 'Х' or string == 'X':
             raise StrikeError('Некорректные данные. Strike может быть только первым броском фрейма')
         elif string == '/':
             score = 15 - prev_score
@@ -60,8 +65,11 @@ class SecondThrow(State):
             score = int(string)
             if prev_score + score > 10:
                 raise TotalScoreError('Некорректные данные. Сумма двух бросков не может превышать 10 очков')
+            if prev_score + score == 10:
+                raise NoSpareWarning(f'Некорректные данные. Записано {prev_score}{score}, ожидается {prev_score}/')
         else:
-            raise ValueError('Некорректный символ в данных. Допустимо использовать Цифры, "-". "/", "Х"')
+            raise ValueError(
+                f"Некорректный символ в данных {string}. Допустимо использовать Цифры, \"-\", \"/\", \"Х\"")
         game_state = FirstThrow()
         return score, game_state, frame_count
 
@@ -77,7 +85,7 @@ def get_score(game_result):
             raise FrameCountError('Игра состоит более чем из 10 фреймов')
     if isinstance(game_state, SecondThrow):
         raise UnfinishedFrameWarning('Игра закончена на недоигранном фрейме')
-    print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
-    print('===============================================================================')
+    # print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
+    # print('===============================================================================')
     return game_score
 

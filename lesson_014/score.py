@@ -33,6 +33,11 @@ if __name__ == '__main__':
         print(exc)
 
     try:
+        game_score = get_score('ХХХХХХХХХ55')
+    except bowling.NoSpareWarning as exc:
+        print(exc)
+
+    try:
         game_score = get_score('ХХХХХХХХХ1')
     except bowling.UnfinishedFrameWarning as exc:
         print(exc)

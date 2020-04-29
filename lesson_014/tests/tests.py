@@ -26,6 +26,9 @@ class ScoreTests(TestCase):
     def test_TotalScoreError(self):
         self.assertRaises(bowling.TotalScoreError, get_score, 'ХХХХХХХХХ56')
 
+    def NoSpareWarning(self):
+        self.assertRaises(bowling.TotalScoreError, get_score, 'ХХХХХХХХХ55')
+
     def test_UnfinishedFrameWarning(self):
         self.assertRaises(bowling.UnfinishedFrameWarning, get_score, 'ХХХХХХХХХ1')
 
