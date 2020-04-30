@@ -59,8 +59,12 @@ class TournamentHandler:
                         continue
                     line = line.rstrip('\n')
                     if line[0:19] == 'winner is .........':
-                        print(self.tour_stat)
-                        out_file.write(f'{line} {max(self.tour_stat.values())}\n')
+                        tour_max_score = max(self.tour_stat.values())
+                        for key, value in self.tour_stat.items():
+                            if value == tour_max_score:
+                                winner_name = key
+                        out_file.write(f'{line} {winner_name}\n')
+                        self.tournament_stat[tour_number] = self.tour_stat
                         self.tour_stat.clear()
                         continue
                     try:
@@ -81,7 +85,6 @@ class TournamentHandler:
 
 tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt')
 tournament.calculate()
-
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
