@@ -34,7 +34,6 @@
 
 import argparse
 from bowling import get_score
-import bowling
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')

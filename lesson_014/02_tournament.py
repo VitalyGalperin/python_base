@@ -36,9 +36,16 @@
 # ...
 # | Алексей  |        20        |       5      |
 # +----------+------------------+--------------+
-
+import argparse
 from collections import defaultdict, Counter
 from bowling import get_score
+
+
+class Player:
+    def __init__(self):
+        self.games = 0
+        self.wins = 0
+        self.fail_data = 0
 
 
 class TournamentHandler:
@@ -47,7 +54,6 @@ class TournamentHandler:
         self.input_file = input_file
         self.output_file = output_file
         self.tour_stat = defaultdict()
-        self.tournament_stat = defaultdict()
 
     def calculate(self):
         with open(self.input_file, mode='r', encoding='utf8') as file:
@@ -64,7 +70,6 @@ class TournamentHandler:
                             if value == tour_max_score:
                                 winner_name = key
                         out_file.write(f'{line} {winner_name}\n')
-                        self.tournament_stat[tour_number] = self.tour_stat
                         self.tour_stat.clear()
                         continue
                     try:
@@ -79,18 +84,19 @@ class TournamentHandler:
                         score = exc
                         self.tour_stat[name] = -1
                     out_file.write(f'{name:7} {game_result:20} {score}\n')
-                    # self.stat[name] += score
-        a = 1
 
 
-tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt')
-tournament.calculate()
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
-# args = parser.parse_args()
-# try:
-#     print("Результат игры:", get_score(args.game_result))
-# except Exception as exc:
-#     print("Неверные входные данные")
-#     print(exc)
+# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt')
+# tournament.calculate()
+
+if __name__ == '__main__':
+    tournament_calc = argparse.ArgumentParser()
+    tournament_calc.add_argument('--input', required=True, help='файл протокола турнира', dest='input_file')
+    tournament_calc.add_argument('--output', required=True, help='файл результатов турнира', dest='output_file')
+    args = tournament_calc.parse_args()
+    tournament = TournamentHandler(input_file=args.input_file, output_file=args.output_file)
+    tournament.calculate()
+
+# Для вызова с терминала
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt
