@@ -5,9 +5,9 @@ if __name__ == '__main__':
 
     game_score = get_score('Х4/34', international=True)
     game_score = get_score('ХXX347/21', international=True)
-    game_score = get_score('Х4/34')
-    game_score = get_score('ХXX347/21')
-    game_score = get_score('ХXX347/215/')
+    game_score = get_score('Х4/34', international=False)
+    game_score = get_score('ХXX347/21', international=False)
+    game_score = get_score('ХXX347/21XXX5/')
     game_score = get_score('Х4/34-4')
     game_score = get_score('15-/Х1/42')
     game_score = get_score('Х4/34-452Х-/729-1-')

@@ -64,7 +64,6 @@ class FirstThrow(State):
                         bonus = 10
                     else:
                         for i, bonus_string in enumerate(game_result[string_count: string_count + 2]):
-                            # print(bonus_string, type(bonus_string), string_count, i)
                             if bonus_string == 'Х' or bonus_string == 'X':
                                 bonus += 10
                             elif bonus_string.isdigit():
@@ -121,7 +120,7 @@ class SecondThrow(State):
         return score, game_state, frame_count, bonus
 
 
-def get_score(game_result, international=False):
+def get_score(game_result, international=True):
     game_score = prev_score = frame_count = string_count = bonus = 0
     game_state = FirstThrow()
     for string in game_result:
@@ -131,13 +130,10 @@ def get_score(game_result, international=False):
                                                                              game_result, string_count, international)
         game_score += score
         prev_score = score
-        # print(string_count, string, 'score=', score, '+' , bonus, game_score)
         if frame_count > 10:
             raise FrameCountError()
     if isinstance(game_state, SecondThrow):
         raise UnfinishedFrameWarning()
-    print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
-    print('===============================================================================')
+    # print(f'Количество очков для результатов: {game_result}  -  {game_score}, количество фреймов {frame_count} ')
+    # print('===============================================================================')
     return game_score
-
-

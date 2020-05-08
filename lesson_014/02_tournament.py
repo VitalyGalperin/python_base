@@ -44,6 +44,7 @@ from bowling import get_score
 class TournamentHandler:
 
     def __init__(self, input_file, output_file, international=True):
+        print(international, 'init')
         self.input_file = input_file
         self.output_file = output_file
         self.tour_stat = defaultdict()
@@ -98,14 +99,17 @@ class TournamentHandler:
 
 
 # Для запуска в файле
-# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt', international)
+# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt', international=True)
 # tournament.calculate()
+# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt', international=False)
+# tournament.calculate()
+
 
 if __name__ == '__main__':
     tournament_calc = argparse.ArgumentParser()
     tournament_calc.add_argument('--input', required=True, help='файл протокола турнира', dest='input_file')
     tournament_calc.add_argument('--output', required=True, help='файл результатов турнира', dest='output_file')
-    tournament_calc.add_argument('--international',
+    tournament_calc.add_argument('--international', action='store_true',
                                  help='Использовать междунвродую систему подсчета очков', dest='international')
     args = tournament_calc.parse_args()
     tournament = TournamentHandler(input_file=args.input_file, output_file=args.output_file,
@@ -113,7 +117,7 @@ if __name__ == '__main__':
     tournament.calculate()
 
 # Командная строка Для вызова с терминала (русский подсчкет очков)
-# python 02_tournament.py --input tournament.txt --output tournament_result.txt --international False
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt
 
 # Командная строка Для вызова с терминала (междунаорождный подсчкет очков)
-# python 02_tournament.py --input tournament.txt --output tournament_result.txt
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt --international
