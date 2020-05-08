@@ -37,6 +37,8 @@ from bowling import get_score
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
+parser.add_argument('--international',
+                    help='Использовать междунвродую систему подсчета очков', dest='international')
 args = parser.parse_args()
 try:
     print("Результат игры:", get_score(args.game_result))
@@ -44,6 +46,7 @@ except Exception as exc:
     print("Неверные входные данные")
     print(exc)
 
+# python 01_score.py --result Х4/34-4
+# python 01_score.py --result Х4/34-4  --international False
 
 # Зачет
-

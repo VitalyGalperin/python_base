@@ -43,11 +43,12 @@ from bowling import get_score
 
 class TournamentHandler:
 
-    def __init__(self, input_file, output_file):
+    def __init__(self, input_file, output_file, international=True):
         self.input_file = input_file
         self.output_file = output_file
         self.tour_stat = defaultdict()
         self.tournament_stat = defaultdict(lambda: {'name': set(), 'tours': 0, 'wins': 0, 'fault': 0})
+        self.international = international
 
     def calculate(self):
         with open(self.input_file, mode='r', encoding='utf8') as file:
@@ -76,7 +77,7 @@ class TournamentHandler:
                         out_file.write(f'{line}\n')
                         continue
                     try:
-                        score = get_score(game_result)
+                        score = get_score(game_result, international=self.international)
                         self.tour_stat[name] = score
                     except Exception as exc:
                         score = exc
@@ -97,16 +98,22 @@ class TournamentHandler:
 
 
 # Для запуска в файле
-# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt')
+# tournament = TournamentHandler(input_file='tournament.txt', output_file='tournament_result.txt', international)
 # tournament.calculate()
 
 if __name__ == '__main__':
     tournament_calc = argparse.ArgumentParser()
     tournament_calc.add_argument('--input', required=True, help='файл протокола турнира', dest='input_file')
     tournament_calc.add_argument('--output', required=True, help='файл результатов турнира', dest='output_file')
+    tournament_calc.add_argument('--international',
+                                 help='Использовать междунвродую систему подсчета очков', dest='international')
     args = tournament_calc.parse_args()
-    tournament = TournamentHandler(input_file=args.input_file, output_file=args.output_file)
+    tournament = TournamentHandler(input_file=args.input_file, output_file=args.output_file,
+                                   international=args.international)
     tournament.calculate()
 
-# Командная строка Для вызова с терминала
+# Командная строка Для вызова с терминала (русский подсчкет очков)
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt --international False
+
+# Командная строка Для вызова с терминала (междунаорождный подсчкет очков)
 # python 02_tournament.py --input tournament.txt --output tournament_result.txt

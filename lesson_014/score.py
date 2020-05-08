@@ -1,17 +1,23 @@
 from bowling import get_score
-import bowling
+import bowling as bowling
 
 if __name__ == '__main__':
 
+    game_score = get_score('Х4/34', international=True)
+    game_score = get_score('ХXX347/21', international=True)
+    game_score = get_score('Х4/34')
+    game_score = get_score('ХXX347/21')
+    game_score = get_score('ХXX347/215/')
     game_score = get_score('Х4/34-4')
     game_score = get_score('15-/Х1/42')
     game_score = get_score('Х4/34-452Х-/729-1-')
     game_score = get_score('ХХХХХХХХХ')
+
     try:
         game_score = get_score('141/FA457X')
-    except ValueError as exc:
+    except bowling.BadStringError as exc:
         print(exc)
-
+    #
     try:
         game_score = get_score('ХХХХХХХХХ111')
     except bowling.FrameCountError as exc:
