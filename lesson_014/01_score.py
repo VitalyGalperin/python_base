@@ -39,15 +39,21 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--result', required=True, help='Строка с результатом игры', dest='game_result')
 parser.add_argument('--international',
                     help='Использовать междунвродую систему подсчета очков', dest='international')
+parser.add_argument('--international', action='store_true',
+                             help='Использовать междунвродую систему подсчета очков', dest='international')
 args = parser.parse_args()
 try:
-    print("Результат игры:", get_score(args.game_result))  # TODO  а как теперь запустить обычную версию,
+    print("Результат игры:", get_score(args.game_result))
     # если я не передам --international
 except Exception as exc:
     print("Неверные входные данные")
     print(exc)
 
-# python 01_score.py --result Х4/34-4
-# python 01_score.py --result Х4/34-4  --international False
+
+# Командная строка Для вызова с терминала (русский подсчкет очков)
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt
+
+# Командная строка Для вызова с терминала (междунаорождный подсчкет очков)
+# python 02_tournament.py --input tournament.txt --output tournament_result.txt --international
 
 # Зачет
