@@ -41,7 +41,8 @@ parser.add_argument('--international',
                     help='Использовать междунвродую систему подсчета очков', dest='international')
 args = parser.parse_args()
 try:
-    print("Результат игры:", get_score(args.game_result))
+    print("Результат игры:", get_score(args.game_result))  # TODO  а как теперь запустить обычную версию,
+    # если я не передам --international
 except Exception as exc:
     print("Неверные входные данные")
     print(exc)
