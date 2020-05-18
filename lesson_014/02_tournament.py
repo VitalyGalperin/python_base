@@ -121,3 +121,4 @@ if __name__ == '__main__':
 
 # Командная строка Для вызова с терминала (междунаорождный подсчкет очков)
 # python 02_tournament.py --input tournament.txt --output tournament_result.txt --international
+# Зачет
