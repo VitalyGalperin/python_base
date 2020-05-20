@@ -47,7 +47,7 @@ if __name__ == '__main__':
         print(exc)
 
     try:
-        game_score = get_score('XXXXXXXXX1')
+        game_score = get_score('XXXXXXX111')
     except bowling.UnfinishedFrameWarning as exc:
         print(exc)
 

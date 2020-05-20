@@ -38,7 +38,7 @@
 # +----------+------------------+--------------+
 import argparse
 from collections import defaultdict, Counter
-from bowling import get_score
+from bowling_linearly import get_score
 
 
 class TournamentHandler:

@@ -2,8 +2,8 @@ from unittest import TestCase
 # from bowling import get_score
 # import bowling
 
-from bowling_V1 import get_score
-import bowling_V1 as bowling
+from bowling import get_score
+import bowling as bowling
 
 
 class ScoreTests(TestCase):
