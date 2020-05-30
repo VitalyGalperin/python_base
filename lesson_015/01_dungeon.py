@@ -91,13 +91,103 @@
 #  ...
 #
 # и так далее...
+#
+# self.remaining_time = '123456.0987654321'
+# если изначально не писать число в виде строки - теряется точность!
 
+from decimal import *
 import json
 
-remaining_time = '123456.0987654321'
-# если изначально не писать число в виде строки - теряется точность!
-field_names = ['current_location', 'current_experience', 'current_date']
 
-# TODO тут ваш код
+class LabyrinthGame:
+    def __init__(self, file_name, remaining_time):
+        self.remaining_time = Decimal(remaining_time)
+        self.field_names = ['current_location', 'current_experience', 'current_date']
+        self.experience = self.level_number = 0
+        self.rpg = self.level_name = self.level_time = self.level = None
+        self.level_monsters = []
+        self.level_exits = []
+        self.process_file(file_name)
+        self.run()
 
-# Учитывая время и опыт, не забывайте о точности вычислений!
+    def process_file(self, file_name):
+        with open(file_name, "r") as read_file:
+            self.rpg = json.load(read_file)
+
+    def run(self):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("!!!!! Добро пожаловать в Лабиринт !!!!!")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        while True:
+            self.get_level_info()
+            self.print_situation()
+            print(".................")
+            print("Выберите действие:")
+            if len(self.level_monsters) >= 1:
+                print("    1.Атаковать монстра")
+            print("    2.Перейти в другую локацию")
+            print("    3.Сдаться и выйти из игры")
+            get_number = input()
+            if get_number.isdigit() and int(get_number) == 1:
+                monster = self.get_monster()
+                self.attack_monster(monster)
+            elif get_number.isdigit() and int(get_number) == 2:
+                self.change_location()
+            elif get_number.isdigit() and int(get_number) == 3:
+                break
+            else:
+                print('Некорректеый ввод')
+
+    def get_monster(self):
+        if len(self.level_monsters) < 1:
+            print('Некого атаковать! На уровне не осталоссь монстров!')
+            return None
+        elif len(self.level_monsters) == 1:
+            return self.level_monsters[0]
+        else:
+            while True:
+                print('Выберите какого монстра будем атоковать:')
+                for number, monster_name in self.level_monsters:
+                    print(number + 1, ': ', monster_name)
+                monster_number = input()
+                try:
+                    monster = self.level_monsters[int(monster_number)-1]
+                    return monster
+                except IndexError:
+                    print('Такого монстра на уровне нет, выберите ещё раз!')
+
+    def attack_monster(self, monster):
+        if not monster:
+            return None
+        name, experience_plus, battle_time = monster.split('_')
+        battle_time = battle_time[2:]
+        self.experience += int(experience_plus[3:])
+        print(name, experience_plus, battle_time, self.experience)
+        self.rpg[self.level_name].remove(monster)
+
+    def change_location(self):
+        pass
+
+    def get_level_info(self):
+        for key, item in self.rpg.items():
+            self.level_name, self.level = key, item
+        string, self.level_number, self.level_time = self.level_name.split('_')
+        self.level_time = self.level_time[2:]
+        self.level_monsters = []
+
+    def print_situation(self):
+        print(f'Вы находитесь в {self.level_name}')
+        print(f'У вас {self.experience} опыта и осталось {self.remaining_time} секунд до наводнения')
+        # print(f'Прошло времени:  {}')
+        print("=================")
+        print("Внутри вы видите:")
+        for string, object in enumerate(self.level):
+            if isinstance(object, str):
+                print('Монстра:', object)
+                self.level_monsters.append(object)
+            elif isinstance(object, dict):
+                print('Вход в локацию: ', (list(object)[0]))
+                self.level_exits.append(list(object)[0])
+
+
+game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321', )
