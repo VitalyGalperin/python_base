@@ -95,20 +95,20 @@
 # если изначально не писать число в виде строки - теряется точность!
 
 from decimal import *
-import json
 from datetime import datetime
+import json
+import csv
 
 
 class LabyrinthGame:
     def __init__(self, file_name, remaining_time):
         self.remaining_time = Decimal(remaining_time)
-        self.field_names = ['current_location', 'current_experience', 'current_date']
+        self.log = [['current_location', 'current_experience', 'current_date']]
         self.experience = 0
         self.rpg = self.level = self.current_level = self.level_name = None
         self.level_monsters = []
         self.level_exits = []
         self.level_time = Decimal()
-        self.log = []
 
         self.process_file(file_name)
         self.run()
@@ -133,10 +133,10 @@ class LabyrinthGame:
                 # if self.exit_try():
                 #     break
             elif get_number.isdigit() and int(get_number) == 3:
+                self.log_write()
                 break
             else:
                 print('Некорректеый ввод\n')
-        self.log_write()
 
     def welcome_message(self):
         print("=======================================")
@@ -180,6 +180,7 @@ class LabyrinthGame:
         self.level_monsters.remove(monster)
         print(f'Монстр {monster} повержен! Вы получили {experience_plus[3:]} опыта')
         print(f'Теперь у вас {self.experience} опыта! Времени осталось {self.remaining_time} секунд')
+        self.add_log_line()
         if self.remaining_time <= 0:
             self.death_message()
 
@@ -238,6 +239,8 @@ class LabyrinthGame:
         print(f'У вас {self.experience} опыта и осталось {self.remaining_time} секунд до наводнения')
         print("=================")
         print("Внутри вы видите:")
+        self.add_log_line()
+
 
     def death_message(self):
         print('У вас темнеет в глазах... прощай, принцесса...')
@@ -246,13 +249,18 @@ class LabyrinthGame:
         print('Вы осторожно входите в пещеру...')
 
     def add_log_line(self):
-        pass
+        now = datetime.now()
+        self.log.append([self.level_name, self.experience, now.strftime("%d.%m.%Y %H:%M")])
+        print(self.log)
 
     def log_write(self):
-        pass
+        with open('dungeon.csv', 'w', newline='') as result_file:
+            writer = csv.writer(result_file, delimiter=';')
+            for row in self.log:
+                writer.writerow(row)
 
     # def exit_try(self):
     #     for index, object in enumerate(self.level):
 
 
-game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321', )
+game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321')
