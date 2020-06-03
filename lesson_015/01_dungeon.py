@@ -130,8 +130,6 @@ class LabyrinthGame:
                 self.attack_monster(monster)
             elif get_number.isdigit() and int(get_number) == 2:
                 self.level_name = self.change_location()
-                # if self.exit_try():
-                #     break
             elif get_number.isdigit() and int(get_number) == 3:
                 self.log_write()
                 break
@@ -206,13 +204,13 @@ class LabyrinthGame:
         if not self.level_name:
             for key, item in self.rpg.items():
                 self.level_name, self.level = key, item
+        elif self.level_name[:5] == 'Hatch':
+            pass
         else:
             for index, object in enumerate(self.level):
                 if isinstance(object, dict) and list(object.keys())[0] == self.level_name:
                     for key, item in object.items():
                         self.level_name, self.level = key, item
-        if self.level_name[:5] == 'Hatch':
-            pass
         string, level_number, self.level_time = self.level_name.split('_')
         self.level_time = Decimal(self.level_time[2:])
 
@@ -241,7 +239,6 @@ class LabyrinthGame:
         print("Внутри вы видите:")
         self.add_log_line()
 
-
     def death_message(self):
         print('У вас темнеет в глазах... прощай, принцесса...')
         print('Но что это?! Вы воскресли у входа в пещеру... Не зря матушка дала вам оберег :)')
@@ -258,9 +255,6 @@ class LabyrinthGame:
             writer = csv.writer(result_file, delimiter=';')
             for row in self.log:
                 writer.writerow(row)
-
-    # def exit_try(self):
-    #     for index, object in enumerate(self.level):
 
 
 game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321')
