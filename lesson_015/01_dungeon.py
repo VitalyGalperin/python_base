@@ -121,7 +121,7 @@ class LabyrinthGame:
         while True:
             self.get_level()
             if self.current_level != self.level:
-                self.current_level = self.level
+                self.clear_level()
                 if not self.level_state():
                     break
             self.action_choice()
@@ -165,11 +165,13 @@ class LabyrinthGame:
     def attack_monster(self, monster):
         if not monster:
             return None
+        print('Вы выбрали сражаться с монстром!')
         name, experience_plus, battle_time = monster.split('_')
         battle_time = battle_time[2:]
         self.experience += int(experience_plus[3:])
-        print(name, experience_plus, battle_time, self.experience)
-        self.rpg[self.level_name].remove(monster)
+        self.level_monsters.remove(monster)
+        print(f'Монстр {monster} повержен! Вы получили {experience_plus[3:]} опыта')
+        print(f'Теперь у вас {self.experience} опыта!')
 
     def change_location(self):
         if len(self.level_exits) < 1:
@@ -189,12 +191,20 @@ class LabyrinthGame:
                 except IndexError:
                     print('Неверный номер уровня, попробуйте ещё раз!!!')
 
+    def clear_level(self):
+        self.level_monsters.clear()
+        self.level_exits.clear()
+        self.current_level = self.level
+
     def get_level(self):
         if not self.level_name:
             for key, item in self.rpg.items():
                 self.level_name, self.level = key, item
         else:
-            self.level = self.rpg[self.level_name]
+            for index, object in enumerate(self.level):
+                if isinstance(object, dict) and list(object.keys())[0] == self.level_name:
+                    for key, item in object.items():
+                        self.level_name, self.level = key, item
         string, level_number, self.level_time = self.level_name.split('_')
         self.level_time = self.level_time[2:]
 
