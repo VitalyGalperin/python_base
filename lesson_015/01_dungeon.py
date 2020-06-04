@@ -102,13 +102,14 @@ import csv
 
 class LabyrinthGame:
     def __init__(self, file_name, remaining_time):
-        self.remaining_time = Decimal(remaining_time)
+        self.game_time = self.remaining_time = Decimal(remaining_time)
         self.log = [['current_location', 'current_experience', 'current_date']]
         self.experience = 0
         self.rpg = self.level = self.current_level = self.level_name = None
         self.level_monsters = []
         self.level_exits = []
         self.level_time = Decimal()
+        self.last_step = False
 
         self.process_file(file_name)
         self.run()
@@ -118,11 +119,18 @@ class LabyrinthGame:
             self.rpg = json.load(read_file)
 
     def run(self):
-        self.welcome_message()
         while True:
             self.get_level()
-            if self.current_level != self.level and not self.level_state():
-                break
+            if self.last_step:
+                if self.experience >= 280:
+                    self.log_write()
+                    self.win_message()
+                    break
+                else:
+                    self.exit_deadlock_message()
+                    self.get_level()
+            if self.current_level != self.level:
+                self.level_state()
             self.action_choice()
             get_number = input()
             if get_number.isdigit() and int(get_number) == 1:
@@ -132,14 +140,10 @@ class LabyrinthGame:
                 self.level_name = self.change_location()
             elif get_number.isdigit() and int(get_number) == 3:
                 self.log_write()
+                self.escape_message()
                 break
             else:
-                print('Некорректеый ввод\n')
-
-    def welcome_message(self):
-        print("=======================================")
-        print("|    Добро пожаловать в Лабиринт !!!  |")
-        print("=======================================")
+                print('Эээ.... Не понимаю что делать. Попробуй ещё раз...')
 
     def action_choice(self):
         print(".................")
@@ -162,9 +166,11 @@ class LabyrinthGame:
                     print(number + 1, ': ', monster_name)
                 monster_number = input()
                 try:
-                    monster = self.level_monsters[int(monster_number)-1]
+                    monster = self.level_monsters[int(monster_number) - 1]
                     return monster
                 except IndexError:
+                    print('Такого монстра на уровне нет, выберите ещё раз!')
+                except ValueError:
                     print('Такого монстра на уровне нет, выберите ещё раз!')
 
     def attack_monster(self, monster):
@@ -173,18 +179,18 @@ class LabyrinthGame:
         print('Вы выбрали сражаться с монстром!')
         name, experience_plus, battle_time = monster.split('_')
         battle_time = Decimal(battle_time[2:])
-        self.remaining_time -= battle_time
+        self.game_time -= battle_time
         self.experience += int(experience_plus[3:])
         self.level_monsters.remove(monster)
         print(f'Монстр {monster} повержен! Вы получили {experience_plus[3:]} опыта')
-        print(f'Теперь у вас {self.experience} опыта! Времени осталось {self.remaining_time} секунд')
+        print(f'Теперь у вас {self.experience} опыта! Времени осталось {self.game_time} секунд')
         self.add_log_line()
-        if self.remaining_time <= 0:
+        if self.game_time <= 0:
             self.death_message()
 
     def change_location(self):
         if len(self.level_exits) < 1:
-            print('    Тупик      ')
+            self.deadlock_message()
             return None
         elif len(self.level_exits) == 1:
             return self.level_exits[0]
@@ -193,10 +199,12 @@ class LabyrinthGame:
                 print('На какой уровень переходим?:')
                 for number, level_name in enumerate(self.level_exits):
                     print(number + 1, ': ', level_name)
-                level_number = input()
+                choice_number = input()
                 try:
-                    level = self.level_exits[int(level_number)-1]
+                    level = self.level_exits[int(choice_number) - 1]
                     return level
+                except ValueError:
+                    print('Неверный номер уровня, попробуйте ещё раз!!!')
                 except IndexError:
                     print('Неверный номер уровня, попробуйте ещё раз!!!')
 
@@ -204,14 +212,17 @@ class LabyrinthGame:
         if not self.level_name:
             for key, item in self.rpg.items():
                 self.level_name, self.level = key, item
-        elif self.level_name[:5] == 'Hatch':
-            pass
+            self.welcome_message()
         else:
             for index, object in enumerate(self.level):
                 if isinstance(object, dict) and list(object.keys())[0] == self.level_name:
                     for key, item in object.items():
                         self.level_name, self.level = key, item
-        string, level_number, self.level_time = self.level_name.split('_')
+        if self.level_name[:5] == 'Hatch':
+            string, self.level_time = self.level_name.split('_')
+            self.last_step = True
+        else:
+            string, level_number, self.level_time = self.level_name.split('_')
         self.level_time = Decimal(self.level_time[2:])
 
     def level_state(self):
@@ -223,32 +234,65 @@ class LabyrinthGame:
             elif isinstance(object, dict):
                 print('Вход в локацию: ', (list(object)[0]))
                 self.level_exits.append(list(object)[0])
-            else:
-                print('!!! Ошибка во входных данных !!!')
-                return False
-        return True
 
     def init_level(self):
         self.level_monsters.clear()
         self.level_exits.clear()
         self.current_level = self.level
-        self.remaining_time -= self.level_time
+        self.game_time -= self.level_time
         print(f'Вы находитесь в {self.level_name}')
-        print(f'У вас {self.experience} опыта и осталось {self.remaining_time} секунд до наводнения')
+        print(f'У вас {self.experience} опыта и осталось {self.game_time} секунд до наводнения')
         print("=================")
         print("Внутри вы видите:")
         self.add_log_line()
 
+    def welcome_message(self):
+        print("=======================================")
+        print("|    Добро пожаловать в Лабиринт !!!  |")
+        print("=======================================")
+
+    def win_message(self):
+        print("=======================================")
+        print("|           Поздравляю!!!!!           |")
+        print("|     Вы вырвались из Лабиринта!!!!   |")
+        print("|        Вперёд, к Принцессе!!!!      |")
+        print("=======================================")
+
+    def exit_deadlock_message(self):
+        print('Вот и Выход, вы навалились всем телом,но дверь не поддаётся...')
+        print('Вы не сражались с монстрами и теперь у вас не хватает опыта чтобы открыть Выход')
+        print('Вы оборачиваетесь...')
+        self.deadlock_message()
+
+    def deadlock_message(self):
+        print('Дверь захлопнулась за вами. Вокруг каменные стены...')
+        print('Вы не умрете с голода... Навадение убъёт вас раньше...')
+        print('Его ждать недолго...')
+        self.death_message()
+
     def death_message(self):
-        print('У вас темнеет в глазах... прощай, принцесса...')
-        print('Но что это?! Вы воскресли у входа в пещеру... Не зря матушка дала вам оберег :)')
-        print('Ну, на этот-то раз у вас все получится! Трепещите, монстры!')
-        print('Вы осторожно входите в пещеру...')
+        print('Вода захлестывает вас, нечем дышать.....')
+        print('Но что это?!  Вы воскресли... Не зря матушка дала вам оберег :)')
+        print('Но оберег не может вывести из Круга ....')
+        print('Вы открываете газа, за вами стена, а перед вами снова надпись:....')
+        self.new_try()
+
+    def escape_message(self):
+        print('Ну что же... Вы вспомнили про подарок Домовихи..')
+        print('Заговорённая скалка открыла портал к родному дому.')
+        print('Монстры так и остались в пещере, да и к Принцессе теперь не вернёшься.....')
+        print('Зато живой и дома.... Вот и Домовиха бежит навстречу.... ')
+        print('Не Принцесса, конечно......Хотя........')
+
+    def new_try(self):
+        self.game_time = self.remaining_time
+        self.experience = 0
+        self.level_name = None
+        self.last_step = False
 
     def add_log_line(self):
         now = datetime.now()
         self.log.append([self.level_name, self.experience, now.strftime("%d.%m.%Y %H:%M")])
-        print(self.log)
 
     def log_write(self):
         with open('dungeon.csv', 'w', newline='') as result_file:
