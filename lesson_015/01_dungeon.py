@@ -103,6 +103,7 @@ import csv
 class LabyrinthGame:
     def __init__(self, file_name, remaining_time):
         self.game_time = self.remaining_time = Decimal(remaining_time)
+        self.file_name = file_name
         self.log = [['current_location', 'current_experience', 'current_date']]
         self.experience = 0
         self.rpg = self.level = self.current_level = self.level_name = None
@@ -110,16 +111,13 @@ class LabyrinthGame:
         self.level_exits = []
         self.level_time = Decimal()
         self.last_step = False
-        # TODO Хорошим стилем считается избегание запуска методов в init программы
-        # TODO Достаточно будет вручную метод run() вызвать после инициализации
-        self.process_file(file_name)  # TODO и этот метод там перед while расположить
-        self.run()
-    # TODO В остальном всё отлично!
+
     def process_file(self, file_name):
         with open(file_name, "r") as read_file:
             self.rpg = json.load(read_file)
 
     def run(self):
+        self.process_file(self.file_name)
         while True:
             self.get_level()
             if self.last_step:
@@ -303,3 +301,4 @@ class LabyrinthGame:
 
 
 game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321')
+game.run()
