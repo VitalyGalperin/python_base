@@ -110,10 +110,11 @@ class LabyrinthGame:
         self.level_exits = []
         self.level_time = Decimal()
         self.last_step = False
-
-        self.process_file(file_name)
+        # TODO Хорошим стилем считается избегание запуска методов в init программы
+        # TODO Достаточно будет вручную метод run() вызвать после инициализации
+        self.process_file(file_name)  # TODO и этот метод там перед while расположить
         self.run()
-
+    # TODO В остальном всё отлично!
     def process_file(self, file_name):
         with open(file_name, "r") as read_file:
             self.rpg = json.load(read_file)
@@ -266,7 +267,7 @@ class LabyrinthGame:
 
     def deadlock_message(self):
         print('Дверь захлопнулась за вами. Вокруг каменные стены...')
-        print('Вы не умрете с голода... Навадение убъёт вас раньше...')
+        print('Вы не умрете с голода... Наводнение убъёт вас раньше...')
         print('Его ждать недолго...')
         self.death_message()
 
@@ -274,7 +275,7 @@ class LabyrinthGame:
         print('Вода захлестывает вас, нечем дышать.....')
         print('Но что это?!  Вы воскресли... Не зря матушка дала вам оберег :)')
         print('Но оберег не может вывести из Круга ....')
-        print('Вы открываете газа, за вами стена, а перед вами снова надпись:....')
+        print('Вы открываете глаза, за вами стена, а перед вами снова надпись:....')
         self.new_try()
 
     def escape_message(self):
