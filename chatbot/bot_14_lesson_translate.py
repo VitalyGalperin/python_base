@@ -7,7 +7,7 @@ import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import logging
 import random
-import settings
+from translate import Translator
 
 log = logging.getLogger('bot')
 
@@ -43,7 +43,7 @@ class Bot:
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
-        self.user_states = dict()
+        self.translator = Translator(to_lang, from_lang)
 
     def run(self):
         """
@@ -61,43 +61,34 @@ class Bot:
         :param event: VkBotMessageEvent
         :return: None
         """
-        if event.type != VkBotEventType.MESSAGE_NEW:
-            log.info('Сообщения такого типа не обрабатываются %s', event.type)
-            return
-        user_id = event.object.peer_id
-        text = event.object.text
-
-        if user_id in self.user_states:
-            text_to_send = self.continue_scenario(user_id, text)
+        if event.type == VkBotEventType.MESSAGE_NEW:
+            log.info('Обработка сообщения')
+            try:
+                if not event.object.text:
+                    send_message = 'В сообщении отсутствует текст'
+                elif len(event.object.text) > 500:
+                    send_message = 'Максимальная длина текста для перевода: 500 знаков'
+                else:
+                    send_message = self.on_translate(event)
+                self.api.messages.send(message=send_message,
+                                       random_id=random.randint(0, 2 ** 20),
+                                       peer_id=event.object.peer_id, )
+            except Exception:
+                log.exception('Ошибка сообщения')
         else:
-            # search intevt
-            for intent in self.user_states:
-                if any(token in text for token in intent['tokens']):
-                    if intent['answer']:
-                        text_to_send = intent['answer']
-                    else:
-                        text_to_send = self.start_scenario(user_id, intent['scenario'])
-                    break
-            else:
-                text_to_send = settings.DEFAULT_ANSWER
+            log.debug('Сообщения такого типа не обрабатываются %s', event.type)
 
-            self.api.messages.send(
-                message=text_to_send,
-                random_id=random.randint(0, 2 ** 20),
-                peer_id=event.object.peer_id, )
-
-    def start_scenario(self, user_id, scenario_name):
-        scenario = settings.SCENARIOS[scenario_name]
-        first_step = scenario['first_step']
-        step = scenario['step'][first_step]
-        text_to_send = step['text']
-        self.user_states[user_id] =UserState(scenario_name=scenario_name, step_name=first_step)
-
-        return True
-
-    def continue_scenario(self, user_id, text):
-
-        return True
+    def on_translate(self, event):
+        """
+        Перевод переданного сообщения
+        :param event: VkBotMessageEvent
+        :return: str, переведённый текст
+        """
+        try:
+            translation = self.translator.translate(event.object.text)
+        except Exception as err:
+            translation = 'Перевод не удался'
+        return translation
 
 
 if __name__ == "__main__":
