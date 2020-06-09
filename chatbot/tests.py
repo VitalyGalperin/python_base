@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock, ANY
 import settings
-from vk_api.bot_longpoll import VkBotEvent
+from vk_api.bot_longpoll import VkBotMessageEvent
 from copy import deepcopy
 
 from bot import Bot
@@ -32,7 +32,7 @@ class Test1(TestCase):
                 assert bot.on_event.call_count == count
     INPUTS = [
         'Привет',
-        'Как дела?',
+        'А когда?',
         'Где будет конференция?',
         'Зарегистрируйте меня',
         'Вася',
@@ -53,13 +53,13 @@ class Test1(TestCase):
     def test_run_ok(self):
         send_mock = Mock()
         api_mock = Mock()
-        api_mock.message.send = send_mock
+        api_mock.messages.send = send_mock
 
         events = []
         for input_text in self.INPUTS:
             event = deepcopy(self.RAW_EVENT)
             event['object']['text'] = input_text
-            events.append(VkBotEvent(event))
+            events.append(VkBotMessageEvent(event))
 
         long_poller_mock = Mock()
         long_poller_mock.listen = Mock(return_value=events)
@@ -69,7 +69,7 @@ class Test1(TestCase):
             bot.api = api_mock
             bot.run()
 
-        assert send_mock.call_count == len(self.INPUTS)
+            assert send_mock.call_count == len(self.INPUTS)
 
         real_outputs = []
         for call in send_mock.call_args_list:
