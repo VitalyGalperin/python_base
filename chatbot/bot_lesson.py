@@ -9,7 +9,6 @@ import logging
 import random
 import settings
 import handlers
-import json
 
 log = logging.getLogger('bot')
 
@@ -25,7 +24,6 @@ def config_log():
     log.addHandler(file_handler)
     log.setLevel(logging.DEBUG)
 
-
 class UserState:
 
     def __init__(self, scenario_name, step_name, context=None):
@@ -33,14 +31,13 @@ class UserState:
         self.step_name = step_name
         self.context = context or {}
 
-
 class Bot:
     """
     Бот-переводчик VK
     Python version 3.7
     """
 
-    def __init__(self, GROUP_ID, TOKEN, YA_TOKEN, cities_json='cities.json'):
+    def __init__(self, GROUP_ID, TOKEN, to_lang='en', from_lang='ru'):
         """
 
         :param GROUP_ID: ID группы VK
@@ -50,23 +47,15 @@ class Bot:
         """
         self.group_id = GROUP_ID
         self.token = TOKEN
-        self.ya_token = YA_TOKEN
         self.vk = vk_api.VkApi(token=TOKEN)
-        self.json_file = cities_json
-        self.cities_json = None
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
         self.user_states = dict()
-
-    def get_cities_json(self, json_file):
-        with open(json_file, "r",  encoding="utf-8") as read_file:
-            self.cities_json = json.load(read_file)
 
     def run(self):
         """
         Запуск бота
         """
-        self.get_cities_json(self.json_file)
         for event in self.long_poller.listen():
             try:
                 self.on_event(event)
@@ -105,9 +94,6 @@ class Bot:
             random_id=random.randint(0, 2 ** 20),
             peer_id=event.object.peer_id, )
 
-        # https: // api.rasp.yandex.net / v30 / schedule /?apikey = {ключ} & station = s9600213 & transport_types = suburban & direction = на % 20
-
-
     def start_scenario(self, user_id, scenario_name):
         scenario = settings.SCENARIOS[scenario_name]
         first_step = scenario['first_step']
@@ -138,12 +124,8 @@ class Bot:
 
         return text_to_send
 
-    def get_city(self):
-        for city in self.cities_json:
-            print(city['name'], city['name_translations']['en'])
-
 
 if __name__ == "__main__":
     config_log()
-    bot = Bot(settings.GROUP_ID, settings.TOKEN, settings.YA_TOKEN)
+    bot = Bot(settings.GROUP_ID, settings.TOKEN)
     bot.run()

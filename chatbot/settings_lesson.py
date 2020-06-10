@@ -1,6 +1,5 @@
 GROUP_ID = 194114072
 TOKEN = ''
-YA_TOKEN = ''
 
 INTENTS = [
     {
@@ -85,5 +84,7 @@ SCENARIOS = {
         }
     }
 }
+
+DEFAULT_ANSWER = 'Не знаю как ответить'
 
 DEFAULT_ANSWER = 'Не знаю как ответить'
