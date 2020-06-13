@@ -9,7 +9,7 @@ import logging
 import random
 import json
 import requests
-import re
+import handlers
 
 log = logging.getLogger('bot')
 
@@ -51,19 +51,13 @@ class Bot:
         self.cities_file = 'cities.json'
         self.airports_file = 'airports.json'
 
-        self.re_name = re.compile(r'^[\w\-\s]{3,40}$')
-        self.re_email = re.compile(r'^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$')
-        self.re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$'
-
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
 
-        self.cities_json = self.airports_json = self.ya_answer = None
+        self.cities_json = self.airports_json = self.ya_answer = self.city_code = None
         self.user_states = dict()
-        self.cities = []
         self.first_event = True
-)
 
     def run(self):
         """
@@ -111,23 +105,6 @@ class Bot:
             random_id=random.randint(0, 2 ** 20),
             peer_id=event.object.peer_id, )
 
-        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'LED')
-        # a = json.loads(self.ya_answer)
-
-        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'MOW')
-        # print(self.ya_answer)
-        # a = json.loads(self.ya_answer)
-
-        a = requests.get(
-            'http://api.travelpayouts.com/v1/prices/direct?origin=MOW&destination=LED&depart_date=2020-06&token=7ef952b2fa4b61f0439c0cc5a24c6fac',
-            {
-                'Accept': 'application/json',
-                'Accept-Encoding': 'gzip,deflate,sdch',
-                'Content-Type': 'application/json',
-                'X-Access-Token': '7ef952b2fa4b61f0439c0cc5a24c6fac'
-            })
-        print(a)
-
     def hello_message(self, event):
         self.api.messages.send(
             message=HELLO_MESSAGE,
@@ -149,9 +126,10 @@ class Bot:
         step = steps[state.step_name]
 
         handler = getattr(handlers, step['handler'])
+        while str(handler).find('city') > -1 and not self.city_code:
+            self.get_city(text)
         if handler(text=text, context=state.context):
-            # while
-            self.get_city('ква')
+
             next_step = steps[step['next_step']]
             text_to_send = next_step['text'].format(**state.context)
             if next_step['next_step']:
@@ -175,47 +153,35 @@ class Bot:
             self.airports_json = json.load(read_file)
 
     def get_city(self, search_str):
+        self.city_code = None
+
         search_str = search_str.upper()
         print(search_str)
+        cities = {}
         for city in self.cities_json:
             upper_ru_name = ''
             if city['name']:
                 upper_ru_name = city['name'].upper()
             upper_en_name = city['name_translations']['en'].upper()
             if upper_ru_name.find(search_str) > -1 or upper_en_name.find(search_str) > -1:
-                self.cities.append(city['code'])
+                cities[city['name']] = city['code']
 
-    def handle_departure_city(self, text, context):
-        matches = re.findall(re_email, text)
-        if len(matches) > 0:
-            context['departure_city'] = text
-            return True
+        if len(cities) < 1:
+            pass
+        elif len(cities) == 1:
+            return cities
         else:
-            return False
+            print(cities)
 
-    def handle_arrival_city(self, text, context):
-        matches = re.findall(re_email, text)
-        if len(matches) > 0:
-            context['arrival_city'] = text
-            return True
-        else:
-            return False
 
-    # def handle_name(text, context):
-    #     match = re.match(re_name, text)
-    #     if match:
-    #         context['name'] = text
-    #         return True
-    #     else:
-    #         return False
-    #
-    # def handle_email(text, context):
-    #     matches = re.findall(re_email, text)
-    #     if len(matches) > 0:
-    #         context['email'] = text
-    #         return True
-    #     else:
-    #         return False
+    def get_flight(self):
+        pass
+        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'LED')
+        # a = json.loads(self.ya_answer)
+
+        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'MOW')
+        # print(self.ya_answer)
+        # a = json.loads(self.ya_answer)
 
 
 if __name__ == "__main__":
