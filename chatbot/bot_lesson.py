@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
-    from settings import TOKEN, GROUP_ID
+    from settings_lesson import TOKEN, GROUP_ID
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import logging
 import random
-import settings
+import settings_lesson as settings
 import handlers
 
 log = logging.getLogger('bot')

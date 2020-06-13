@@ -1,23 +1,30 @@
 GROUP_ID = 194114072
 TOKEN = ''
 YA_TOKEN = ''
+YA_URL = 'https://api.rasp.yandex.net/v3.0/schedule/?'
+
+HELLO_MESSAGE = 'Здравствуйте!!!\nВас приветствует Бот по заказу Авиабилетов!\n' \
+                'Для начала заказа билета:     наберите /ticket\n' \
+                'Для получения подробной справки:     наберите /help'
+
+DEFAULT_ANSWER = 'Не знаю как ответить'
 
 INTENTS = [
     {
-        'name': 'Дата',
-        'tokens': ('когда', 'сколько', 'дата', 'даты', 'числ'),
+        'name': 'Приветствие',
+        'tokens': ('hello', 'hi', 'good', 'здрав', 'добр', 'привет',),
         'scenario': None,
-        'answer': 'Дата - ответ'
+        'answer': HELLO_MESSAGE
     },
     {
-        'name': 'Место',
-        'tokens': ('где', 'место', 'адрес'),
+        'name': 'Помощь',
+        'tokens': '/help',
         'scenario': None,
-        'answer': 'Где - ответ'
+        'answer': 'HELP!!!'
     },
     {
         'name': 'Регистрация',
-        'tokens': ('регистр', 'добав', 'купи'),
+        'tokens': '/ticket',
         'scenario': 'registration',
         'answer': None
     }
@@ -29,14 +36,14 @@ SCENARIOS = {
         'steps': {
             'step1': {
                 'text': 'Ведите город отправления:',
-                'failure_text': 'Такой город нам не известен',
-                'handler': 'handle_departure',
+                'failure_text': 'Попробуйте снова',
+                'handler': 'handle_departure_city',
                 'next_step': 'step2'
             },
             'step2': {
                 'text': 'Ведите город прибытия:',
                 'failure_text': 'Такой город нам не известен',
-                'handler': 'handle_arrival',
+                'handler': 'handle_arrival_city',
                 'next_step': 'step3'
             },
             'step3': {
@@ -86,4 +93,3 @@ SCENARIOS = {
     }
 }
 
-DEFAULT_ANSWER = 'Не знаю как ответить'

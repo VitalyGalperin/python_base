@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 try:
-    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL
+    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import logging
 import random
-import settings
-import handlers
 import json
 import requests
+import re
 
 log = logging.getLogger('bot')
 
@@ -52,6 +51,10 @@ class Bot:
         self.cities_file = 'cities.json'
         self.airports_file = 'airports.json'
 
+        self.re_name = re.compile(r'^[\w\-\s]{3,40}$')
+        self.re_email = re.compile(r'^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$')
+        self.re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$'
+
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
@@ -60,6 +63,7 @@ class Bot:
         self.user_states = dict()
         self.cities = []
         self.first_event = True
+)
 
     def run(self):
         """
@@ -85,14 +89,13 @@ class Bot:
         user_id = event.object.peer_id
         text = event.object.text
         if self.first_event:
-            self.hello_massage(event)
-            self.first_event = False
+            self.hello_message(event)
             return
         if user_id in self.user_states:
             text_to_send = self.continue_scenario(user_id, text)
         else:
             # search intevt
-            for intent in settings.INTENTS:
+            for intent in INTENTS:
                 log.debug(f'user get {intent}')
                 if any(token in text.lower() for token in intent['tokens']):
                     if intent['answer']:
@@ -101,7 +104,7 @@ class Bot:
                         text_to_send = self.start_scenario(user_id, intent['scenario'])
                     break
             else:
-                text_to_send = settings.DEFAULT_ANSWER
+                text_to_send = DEFAULT_ANSWER
 
         self.api.messages.send(
             message=text_to_send,
@@ -125,8 +128,15 @@ class Bot:
             })
         print(a)
 
+    def hello_message(self, event):
+        self.api.messages.send(
+            message=HELLO_MESSAGE,
+            random_id=random.randint(0, 2 ** 20),
+            peer_id=event.object.peer_id, )
+        self.first_event = False
+
     def start_scenario(self, user_id, scenario_name):
-        scenario = settings.SCENARIOS[scenario_name]
+        scenario = SCENARIOS[scenario_name]
         first_step = scenario['first_step']
         step = scenario['steps'][first_step]
         text_to_send = step['text']
@@ -135,11 +145,12 @@ class Bot:
 
     def continue_scenario(self, user_id, text):
         state = self.user_states[user_id]
-        steps = settings.SCENARIOS[state.scenario_name]['steps']
+        steps = SCENARIOS[state.scenario_name]['steps']
         step = steps[state.step_name]
 
         handler = getattr(handlers, step['handler'])
         if handler(text=text, context=state.context):
+            # while
             self.get_city('ква')
             next_step = steps[step['next_step']]
             text_to_send = next_step['text'].format(**state.context)
@@ -153,7 +164,6 @@ class Bot:
         else:
             # retry current step
             text_to_send = step['failure_text']
-
         return text_to_send
 
     def get_cities_json(self, cities_file):
@@ -175,13 +185,37 @@ class Bot:
             if upper_ru_name.find(search_str) > -1 or upper_en_name.find(search_str) > -1:
                 self.cities.append(city['code'])
 
-    def hello_massage(self, event):
-        self.api.messages.send(
-            message= 'Здравствуйте!!!\nВас приветствует Бот по заказу Авиабилетов!\n'
-                  'Для начала заказа билета:     наберите /ticket\n'
-                  'Для получения подробной справки:     наберите /help',
-            random_id=random.randint(0, 2 ** 20),
-            peer_id=event.object.peer_id, )
+    def handle_departure_city(self, text, context):
+        matches = re.findall(re_email, text)
+        if len(matches) > 0:
+            context['departure_city'] = text
+            return True
+        else:
+            return False
+
+    def handle_arrival_city(self, text, context):
+        matches = re.findall(re_email, text)
+        if len(matches) > 0:
+            context['arrival_city'] = text
+            return True
+        else:
+            return False
+
+    # def handle_name(text, context):
+    #     match = re.match(re_name, text)
+    #     if match:
+    #         context['name'] = text
+    #         return True
+    #     else:
+    #         return False
+    #
+    # def handle_email(text, context):
+    #     matches = re.findall(re_email, text)
+    #     if len(matches) > 0:
+    #         context['email'] = text
+    #         return True
+    #     else:
+    #         return False
 
 
 if __name__ == "__main__":
