@@ -100,16 +100,16 @@ class Bot:
             else:
                 text_to_send = DEFAULT_ANSWER
 
+        self.send_vk_meesage(event, text_to_send)
+
+    def send_vk_meesage(self, event, text_to_send):
         self.api.messages.send(
             message=text_to_send,
             random_id=random.randint(0, 2 ** 20),
             peer_id=event.object.peer_id, )
 
     def hello_message(self, event):
-        self.api.messages.send(
-            message=HELLO_MESSAGE,
-            random_id=random.randint(0, 2 ** 20),
-            peer_id=event.object.peer_id, )
+        self.send_vk_meesage(event, HELLO_MESSAGE)
         self.first_event = False
 
     def start_scenario(self, user_id, scenario_name):
@@ -126,10 +126,20 @@ class Bot:
         step = steps[state.step_name]
 
         handler = getattr(handlers, step['handler'])
-        while str(handler).find('city') > -1 and not self.city_code:
-            self.get_city(text)
         if handler(text=text, context=state.context):
-
+            # check cities
+            if str(handler).find('city') > -1:
+                cities = self.get_city(text)
+                if len(cities) < 1:
+                    text_to_send = step['failure_text']
+                    return text_to_send
+                elif len(cities) > 1:
+                    text_to_send = 'Найдены следующие города:\n'
+                    for city, cod in cities.items():
+                        text_to_send += city + '\n'
+                    text_to_send += step['failure_text']
+                    return text_to_send
+                print(cities)
             next_step = steps[step['next_step']]
             text_to_send = next_step['text'].format(**state.context)
             if next_step['next_step']:
@@ -153,26 +163,20 @@ class Bot:
             self.airports_json = json.load(read_file)
 
     def get_city(self, search_str):
-        self.city_code = None
-
-        search_str = search_str.upper()
+        self.city_code = False
+        search_str = search_str.lower()
         print(search_str)
         cities = {}
         for city in self.cities_json:
-            upper_ru_name = ''
-            if city['name']:
-                upper_ru_name = city['name'].upper()
-            upper_en_name = city['name_translations']['en'].upper()
-            if upper_ru_name.find(search_str) > -1 or upper_en_name.find(search_str) > -1:
+            if (city['name'] and city['name'].lower().find(search_str) > -1) or \
+                    (city['cases']['vi'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    (city['cases']['tv'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    (city['cases']['ro'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    (city['cases']['pr'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    (city['cases']['da'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    city['name_translations']['en'].lower().find(search_str) > -1:
                 cities[city['name']] = city['code']
-
-        if len(cities) < 1:
-            pass
-        elif len(cities) == 1:
-            return cities
-        else:
-            print(cities)
-
+        return cities
 
     def get_flight(self):
         pass

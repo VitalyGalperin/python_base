@@ -34,7 +34,7 @@ SCENARIOS = {
             },
             'step2': {
                 'text': 'email',
-                'failure_text': 'noy email',
+                'failure_text': 'not email',
                 'handler': 'handle_email',
                 'next_step': 'step3'
             },

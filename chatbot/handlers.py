@@ -1,6 +1,7 @@
 import re
 
 re_name = re.compile(r'^[\w\-\s]{3,40}$')
+re_city = re.compile(r'^[\w\-\s\.]{3,40}$')
 re_email = re.compile(r'^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$')
 re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$')
 
@@ -15,8 +16,8 @@ def handle_name(text, context):
 
 
 def handle_email(text, context):
-    matches = re.findall(re_email, text)
-    if len(matches) > 0:
+    match = re.match(re_email, text)
+    if match:
         context['email'] = text
         return True
     else:
@@ -24,8 +25,8 @@ def handle_email(text, context):
 
 
 def handle_departure_city(text, context):
-    matches = re.findall(re_email, text)
-    if len(matches) > 0:
+    match = re.match(re_city, text)
+    if match:
         context['departure_city'] = text
         return True
     else:
@@ -33,8 +34,8 @@ def handle_departure_city(text, context):
 
 
 def handle_arrival_city(text, context):
-    matches = re.findall(re_email, text)
-    if len(matches) > 0:
+    match = re.match(re_city, text)
+    if match:
         context['arrival_city'] = text
         return True
     else:
