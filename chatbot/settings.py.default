@@ -18,13 +18,13 @@ INTENTS = [
     },
     {
         'name': 'Помощь',
-        'tokens': '/help',
+        'tokens': ('/help', 'помощь'),
         'scenario': None,
         'answer': 'HELP!!!'
     },
     {
         'name': 'Регистрация',
-        'tokens': '/ticket',
+        'tokens': ('/ticket', 'билет'),
         'scenario': 'registration',
         'answer': None
     }
@@ -42,7 +42,7 @@ SCENARIOS = {
             },
             'step2': {
                 'text': 'Ведите город прибытия:',
-                'failure_text': 'Такой город нам не известен',
+                'failure_text': 'Попробуйте снова',
                 'handler': 'handle_arrival_city',
                 'next_step': 'step3'
             },
