@@ -49,13 +49,12 @@ class Bot:
         self.token = TOKEN
         self.ya_token = YA_TOKEN
         self.cities_file = 'cities.json'
-        self.airports_file = 'airports.json'
 
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
 
-        self.cities_json = self.airports_json = self.ya_answer = self.city_code = None
+        self.cities_json = self.ya_answer = self.city_code = None
         self.user_states = dict()
         self.first_event = True
 
@@ -64,7 +63,13 @@ class Bot:
         Запуск бота
         """
         self.get_cities_json(self.cities_file)
-        self.get_airports_json(self.airports_file)
+
+        request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
+                               '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
+                               '&from=' + 'MOW' + '&to=' + 'LED' + '&date=' + '2020-07-07')
+        self.ya_answer = json.loads(request.text)
+
+
         for event in self.long_poller.listen():
             try:
                 self.on_event(event)
@@ -79,7 +84,6 @@ class Bot:
         """
         if event.type != VkBotEventType.MESSAGE_NEW:
             log.info('Сообщения такого типа не обрабатываются %s', event.type)
-            return
         user_id = event.object.peer_id
         text = event.object.text
         if self.first_event:
@@ -127,19 +131,14 @@ class Bot:
 
         handler = getattr(handlers, step['handler'])
         if handler(text=text, context=state.context):
-            # check cities
-            if str(handler).find('city') > -1:
-                cities = self.get_city(text)
-                if len(cities) < 1:
-                    text_to_send = step['failure_text']
-                    return text_to_send
-                elif len(cities) > 1:
-                    text_to_send = 'Найдены следующие города:\n'
-                    for city, cod in cities.items():
-                        text_to_send += city + '\n'
-                    text_to_send += step['failure_text']
-                    return text_to_send
-                print(cities)
+            text_to_send = self.check_city(handler, step, text, state)
+            if text_to_send:
+                return text_to_send
+            if state.context.get('date') and not state.context.get('flight'):
+                if not self.get_flights(state):
+                    print('2')
+                else:
+                    print('1')
             next_step = steps[step['next_step']]
             text_to_send = next_step['text'].format(**state.context)
             if next_step['next_step']:
@@ -154,18 +153,29 @@ class Bot:
             text_to_send = step['failure_text']
         return text_to_send
 
+    def check_city(self, handler, step, text, state):
+        if str(handler).find('city') > -1:
+            cities = self.get_city(text)
+            if len(cities) < 1:
+                text_to_send = step['failure_text']
+                return text_to_send
+            elif len(cities) > 1:
+                text_to_send = 'Найдены следующие города:\n'
+                for city, code in cities.items():
+                    text_to_send += city + ' (' + code + ')\n'
+                text_to_send += step['failure_text']
+                return text_to_send
+            else:
+                handler(text=cities, context=state.context)
+        return False
+
     def get_cities_json(self, cities_file):
         with open(cities_file, "r", encoding="utf-8") as read_file:
             self.cities_json = json.load(read_file)
 
-    def get_airports_json(self, airports_file):
-        with open(airports_file, "r", encoding="utf-8") as read_file:
-            self.airports_json = json.load(read_file)
-
     def get_city(self, search_str):
         self.city_code = False
         search_str = search_str.lower()
-        print(search_str)
         cities = {}
         for city in self.cities_json:
             if (city['name'] and city['name'].lower().find(search_str) > -1) or \
@@ -174,18 +184,21 @@ class Bot:
                     (city['cases']['ro'] and city['cases']['vi'].lower().find(search_str) > -1) or \
                     (city['cases']['pr'] and city['cases']['vi'].lower().find(search_str) > -1) or \
                     (city['cases']['da'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    city['name_translations']['en'].lower().find(search_str) > -1:
+                    city['code'].lower() == search_str:
                 cities[city['name']] = city['code']
         return cities
 
-    def get_flight(self):
-        pass
-        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'LED')
-        # a = json.loads(self.ya_answer)
+    def get_flights(self, state):
+        from_station = list(state.context['departure_city'].values())[0]
+        to_station = list(state.context['arrival_city'].values())[0]
+        date = state.context['date']
 
-        # self.ya_answer = requests.get(YA_URL + 'apikey=' + YA_TOKEN + '&system=iata&station=' + 'MOW')
-        # print(self.ya_answer)
-        # a = json.loads(self.ya_answer)
+        request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
+                               '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
+                               '&from=' + from_station + '&to=' + to_station + '&date=' + '2020-07-07')
+        self.ya_answer = json.loads(request.text)
+
+        return True
 
 
 if __name__ == "__main__":

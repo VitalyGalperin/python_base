@@ -1,7 +1,7 @@
 GROUP_ID = 194114072
 TOKEN = ''
 YA_TOKEN = ''
-YA_URL = 'https://api.rasp.yandex.net/v3.0/schedule/?'
+YA_URL = 'https://api.rasp.yandex.net/v3.0/search/?'
 
 HELLO_MESSAGE = 'Здравствуйте!!!\nВас приветствует Бот по заказу Авиабилетов!\n' \
                 'Для начала заказа билета:     наберите /ticket\n' \
@@ -35,20 +35,20 @@ SCENARIOS = {
         'first_step': 'step1',
         'steps': {
             'step1': {
-                'text': 'Ведите город отправления:',
+                'text': 'Введите название или код города отправления:',
                 'failure_text': 'Попробуйте снова',
                 'handler': 'handle_departure_city',
                 'next_step': 'step2'
             },
             'step2': {
-                'text': 'Ведите город прибытия:',
+                'text': 'Введите название или код города прибытия:',
                 'failure_text': 'Попробуйте снова',
                 'handler': 'handle_arrival_city',
                 'next_step': 'step3'
             },
             'step3': {
-                'text': 'На какую дату Вы хотите заказать билет?:',
-                'failure_text': 'На эту дату, к сожалению, нет рейсов',
+                'text': 'На какую дату или месяц Вы хотите заказать билет? (DD-MM-YYYY):',
+                'failure_text': 'Неправильный ввод даты, попробуйте еще раз',
                 'handler': 'handle_date',
                 'next_step': 'step4'
             },
