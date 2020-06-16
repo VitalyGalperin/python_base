@@ -54,8 +54,9 @@ class Bot:
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
 
-        self.cities_json = self.ya_answer = self.city_code = None
+        self.cities_json = self.ya_answer = None
         self.user_states = dict()
+        self.city_code = False
         self.first_event = True
 
     def run(self):
@@ -63,13 +64,6 @@ class Bot:
         Запуск бота
         """
         self.get_cities_json(self.cities_file)
-
-        request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
-                               '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
-                               '&from=' + 'MOW' + '&to=' + 'LED' + '&date=' + '2020-07-07')
-        self.ya_answer = json.loads(request.text)
-
-
         for event in self.long_poller.listen():
             try:
                 self.on_event(event)
@@ -132,8 +126,9 @@ class Bot:
         handler = getattr(handlers, step['handler'])
         if handler(text=text, context=state.context):
             text_to_send = self.check_city(handler, step, text, state)
-            if text_to_send:
+            if self.city_code:
                 return text_to_send
+            text_to_send = self.check_date(handler)
             if state.context.get('date') and not state.context.get('flight'):
                 if not self.get_flights(state):
                     print('2')
@@ -153,28 +148,33 @@ class Bot:
             text_to_send = step['failure_text']
         return text_to_send
 
+    def check_date(self, handler):
+        pass
+
     def check_city(self, handler, step, text, state):
+        self.city_code = False
         if str(handler).find('city') > -1:
             cities = self.get_city(text)
             if len(cities) < 1:
                 text_to_send = step['failure_text']
-                return text_to_send
             elif len(cities) > 1:
                 text_to_send = 'Найдены следующие города:\n'
                 for city, code in cities.items():
                     text_to_send += city + ' (' + code + ')\n'
                 text_to_send += step['failure_text']
-                return text_to_send
             else:
                 handler(text=cities, context=state.context)
-        return False
+                text_to_send = 'Принято:\n'
+                for city, code in cities.items():
+                    text_to_send += city + ' (' + code + ')\n'
+                self.city_code = True
+        return text_to_send
 
     def get_cities_json(self, cities_file):
         with open(cities_file, "r", encoding="utf-8") as read_file:
             self.cities_json = json.load(read_file)
 
     def get_city(self, search_str):
-        self.city_code = False
         search_str = search_str.lower()
         cities = {}
         for city in self.cities_json:
@@ -189,16 +189,27 @@ class Bot:
         return cities
 
     def get_flights(self, state):
+        request = None
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
         date = state.context['date']
-
-        request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
-                               '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
-                               '&from=' + from_station + '&to=' + to_station + '&date=' + '2020-07-07')
+        try:
+            request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
+                                   '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
+                                   '&from=' + from_station + '&to=' + to_station + '&date=' + date)
+        except Exception:
+            log.exception('Ошибка запроса Яндекс-Расписания')
+        if not request:
+            return False
         self.ya_answer = json.loads(request.text)
-
-        return True
+        if self.ya_answer.get('error'):
+            text_to_send = self.ya_answer['error']['text']
+        else:
+            text_to_send = 'Найдены рейсы:\n'
+            for i, flight in enumerate(self.ya_answer['segments']):
+                text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ' ' + \
+                                self.ya_answer['segments'][i]['thread']['title'] + '\n'
+        return text_to_send
 
 
 if __name__ == "__main__":
