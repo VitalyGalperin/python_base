@@ -10,6 +10,7 @@ import random
 import json
 import requests
 import handlers
+import datetime
 
 log = logging.getLogger('bot')
 
@@ -78,6 +79,7 @@ class Bot:
         """
         if event.type != VkBotEventType.MESSAGE_NEW:
             log.info('Сообщения такого типа не обрабатываются %s', event.type)
+            return
         user_id = event.object.peer_id
         text = event.object.text
         if self.first_event:
@@ -125,17 +127,20 @@ class Bot:
 
         handler = getattr(handlers, step['handler'])
         if handler(text=text, context=state.context):
-            text_to_send = self.check_city(handler, step, text, state)
-            if self.city_code:
-                return text_to_send
-            text_to_send = self.check_date(handler)
+            text_to_send = ''
+            if str(handler).find('city') > -1:
+                text_to_send = self.check_city(handler, step, text, state)
+                if not self.city_code:
+                    return text_to_send
+            if str(handler).find('date') > -1:
+                text_to_send = self.check_date(handler, state, text)
             if state.context.get('date') and not state.context.get('flight'):
                 if not self.get_flights(state):
                     print('2')
                 else:
                     print('1')
             next_step = steps[step['next_step']]
-            text_to_send = next_step['text'].format(**state.context)
+            text_to_send += next_step['text'].format(**state.context)
             if next_step['next_step']:
                 # swith to next step
                 state.step_name = step['next_step']
@@ -148,26 +153,32 @@ class Bot:
             text_to_send = step['failure_text']
         return text_to_send
 
-    def check_date(self, handler):
-        pass
+    def check_date(self, handler, state, text):
+        text_to_send = ''
+        arrival_date = datetime.date(day=int(text[:2]), month=int(text[3:5]), year=int(text[6:10]))
+        if arrival_date < datetime.date.today():
+            return 'Невозможно найти билет на прошедшую дату'
+        if arrival_date > datetime.date.today() + datetime.timedelta(365):
+            return 'Не можем искать билет более, чем на год вперёд'
+        handler(text=arrival_date.strftime("%Y-%m-%d"), context=state.context)
+        return 'Принято'
 
     def check_city(self, handler, step, text, state):
         self.city_code = False
-        if str(handler).find('city') > -1:
-            cities = self.get_city(text)
-            if len(cities) < 1:
-                text_to_send = step['failure_text']
-            elif len(cities) > 1:
-                text_to_send = 'Найдены следующие города:\n'
-                for city, code in cities.items():
-                    text_to_send += city + ' (' + code + ')\n'
-                text_to_send += step['failure_text']
-            else:
-                handler(text=cities, context=state.context)
-                text_to_send = 'Принято:\n'
-                for city, code in cities.items():
-                    text_to_send += city + ' (' + code + ')\n'
-                self.city_code = True
+        cities = self.get_city(text)
+        if len(cities) < 1:
+            text_to_send = step['failure_text']
+        elif len(cities) > 1:
+            text_to_send = 'Найдены следующие города:\n'
+            for city, code in cities.items():
+                text_to_send += city + ' (' + code + ')\n'
+            text_to_send += step['failure_text']
+        else:
+            handler(text=cities, context=state.context)
+            text_to_send = 'Принято:\n'
+            for city, code in cities.items():
+                text_to_send += city + ' (' + code + ')\n'
+            self.city_code = True
         return text_to_send
 
     def get_cities_json(self, cities_file):
