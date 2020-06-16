@@ -42,7 +42,10 @@ def handle_arrival_city(text, context):
         return False
 
 
-def handle_date(text, context):
+def handle_date(text, context, ymd_format=False):
+    if ymd_format:
+        context['date'] = text
+        return True
     match = re.match(re_date, text)
     if match:
         context['date'] = text

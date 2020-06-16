@@ -57,7 +57,7 @@ class Bot:
 
         self.cities_json = self.ya_answer = None
         self.user_states = dict()
-        self.city_code = False
+        self.city_code = self.is_get_date = self.is_flight_found = False
         self.first_event = True
 
     def run(self):
@@ -70,6 +70,10 @@ class Bot:
                 self.on_event(event)
             except Exception:
                 log.exception('Ошибка обработки')
+
+    def get_cities_json(self, cities_file):
+        with open(cities_file, "r", encoding="utf-8") as read_file:
+            self.cities_json = json.load(read_file)
 
     def on_event(self, event):
         """
@@ -134,11 +138,13 @@ class Bot:
                     return text_to_send
             if str(handler).find('date') > -1:
                 text_to_send = self.check_date(handler, state, text)
+                if not self.is_get_date:
+                    return text_to_send
             if state.context.get('date') and not state.context.get('flight'):
-                if not self.get_flights(state):
-                    print('2')
-                else:
-                    print('1')
+                text_to_send = self.get_flights(state)
+                if not self.is_flight_found:
+                    self.user_states.pop(user_id)
+                    log.info('Рейсы не найдены')
             next_step = steps[step['next_step']]
             text_to_send += next_step['text'].format(**state.context)
             if next_step['next_step']:
@@ -154,13 +160,14 @@ class Bot:
         return text_to_send
 
     def check_date(self, handler, state, text):
-        text_to_send = ''
+        self.is_get_date = False
         arrival_date = datetime.date(day=int(text[:2]), month=int(text[3:5]), year=int(text[6:10]))
         if arrival_date < datetime.date.today():
             return 'Невозможно найти билет на прошедшую дату'
         if arrival_date > datetime.date.today() + datetime.timedelta(365):
             return 'Не можем искать билет более, чем на год вперёд'
-        handler(text=arrival_date.strftime("%Y-%m-%d"), context=state.context)
+        handler(text=arrival_date.strftime("%Y-%m-%d"), context=state.context, ymd_format=True)
+        self.is_get_date = True
         return 'Принято'
 
     def check_city(self, handler, step, text, state):
@@ -181,10 +188,6 @@ class Bot:
             self.city_code = True
         return text_to_send
 
-    def get_cities_json(self, cities_file):
-        with open(cities_file, "r", encoding="utf-8") as read_file:
-            self.cities_json = json.load(read_file)
-
     def get_city(self, search_str):
         search_str = search_str.lower()
         cities = {}
@@ -200,6 +203,7 @@ class Bot:
         return cities
 
     def get_flights(self, state):
+        self.is_flight_found = False
         request = None
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
@@ -220,6 +224,8 @@ class Bot:
             for i, flight in enumerate(self.ya_answer['segments']):
                 text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ' ' + \
                                 self.ya_answer['segments'][i]['thread']['title'] + '\n'
+            #TODO обработкам если нет рейсов сегодня, добавить дату
+            self.is_flight_found = True
         return text_to_send
 
 
