@@ -57,7 +57,7 @@ class Bot:
 
         self.cities_json = self.ya_answer = None
         self.user_states = dict()
-        self.city_code = self.is_get_date = self.is_flight_found = False
+        self.city_code = self.is_get_date = self.is_flight_found = self.request_error = False
         self.first_event = True
 
     def run(self):
@@ -114,7 +114,7 @@ class Bot:
 
     def hello_message(self, event):
         self.send_vk_meesage(event, HELLO_MESSAGE)
-        self.first_event = False
+        self.first_event = self.request_error = False
 
     def start_scenario(self, user_id, scenario_name):
         scenario = SCENARIOS[scenario_name]
@@ -142,22 +142,28 @@ class Bot:
                     return text_to_send
             if state.context.get('date') and not state.context.get('flight'):
                 text_to_send = self.get_flights(state)
+                if self.request_error:
+                    # self.user_states.pop(user_id)
+                    log.error('Ошибка запроса Яндекс-Расписания')
                 if not self.is_flight_found:
-                    self.user_states.pop(user_id)
+                    # self.user_states.pop(user_id)
                     log.info('Рейсы не найдены')
+            if str(handler).find('confirm') > -1 and not handler:
+                # self.user_states.pop(user_id)
+                log.info('Заказ не подтверждён')
             next_step = steps[step['next_step']]
             text_to_send += next_step['text'].format(**state.context)
             if next_step['next_step']:
                 # swith to next step
                 state.step_name = step['next_step']
             else:
-                # finish scenario
                 self.user_states.pop(user_id)
-                log.info('зарегистрирован: {name} {email}'.format(**state.context))
+                log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
         else:
             # retry current step
             text_to_send = step['failure_text']
         return text_to_send
+
 
     def check_date(self, handler, state, text):
         self.is_get_date = False
@@ -208,14 +214,10 @@ class Bot:
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
         date = state.context['date']
-        try:
-            request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
-                                   '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
-                                   '&from=' + from_station + '&to=' + to_station + '&date=' + date)
-        except Exception:
-            log.exception('Ошибка запроса Яндекс-Расписания')
+        request = self.request_ya_rasp(date, from_station, request, to_station)
         if not request:
-            return False
+            self.request_error = True
+            return 'Ошибка запроса Яндекс-Расписания'
         self.ya_answer = json.loads(request.text)
         if self.ya_answer.get('error'):
             text_to_send = self.ya_answer['error']['text']
@@ -223,11 +225,20 @@ class Bot:
             text_to_send = 'Найдены рейсы:\n'
             for i, flight in enumerate(self.ya_answer['segments']):
                 text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ': ' + \
-                                self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n      ' + \
+                                self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n\t' + \
                                 (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
             #TODO обработкам если нет рейсов сегодня
             self.is_flight_found = True
         return text_to_send
+
+    def request_ya_rasp(self, date, from_station, request, to_station):
+        try:
+            request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
+                                   '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit=5' +
+                                   '&from=' + from_station + '&to=' + to_station + '&date=' + date)
+        except Exception:
+            log.exception('Ошибка запроса Яндекс-Расписания')
+        return request
 
 
 if __name__ == "__main__":

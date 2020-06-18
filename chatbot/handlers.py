@@ -54,3 +54,47 @@ def handle_date(text, context, ymd_format=False):
         return False
 
 
+def handle_flight(text, context):
+    match = re.match(re_date, text)
+    if 0 < int(text) < 6:
+        context['flight'] = text
+        return True
+    else:
+        return False
+
+
+def handle_seats(text, context):
+    match = re.match(re_date, text)
+    if 0 < int(text) < 6:
+        context['seats'] = text
+        return True
+    else:
+        return False
+
+
+def handle_comment(text, context):
+    match = re.match(re_date, text)
+    if 0 < len(text) < 500:
+        context['comment'] = text
+        return True
+    else:
+        return False
+
+
+def handle_confirm(text, context):
+    match = re.match(re_date, text)
+    if text.lower().find('yes') > -1 or text.lower().find('да') > -1:
+        context['confirm'] = True
+        return True
+    else:
+        return False
+
+
+def handle_phone(text, context):
+    match = re.match(re_phone, text)
+    if match:
+        context['phone'] = text
+        return True
+    else:
+        return False
+
