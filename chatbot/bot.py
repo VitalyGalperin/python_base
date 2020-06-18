@@ -222,9 +222,10 @@ class Bot:
         else:
             text_to_send = 'Найдены рейсы:\n'
             for i, flight in enumerate(self.ya_answer['segments']):
-                text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ' ' + \
-                                self.ya_answer['segments'][i]['thread']['title'] + '\n'
-            #TODO обработкам если нет рейсов сегодня, добавить дату
+                text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ': ' + \
+                                self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n      ' + \
+                                (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
+            #TODO обработкам если нет рейсов сегодня
             self.is_flight_found = True
         return text_to_send
 
