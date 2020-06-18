@@ -131,7 +131,8 @@ class Bot:
 
         handler = getattr(handlers, step['handler'])
         if handler(text=text, context=state.context):
-            text_to_send = ''
+            next_step = steps[step['next_step']]
+            text_to_send = next_step['text'].format(**state.context)
             if str(handler).find('city') > -1:
                 text_to_send = self.check_city(handler, step, text, state)
                 if not self.city_code:
@@ -143,16 +144,14 @@ class Bot:
             if state.context.get('date') and not state.context.get('flight'):
                 text_to_send = self.get_flights(state)
                 if self.request_error:
-                    # self.user_states.pop(user_id)
+                    next_step = steps['last_step']
                     log.error('Ошибка запроса Яндекс-Расписания')
                 if not self.is_flight_found:
-                    # self.user_states.pop(user_id)
+                    next_step = steps['last_step']
                     log.info('Рейсы не найдены')
             if str(handler).find('confirm') > -1 and not handler:
-                # self.user_states.pop(user_id)
+                next_step = steps['last_step']
                 log.info('Заказ не подтверждён')
-            next_step = steps[step['next_step']]
-            text_to_send += next_step['text'].format(**state.context)
             if next_step['next_step']:
                 # swith to next step
                 state.step_name = step['next_step']
@@ -227,7 +226,7 @@ class Bot:
                 text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ': ' + \
                                 self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n\t' + \
                                 (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
-            #TODO обработкам если нет рейсов сегодня
+            #TODO обработка если нет рейсов сегодня
             self.is_flight_found = True
         return text_to_send
 
