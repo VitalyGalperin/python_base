@@ -149,7 +149,7 @@ class Bot:
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания'
                 if self.flights_found < 1:
-                    next_step = next_step
+                    next_step = steps['last_step']
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены'
             if str(handler).find('flight') > -1:
@@ -167,7 +167,7 @@ class Bot:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
                 next_step = steps['last_step']
                 log.info('Заказ не подтверждён')
-                text_to_send = 'Рейсы не найдены'
+                text_to_send = 'Заказ не подтверждён'
                 return text_to_send
             # retry current step
             text_to_send = step['failure_text']
