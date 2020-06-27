@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 try:
     from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
-        SEEK_FLIGHTS
+        FLIGHTS_DAYS
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 import vk_api
@@ -223,10 +223,11 @@ class Bot:
         request = None
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
-        date = state.context['date']
-        date_iso = datetime.date(date, "%Y-%m-%d")
-        while self.flights_found < 5 or  :
-            request = self.request_ya_rasp(date, from_station, request, to_station)
+        date_flight = state.context['date']
+        current_iso_date = datetime.date(day=int(date_flight[8:10]), month=int(date_flight[5:7]), year=int(date_flight[:4]))
+        last_iso_date = current_iso_date + datetime.timedelta(days=FLIGHTS_DAYS)
+        while self.flights_found < 5 or current_iso_date < last_iso_date:
+            request = self.request_ya_rasp(date_flight, from_station, request, to_station)
             if not request:
                 self.request_error = True
                 return 'Ошибка запроса Яндекс-Расписания'
@@ -239,7 +240,8 @@ class Bot:
                                     self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n\t' + \
                                     (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
                     self.flights_found += 1
-            # date_iso += datetime.timedelta(days=1)
+            current_iso_date += datetime.timedelta(days=1)
+            date_flight = current_iso_date.strftime("%Y-%m-%d")
         return text_to_send
 
     def request_ya_rasp(self, date, from_station, request, to_station):
