@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 try:
-    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS
+    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
+        SEEK_FLIGHTS
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 import vk_api
@@ -105,16 +106,16 @@ class Bot:
             else:
                 text_to_send = DEFAULT_ANSWER
 
-        self.send_vk_meesage(event, text_to_send)
+        self.send_vk_message(event, text_to_send)
 
-    def send_vk_meesage(self, event, text_to_send):
+    def send_vk_message(self, event, text_to_send):
         self.api.messages.send(
             message=text_to_send,
             random_id=random.randint(0, 2 ** 20),
             peer_id=event.object.peer_id, )
 
     def hello_message(self, event):
-        self.send_vk_meesage(event, HELLO_MESSAGE)
+        self.send_vk_message(event, HELLO_MESSAGE)
         self.first_event = self.request_error = False
 
     def start_scenario(self, user_id, scenario_name):
@@ -217,25 +218,28 @@ class Bot:
         return cities
 
     def get_flights(self, state):
-        self.flights_found = self.flights_found = 0
+        self.flights_found = 0
+        text_to_send = ''
         request = None
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
         date = state.context['date']
-        request = self.request_ya_rasp(date, from_station, request, to_station)
-        if not request:
-            self.request_error = True
-            return 'Ошибка запроса Яндекс-Расписания'
-        self.ya_answer = json.loads(request.text)
-        if self.ya_answer.get('error'):
-            text_to_send = self.ya_answer['error']['text']
-        else:
-            text_to_send = ''
-            for i, flight in enumerate(self.ya_answer['segments']):
-                text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ': ' + \
-                                self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n\t' + \
-                                (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
-                self.flights_found += 1
+        date_iso = datetime.date(date, "%Y-%m-%d")
+        while self.flights_found < 5 or  :
+            request = self.request_ya_rasp(date, from_station, request, to_station)
+            if not request:
+                self.request_error = True
+                return 'Ошибка запроса Яндекс-Расписания'
+            self.ya_answer = json.loads(request.text)
+            if self.ya_answer.get('error'):
+                text_to_send = self.ya_answer['error']['text']
+            else:
+                for i, flight in enumerate(self.ya_answer['segments']):
+                    text_to_send += str(i + 1) + ': ' + self.ya_answer['segments'][i]['thread']['number'] + ': ' + \
+                                    self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n\t' + \
+                                    (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
+                    self.flights_found += 1
+            # date_iso += datetime.timedelta(days=1)
         return text_to_send
 
     def request_ya_rasp(self, date, from_station, request, to_station):
