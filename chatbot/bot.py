@@ -148,12 +148,10 @@ class Bot:
             if state.context.get('date') and not state.context.get('flight'):
                 text_to_send = self.get_flights(state)
                 if self.request_error:
-                    next_step = steps['last_step']
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания\n\n' + HELLO_MESSAGE
                     self.user_states.pop(user_id)
                 if self.flights_found < 1:
-                    next_step = steps['last_step']
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены\n\n' + HELLO_MESSAGE
                     self.user_states.pop(user_id)
@@ -161,17 +159,15 @@ class Bot:
                 if not handler(text=text, context=state.context, flights_found=self.flights_found):
                     return step['failure_text']
             if next_step['next_step']:
-                # swith to next step
                 state.step_name = step['next_step']
                 text_to_send += next_step['text'].format(**state.context)
-            elif next_step != steps['last_step']:
+            elif next_step == steps['last_step']:
                 log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
                 text_to_send = 'Заказ принят, с Вами свяжутся по телефону {phone}\n\n'.format(**state.context) \
                                + HELLO_MESSAGE
                 self.user_states.pop(user_id)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
-                next_step = steps['last_step']
                 log.info('Заказ не подтверждён')
                 text_to_send = 'Заказ не подтверждён\n\n' + HELLO_MESSAGE
                 self.user_states.pop(user_id)

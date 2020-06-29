@@ -88,7 +88,7 @@ SCENARIOS = {
             },
 
             'last_step': {
-                'text': 'Ваш заказ принят, с вами свяжутся по номеру {phone}',
+                'text': 'Ваш заказ принят, с вами свяжутся по номеру {phone}\n\n' + HELLO_MESSAGE,
                 'failure_text': 'Билет не заказан. \n\n' + HELLO_MESSAGE,
                 'handler': None,
                 'next_step': None
