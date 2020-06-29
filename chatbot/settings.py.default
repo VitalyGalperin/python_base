@@ -28,7 +28,7 @@ INTENTS = [
     },
     {
         'name': 'Регистрация',
-        'tokens': ('/ticket', 'билет'),
+        'tokens': ('/ticket', 'билет', 'заказ'),
         'scenario': 'registration',
         'answer': None
     }
