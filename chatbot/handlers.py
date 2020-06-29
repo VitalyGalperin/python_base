@@ -44,7 +44,7 @@ def handle_date(text, context, ymd_format=False):
         return False
 
 
-def handle_flight(text, context, flights_found):
+def handle_flight(text, context, flights_found=0):
     if 0 < int(text) < flights_found:
         context['flight'] = text
         return True
