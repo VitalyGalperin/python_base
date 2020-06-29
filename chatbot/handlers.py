@@ -1,3 +1,4 @@
+from settings import FLIGHTS_NUMBERS
 import re
 re_city = re.compile(r'^[\w\-\s\.]{3,40}$')
 re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$')
@@ -44,16 +45,17 @@ def handle_date(text, context, ymd_format=False):
         return False
 
 
-def handle_flight(text, context, flights_found=0):
-    if 0 < int(text) < flights_found:
+def handle_flight(text, context, flights_found=FLIGHTS_NUMBERS):
+    if text.isdigit() and 0 < int(text) <= int(flights_found):
         context['flight'] = text
         return True
     else:
+        context['flight'] = None
         return False
 
 
 def handle_seats(text, context):
-    if 0 < int(text) < 6:
+    if text.isdigit() and 0 < int(text) < 6:
         context['seats'] = text
         return True
     else:

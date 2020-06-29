@@ -158,7 +158,8 @@ class Bot:
                     text_to_send = 'Рейсы не найдены\n\n' + HELLO_MESSAGE
                     self.user_states.pop(user_id)
             if str(handler).find('flight') > -1:
-                handler(text=text, context=state.context, flights_found=self.flights_found)
+                if not handler(text=text, context=state.context, flights_found=self.flights_found):
+                    return step['failure_text']
             if next_step['next_step']:
                 # swith to next step
                 state.step_name = step['next_step']
