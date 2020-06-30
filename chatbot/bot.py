@@ -175,7 +175,8 @@ class Bot:
             # retry current step
             text_to_send = step['failure_text']
         return text_to_send
-
+    # TODO Эти проверки (эта и ниже) можно же вынести в Handler-ы, разве нет?
+    # TODO Зачем всё это собирать в теле самого бота?
     def check_date(self, handler, state, text):
         self.is_get_date = False
         arrival_date = datetime.date(day=int(text[:2]), month=int(text[3:5]), year=int(text[6:10]))

@@ -63,7 +63,7 @@ def handle_seats(text, context):
 
 
 def handle_comment(text, context):
-    match = re.match(re_date, text)
+    match = re.match(re_date, text)  # TODO А этот match не используется в самой проверке? зачем он тогда?
     if 0 < len(text) < 500:
         context['comment'] = text
         return True
