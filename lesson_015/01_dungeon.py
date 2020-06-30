@@ -302,3 +302,4 @@ class LabyrinthGame:
 
 game = LabyrinthGame(file_name='rpg.json', remaining_time='123456.0987654321')
 game.run()
+#зачет!
