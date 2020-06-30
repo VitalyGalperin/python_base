@@ -211,10 +211,10 @@ class Bot:
         for city in self.cities_json:
             if (city['name'] and city['name'].lower().find(search_str) > -1) or \
                     (city['cases']['vi'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    (city['cases']['tv'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    (city['cases']['ro'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    (city['cases']['pr'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    (city['cases']['da'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                    (city['cases']['tv'] and city['cases']['tv'].lower().find(search_str) > -1) or \
+                    (city['cases']['ro'] and city['cases']['ro'].lower().find(search_str) > -1) or \
+                    (city['cases']['pr'] and city['cases']['pr'].lower().find(search_str) > -1) or \
+                    (city['cases']['da'] and city['cases']['da'].lower().find(search_str) > -1) or \
                     city['code'].lower() == search_str:
                 cities[city['name']] = city['code']
         return cities
