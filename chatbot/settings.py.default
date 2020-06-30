@@ -22,13 +22,13 @@ INTENTS = [
     },
     {
         'name': 'Помощь',
-        'tokens': ('/help', 'помощь'),
+        'tokens': ('/help', 'помощь', 'помог'),
         'scenario': None,
         'answer': HELP_MESSAGE
     },
     {
         'name': 'Регистрация',
-        'tokens': ('/ticket', 'билет', 'заказ'),
+        'tokens': ('/ticket', 'билет', 'заказ', 'закаж'),
         'scenario': 'registration',
         'answer': None
     }
