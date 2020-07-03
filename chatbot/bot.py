@@ -58,7 +58,7 @@ class Bot:
 
         self.cities_json = self.ya_answer = None
         self.user_states = dict()
-        self.city_code = self.is_get_date = self.request_error = False
+        self.city_code = self.request_error = False
         self.first_event = True
         self.flights_found = 0
 
@@ -116,7 +116,7 @@ class Bot:
 
     def hello_message(self, event):
         self.send_vk_message(event, HELLO_MESSAGE)
-        self.first_event = self.request_error = False
+        self.first_event = False
 
     def start_scenario(self, user_id, scenario_name):
         scenario = SCENARIOS[scenario_name]
@@ -124,7 +124,7 @@ class Bot:
         step = scenario['steps'][first_step]
         text_to_send = step['text']
         self.flights_found = 0
-        self.city_code = self.is_get_date = self.request_error = False
+        self.city_code = self.request_error = False
         self.user_states[user_id] = UserState(scenario_name=scenario_name, step_name=first_step)
         return text_to_send
 
@@ -141,20 +141,18 @@ class Bot:
                 text_to_send = self.check_city(handler, step, text, state)
                 if not self.city_code:
                     return text_to_send
-            if str(handler).find('date') > -1:
-                text_to_send = self.check_date(handler, state, text)
-                if not self.is_get_date:
-                    return text_to_send
             if state.context.get('date') and not state.context.get('flight'):
                 text_to_send = self.get_flights(state)
                 if self.request_error:
                     log.error('Ошибка запроса Яндекс-Расписания')
-                    text_to_send = 'Ошибка запроса Яндекс-Расписания\n\n' + HELLO_MESSAGE
-                    self.user_states.pop(user_id)
+                    text_to_send = 'Ошибка запроса Яндекс-Расписания\n\n'
+                    self.end_scenario(user_id)
+                    return text_to_send
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
-                    text_to_send = 'Рейсы не найдены\n\n' + HELLO_MESSAGE
-                    self.user_states.pop(user_id)
+                    text_to_send = 'Рейсы не найдены\n\n'
+                    self.end_scenario(user_id)
+                    return text_to_send
             if str(handler).find('flight') > -1:
                 if not handler(text=text, context=state.context, flights_found=self.flights_found):
                     return step['failure_text']
@@ -163,32 +161,27 @@ class Bot:
                 text_to_send += next_step['text'].format(**state.context)
             elif next_step == steps['last_step']:
                 log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
-                text_to_send = 'Заказ принят, с Вами свяжутся по телефону {phone}\n\n'.format(**state.context) \
-                               + HELLO_MESSAGE
-                self.user_states.pop(user_id)
+                text_to_send = 'Заказ принят, с Вами свяжутся по телефону {phone}\n\n'.format(**state.context)
+                self.end_scenario(user_id)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
                 log.info('Заказ не подтверждён')
-                text_to_send = 'Заказ не подтверждён\n\n' + HELLO_MESSAGE
-                self.user_states.pop(user_id)
+                text_to_send = 'Заказ не подтверждён\n\n'
+                self.end_scenario(user_id)
                 return text_to_send
             # retry current step
-            text_to_send = step['failure_text']
+            if state.context.get('search_warning'):
+                text_to_send = state.context['search_warning']
+                state.context.pop('search_warning')
+            else:
+                text_to_send = step['failure_text']
         return text_to_send
-    # TODO Эти проверки (эта и ниже) можно же вынести в Handler-ы, разве нет?
-    # TODO Зачем всё это собирать в теле самого бота?
-    def check_date(self, handler, state, text):
-        self.is_get_date = False
-        arrival_date = datetime.date(day=int(text[:2]), month=int(text[3:5]), year=int(text[6:10]))
-        if arrival_date < datetime.date.today():
-            return 'Невозможно найти билет на прошедшую дату'
-        if arrival_date > datetime.date.today() + datetime.timedelta(365):
-            return 'Не можем искать билет более, чем на год вперёд'
-        handler(text=arrival_date.strftime("%Y-%m-%d"), context=state.context, ymd_format=True)
-        self.is_get_date = True
-        return 'Принято'
 
-    def check_city(self, handler, step, text, state):
+    def end_scenario(self, user_id):
+        self.user_states.pop(user_id)
+        self.first_event = True
+
+    def check_city(self, handler, step, text, state): #убрать
         self.city_code = False
         cities = self.get_city(text)
         if len(cities) < 1:
@@ -227,12 +220,11 @@ class Bot:
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
         date_flight = state.context['date']
-        current_iso_date = datetime.date(day=int(date_flight[8:10]), month=int(date_flight[5:7]),
-                                         year=int(date_flight[:4]))
-        last_iso_date = current_iso_date + datetime.timedelta(days=FLIGHTS_DAYS)
-        while self.flights_found < FLIGHTS_NUMBERS and current_iso_date < last_iso_date:
+        last_iso_date = date_flight + datetime.timedelta(days=FLIGHTS_DAYS)
+        while self.flights_found < FLIGHTS_NUMBERS and date_flight < last_iso_date:
+            date_flight_str = date_flight.strftime("%Y-%m-%d")
             request_flights = str(FLIGHTS_NUMBERS - self.flights_found)
-            request = self.request_ya_rasp(date_flight, from_station, request, to_station, request_flights)
+            request = self.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
             if not request:
                 self.request_error = True
                 return 'Ошибка запроса Яндекс-Расписания'
@@ -246,8 +238,7 @@ class Bot:
                                     self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n' + \
                                     (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
                     self.flights_found += 1
-            current_iso_date += datetime.timedelta(days=1)
-            date_flight = current_iso_date.strftime("%Y-%m-%d")
+            date_flight += datetime.timedelta(days=1)
         return text_to_send
 
     def request_ya_rasp(self, date, from_station, request, to_station, request_flights):
