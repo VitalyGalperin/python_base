@@ -89,7 +89,8 @@ class Bot:
         user_id = event.object.peer_id
         text = event.object.text
         if self.first_event:
-            self.hello_message(event)
+            self.send_vk_message(event, HELLO_MESSAGE)
+            self.first_event = False
             return
         if user_id in self.user_states:
             text_to_send = self.continue_scenario(user_id, text)
@@ -113,10 +114,6 @@ class Bot:
             message=text_to_send,
             random_id=random.randint(0, 2 ** 20),
             peer_id=event.object.peer_id, )
-
-    def hello_message(self, event):
-        self.send_vk_message(event, HELLO_MESSAGE)
-        self.first_event = False
 
     def start_scenario(self, user_id, scenario_name):
         scenario = SCENARIOS[scenario_name]
@@ -181,7 +178,7 @@ class Bot:
         self.user_states.pop(user_id)
         self.first_event = True
 
-    def check_city(self, handler, step, text, state): #убрать
+    def check_city(self, handler, step, text, state):  # убрать
         self.city_code = False
         cities = self.get_city(text)
         if len(cities) < 1:
