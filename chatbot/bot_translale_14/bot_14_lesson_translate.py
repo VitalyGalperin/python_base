@@ -16,7 +16,7 @@ def config_log():
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
 
-    file_handler = logging.FileHandler('bot.log')
+    file_handler = logging.FileHandler('../bot.log')
     file_handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
 
     log.addHandler(handler)

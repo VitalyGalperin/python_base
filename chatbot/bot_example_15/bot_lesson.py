@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
-    from settings_lesson import TOKEN, GROUP_ID
+    from bot_example_15.settings_lesson import TOKEN, GROUP_ID
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import logging
 import random
-import settings_lesson as settings
+from bot_example_15 import settings_lesson as settings
 import handlers
 
 log = logging.getLogger('bot')
@@ -17,7 +17,7 @@ def config_log():
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
 
-    file_handler = logging.FileHandler('bot.log')
+    file_handler = logging.FileHandler('../bot.log')
     file_handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
 
     log.addHandler(handler)
