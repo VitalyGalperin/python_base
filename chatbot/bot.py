@@ -58,7 +58,7 @@ class Bot:
 
         self.cities_json = self.ya_answer = None
         self.user_states = dict()
-        self.city_code = self.request_error = False
+        self.request_error = False
         self.first_event = True
         self.flights_found = 0
 
@@ -121,12 +121,13 @@ class Bot:
         step = scenario['steps'][first_step]
         text_to_send = step['text']
         self.flights_found = 0
-        self.city_code = self.request_error = False
+        self.request_error = False
         self.user_states[user_id] = UserState(scenario_name=scenario_name, step_name=first_step)
         return text_to_send
 
     def continue_scenario(self, user_id, text):
         state = self.user_states[user_id]
+        state.context['cities_json'] = self.cities_json
         steps = SCENARIOS[state.scenario_name]['steps']
         step = steps[state.step_name]
 
@@ -134,10 +135,9 @@ class Bot:
         text_to_send = ''
         if handler(text=text, context=state.context):
             next_step = steps[step['next_step']]
-            if str(handler).find('city') > -1:
-                text_to_send = self.check_city(handler, step, text, state)
-                if not self.city_code:
-                    return text_to_send
+            if state.context.get('city_message'):
+                text_to_send = state.context['city_message']
+                state.context.pop('city_message')
             if state.context.get('date') and not state.context.get('flight'):
                 text_to_send = self.get_flights(state)
                 if self.request_error:
@@ -177,38 +177,6 @@ class Bot:
     def end_scenario(self, user_id):
         self.user_states.pop(user_id)
         self.first_event = True
-
-    def check_city(self, handler, step, text, state):  # убрать
-        self.city_code = False
-        cities = self.get_city(text)
-        if len(cities) < 1:
-            text_to_send = step['failure_text']
-        elif len(cities) > 1:
-            text_to_send = 'Найдены следующие города:\n'
-            for city, code in cities.items():
-                text_to_send += city + ' (' + code + ')\n'
-            text_to_send += step['failure_text']
-        else:
-            handler(text=cities, context=state.context)
-            text_to_send = 'Принято:\n'
-            for city, code in cities.items():
-                text_to_send += city + ' (' + code + ')\n'
-            self.city_code = True
-        return text_to_send
-
-    def get_city(self, search_str):
-        search_str = search_str.lower()
-        cities = {}
-        for city in self.cities_json:
-            if (city['name'] and city['name'].lower().find(search_str) > -1) or \
-                    (city['cases']['vi'] and city['cases']['vi'].lower().find(search_str) > -1) or \
-                    (city['cases']['tv'] and city['cases']['tv'].lower().find(search_str) > -1) or \
-                    (city['cases']['ro'] and city['cases']['ro'].lower().find(search_str) > -1) or \
-                    (city['cases']['pr'] and city['cases']['pr'].lower().find(search_str) > -1) or \
-                    (city['cases']['da'] and city['cases']['da'].lower().find(search_str) > -1) or \
-                    city['code'].lower() == search_str:
-                cities[city['name']] = city['code']
-        return cities
 
     def get_flights(self, state):
         self.flights_found = 0

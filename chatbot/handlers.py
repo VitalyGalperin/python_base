@@ -7,31 +7,52 @@ re_date = re.compile(r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|
 
 
 def handle_departure_city(text, context):
-    if isinstance(text, str):
-        match = re.match(re_city, text)
-        if match:
-            return True
-        else:
-            return False
-    elif isinstance(text, dict):
-        context['departure_city'] = text
-        return True
+    match = re.match(re_city, text)
+    if match:
+        return city_handle(context, text, direction='departure_city')
     else:
         return False
 
 
 def handle_arrival_city(text, context):
-    if isinstance(text, str):
-        match = re.match(re_city, text)
-        if match:
-            return True
-        else:
-            return False
-    elif isinstance(text, dict):
-        context['arrival_city'] = text
-        return True
+    match = re.match(re_city, text)
+    if match:
+        return city_handle(context, text, direction='arrival_city')
     else:
         return False
+
+
+def city_handle(context, text, direction):
+    cities = get_city(text, context)
+    if len(cities) < 1:
+        return False
+    elif len(cities) > 1:
+        context['search_warning'] = 'Найдены следующие города:\n'
+        for city, code in cities.items():
+            context['search_warning'] += city + ' (' + code + ')\n\n'
+        context['search_warning'] += 'Уточните выбор'
+        return False
+    else:
+        context[direction] = cities
+        context['city_message'] = 'Принято:\n'
+        for city, code in cities.items():
+            context['city_message'] += city + ' (' + code + ')\n'
+        return True
+
+
+def get_city(search_str, context):
+    search_str = search_str.lower()
+    cities = {}
+    for city in context['cities_json']:
+        if (city['name'] and city['name'].lower().find(search_str) > -1) or \
+                (city['cases']['vi'] and city['cases']['vi'].lower().find(search_str) > -1) or \
+                (city['cases']['tv'] and city['cases']['tv'].lower().find(search_str) > -1) or \
+                (city['cases']['ro'] and city['cases']['ro'].lower().find(search_str) > -1) or \
+                (city['cases']['pr'] and city['cases']['pr'].lower().find(search_str) > -1) or \
+                (city['cases']['da'] and city['cases']['da'].lower().find(search_str) > -1) or \
+                city['code'].lower() == search_str:
+            cities[city['name']] = city['code']
+    return cities
 
 
 def handle_date(text, context):
@@ -90,4 +111,3 @@ def handle_phone(text, context):
         return True
     else:
         return False
-
