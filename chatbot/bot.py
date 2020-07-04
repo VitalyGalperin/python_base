@@ -206,7 +206,8 @@ class Bot:
             date_flight += datetime.timedelta(days=1)
         return text_to_send
 
-    def request_ya_rasp(self, date, from_station, request, to_station, request_flights):
+    @staticmethod  # TODO Этот метод по сути можно было бы вынести в отдельный модуль
+    def request_ya_rasp(date, from_station, request, to_station, request_flights):
         try:
             request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
                                    '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit='
