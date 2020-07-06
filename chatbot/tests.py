@@ -62,7 +62,7 @@ class Test1(TestCase):
         '3',
         '2 багажных места',
         'yes',
-        '+79200101010'
+        '89200101010'
     ]
 
     EXPECTED_OUTPUTS = [

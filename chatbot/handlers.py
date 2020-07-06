@@ -29,7 +29,7 @@ def city_handle(context, text, direction):
     elif len(cities) > 1:
         context['search_warning'] = 'Найдены следующие города:\n'
         for city, code in cities.items():
-            context['search_warning'] += city + ' (' + code + ')\n\n'
+            context['search_warning'] += city + ' (' + code + ')\n'
         context['search_warning'] += 'Уточните выбор'
         return False
     else:

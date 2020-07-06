@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-try:
-    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
-        FLIGHTS_DAYS, FLIGHTS_NUMBERS
-except ImportError:
-    exit('Do cp settings.py.default settings.py and set token')
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import logging
 import random
 import json
-import requests
-import handlers
 import datetime
+
+import ya_rasp
+import handlers
+try:
+    from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
+        FLIGHTS_DAYS, FLIGHTS_NUMBERS
+except ImportError:
+    exit('Do cp settings.py.default settings.py and set token')
 
 log = logging.getLogger('bot')
 
@@ -189,7 +190,7 @@ class Bot:
         while self.flights_found < FLIGHTS_NUMBERS and date_flight < last_iso_date:
             date_flight_str = date_flight.strftime("%Y-%m-%d")
             request_flights = str(FLIGHTS_NUMBERS - self.flights_found)
-            request = self.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
+            request = ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
             if not request:
                 self.request_error = True
                 return 'Ошибка запроса Яндекс-Расписания'
@@ -205,16 +206,6 @@ class Bot:
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
         return text_to_send
-
-    @staticmethod  # TODO Этот метод по сути можно было бы вынести в отдельный модуль
-    def request_ya_rasp(date, from_station, request, to_station, request_flights):
-        try:
-            request = requests.get(YA_URL + 'apikey=' + YA_TOKEN +
-                                   '&format=json&transport_types=plane&system=iata&transfers=false&lang=ru_RU&limit='
-                                   + request_flights + '&from=' + from_station + '&to=' + to_station + '&date=' + date)
-        except Exception:
-            log.exception('Ошибка запроса Яндекс-Расписания')
-        return request
 
 
 if __name__ == "__main__":
