@@ -143,12 +143,12 @@ class Bot:
                 text_to_send = self.get_flights(state)
                 if self.request_error:
                     log.error('Ошибка запроса Яндекс-Расписания')
-                    text_to_send = 'Ошибка запроса Яндекс-Расписания\n\n'
+                    text_to_send = 'Ошибка запроса Яндекс-Расписания'
                     self.end_scenario(user_id)
                     return text_to_send
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
-                    text_to_send = 'Рейсы не найдены\n\n'
+                    text_to_send = 'Рейсы не найдены'
                     self.end_scenario(user_id)
                     return text_to_send
             if str(handler).find('flight') > -1:
@@ -159,7 +159,7 @@ class Bot:
                 text_to_send += next_step['text'].format(**state.context)
             elif next_step == steps['last_step']:
                 log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
-                text_to_send = 'Заказ принят, с Вами свяжутся по телефону {phone}\n\n'.format(**state.context)
+                text_to_send = steps['last_step']['text'].format(**state.context)
                 self.end_scenario(user_id)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
