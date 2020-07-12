@@ -20,21 +20,27 @@ class Test1(TestCase):
                    'Принято:\nАнталья (AYT)\n',
                    'Невозможно найти билет на прошедшую дату',
                    'Не можем искать билет более, чем на год вперёд',
-                   '1 : N4 1879: Нижний Новгород — Анталья\n2020-08-31 06:20:00+03:00\n2 : N4 1879: Нижний Новгород — Анталья\n2020-09-02 06:20:00+03:00\n3 : N4 1879: Нижний Новгород — Анталья\n2020-09-02 06:20:00+03:00\n4 : N4 1879: Нижний Новгород — Анталья\n2020-09-04 06:20:00+03:00\n5 : N4 1879: Нижний Новгород — Анталья\n2020-09-04 06:20:00+03:00\n',
+                   '1 : N4 1879: Нижний Новгород — Анталья\n2020-08-31 06:20:00+03:00\n'
+                   '2 : N4 1879: Нижний Новгород — Анталья\n'
+                   '2020-09-02 06:20:00+03:00\n3 : N4 1879: Нижний Новгород — Анталья\n2020-09-02 06:20:00+03:00\n'
+                   '4 : N4 1879: Нижний Новгород — Анталья\n2020-09-04 06:20:00+03:00\n'
+                   '5 : N4 1879: Нижний Новгород — Анталья\n'
+                   '2020-09-04 06:20:00+03:00\n',
                    'Найдены следующие города:\nЛондон (LOZ)\nИст-Лондон (ELS)\nНью Лондон (GON)\nУточните выбор',
                    'Принято:\nЛондон (LOZ)',
                    'Принято:\nЭйлат (VDA)',
                    'Рейсы не найдены',
                    'Принято:\nРостов-на-Дону (ROV)',
                    'Принято:\nНорильск (NSK)',
-                   '1 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-22 06:30:00+07:00\n2 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-24 06:30:00+07:00\n'
+                   '1 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-22 06:30:00+07:00\n'
+                   '2 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-24 06:30:00+07:00\n'
                    ]
 
     REQUESTS_ANSWERS = requests_answers.REQUESTS_ANSWERS
 
-    # def request_answer(self):
-    #     for request in self.REQUESTS_ANSWERS:
-    #         yield request
+    def request_answer(self):
+        for request in self.REQUESTS_ANSWERS:
+            yield request
 
     def test_run(self):
         count = 5
@@ -127,10 +133,8 @@ class Test1(TestCase):
         send_mock = Mock()
         api_mock = Mock()
         api_mock.messages.send = send_mock
-        # next_request = self.request_answer()
-        next_request = self.REQUESTS_ANSWERS
         ya_mock = Mock()
-        ya_request_mock = Mock(return_value=next_request)
+        ya_request_mock = Mock(return_value=next(self.request_answer()))
         ya_mock.request_ya_rasp = ya_request_mock
 
         events = []
@@ -141,16 +145,13 @@ class Test1(TestCase):
 
         long_poller_mock = Mock()
         long_poller_mock.listen = Mock(return_value=events)
-        #
-        # requests = []
-        # for r in self.REQUESTS_ANSWERS:
-        #     request = self.REQUESTS_ANSWERS[r]
+
 
         with patch('bot.VkBotLongPoll', return_value=long_poller_mock):
             bot = Bot()
             bot.api = api_mock
+
             ya_rasp.request_ya_rasp = ya_request_mock
-            # request1 = self.request_answer()
             bot.run()
 
             # assert send_mock.call_count == len(self.INPUTS)
