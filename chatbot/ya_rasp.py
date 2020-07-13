@@ -14,4 +14,4 @@ def request_ya_rasp(date, from_station, request, to_station, request_flights):
                                + request_flights + '&from=' + from_station + '&to=' + to_station + '&date=' + date)
     except Exception:
         log.exception('Ошибка запроса Яндекс-Расписания')
-    return request
+    return request.text

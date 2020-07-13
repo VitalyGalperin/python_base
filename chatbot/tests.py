@@ -20,20 +20,19 @@ class Test1(TestCase):
                    'Принято:\nАнталья (AYT)\n',
                    'Невозможно найти билет на прошедшую дату',
                    'Не можем искать билет более, чем на год вперёд',
-                   '1 : N4 1879: Нижний Новгород — Анталья\n2020-08-31 06:20:00+03:00\n'
-                   '2 : N4 1879: Нижний Новгород — Анталья\n'
-                   '2020-09-02 06:20:00+03:00\n3 : N4 1879: Нижний Новгород — Анталья\n2020-09-02 06:20:00+03:00\n'
-                   '4 : N4 1879: Нижний Новгород — Анталья\n2020-09-04 06:20:00+03:00\n'
-                   '5 : N4 1879: Нижний Новгород — Анталья\n'
-                   '2020-09-04 06:20:00+03:00\n',
+                   '1 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
+                   '2 : N4 1879: Нижний Новгород — Анталья \n2020-09-02 06:20:00+03:00\n'
+                   '3 : N4 1879: Нижний Новгород — Анталья \n2020-09-02 06:20:00+03:00\n'
+                   '4 : N4 1879: Нижний Новгород — Анталья \n2020-09-04 06:20:00+03:00\n'
+                   '5 : N4 1879: Нижний Новгород — Анталья \n2020-09-04 06:20:00+03:00\n',
                    'Найдены следующие города:\nЛондон (LOZ)\nИст-Лондон (ELS)\nНью Лондон (GON)\nУточните выбор',
-                   'Принято:\nЛондон (LOZ)',
-                   'Принято:\nЭйлат (VDA)',
+                   'Принято:\nЛондон (LOZ)\n',
+                   'Принято:\nЭйлат (VDA)\n',
                    'Рейсы не найдены',
-                   'Принято:\nРостов-на-Дону (ROV)',
-                   'Принято:\nНорильск (NSK)',
-                   '1 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-22 06:30:00+07:00\n'
-                   '2 : Y7 918: Ростов-на-Дону — Норильск\n2020-07-24 06:30:00+07:00\n'
+                   'Принято:\nРостов-на-Дону (ROV)\n',
+                   'Принято:\nНорильск (NSK)\n',
+                   '1 : Y7 918: Ростов-на-Дону — Норильск \n2020-07-22 06:30:00+07:00\n'
+                   '2 : Y7 918: Ростов-на-Дону — Норильск \n2020-07-24 06:30:00+07:00\n'
                    ]
 
     REQUESTS_ANSWERS = requests_answers.REQUESTS_ANSWERS
@@ -134,7 +133,8 @@ class Test1(TestCase):
         api_mock = Mock()
         api_mock.messages.send = send_mock
         ya_mock = Mock()
-        ya_request_mock = Mock(return_value=next(self.request_answer()))
+        # ya_request_mock = Mock(return_value=next(self.request_answer()))
+        ya_request_mock = Mock(return_value=self.request_answer())
         ya_mock.request_ya_rasp = ya_request_mock
 
         events = []
@@ -154,12 +154,21 @@ class Test1(TestCase):
             ya_rasp.request_ya_rasp = ya_request_mock
             bot.run()
 
-            # assert send_mock.call_count == len(self.INPUTS)
+            assert send_mock.call_count == len(self.INPUTS)
 
         real_outputs = []
         for call in send_mock.call_args_list:
             args, kwargs = call
             real_outputs.append(kwargs['message'])
+        # for c, i in enumerate(real_outputs[7]):
+        #     # print(i, self.EXPECTED_OUTPUTS[7][i], i == self.EXPECTED_OUTPUTS[7][i])
+        #     print(ord(i), i, '|', ord(self.EXPECTED_OUTPUTS[7][c]), self.EXPECTED_OUTPUTS[7][c], i == self.EXPECTED_OUTPUTS[7][c])
+        # print(len(real_outputs[7]), len(self.EXPECTED_OUTPUTS[7]), real_outputs[7] == self.EXPECTED_OUTPUTS[7])
+
+        for c, i in enumerate(real_outputs):
+            if real_outputs[c] != self.EXPECTED_OUTPUTS[c]:
+                print(real_outputs[c])
+                print(self.EXPECTED_OUTPUTS[c])
         assert real_outputs == self.EXPECTED_OUTPUTS
 
 
