@@ -146,7 +146,6 @@ class Test1(TestCase):
         long_poller_mock = Mock()
         long_poller_mock.listen = Mock(return_value=events)
 
-
         with patch('bot.VkBotLongPoll', return_value=long_poller_mock):
             bot = Bot()
             bot.api = api_mock
@@ -169,6 +168,7 @@ class Test1(TestCase):
             if real_outputs[c] != self.EXPECTED_OUTPUTS[c]:
                 print(real_outputs[c])
                 print(self.EXPECTED_OUTPUTS[c])
+
         assert real_outputs == self.EXPECTED_OUTPUTS
 
 
