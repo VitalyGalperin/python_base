@@ -133,8 +133,9 @@ class Test1(TestCase):
         api_mock = Mock()
         api_mock.messages.send = send_mock
         ya_mock = Mock()
-        # ya_request_mock = Mock(return_value=next(self.request_answer()))
         ya_request_mock = Mock(return_value=self.request_answer())
+        # ya_request_mock = Mock(return_value=next(self.request_answer()))
+        # ya_request_mock = Mock(return_value=self.request_answer)
         ya_mock.request_ya_rasp = ya_request_mock
 
         events = []
@@ -152,6 +153,9 @@ class Test1(TestCase):
             bot.api = api_mock
 
             ya_rasp.request_ya_rasp = ya_request_mock
+            # ya_rasp.request_ya_rasp = self.request_answer
+            # ya_rasp.request_ya_rasp = self.request_answer()
+            # ya_rasp.request_ya_rasp = next(self.request_answer())
             bot.run()
 
             assert send_mock.call_count == len(self.INPUTS)
