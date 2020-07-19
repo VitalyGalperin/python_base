@@ -37,7 +37,7 @@ class Test1(TestCase):
 
     REQUESTS_ANSWERS = requests_answers.REQUESTS_ANSWERS
 
-    def request_answer(self):
+    def request_answer(self, *args, **kwargs):
         for request in self.REQUESTS_ANSWERS:
             yield request
 
@@ -153,9 +153,9 @@ class Test1(TestCase):
             bot.api = api_mock
 
             ya_rasp.request_ya_rasp = ya_request_mock
-            # ya_rasp.request_ya_rasp = self.request_answer
-            # ya_rasp.request_ya_rasp = self.request_answer()
-            # ya_rasp.request_ya_rasp = next(self.request_answer())
+            # ya_rasp.request_ya_rasp = self.request_answer         #   несоответствие количества аргументов
+            # ya_rasp.request_ya_rasp = self.request_answer()       #   несоответствие типов
+            # ya_rasp.request_ya_rasp = next(self.request_answer()) #   несоответствие типов
             bot.run()
 
             assert send_mock.call_count == len(self.INPUTS)
