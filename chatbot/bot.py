@@ -190,8 +190,8 @@ class Bot:
         while self.flights_found < FLIGHTS_NUMBERS and date_flight < last_iso_date:
             date_flight_str = date_flight.strftime("%Y-%m-%d")
             request_flights = str(FLIGHTS_NUMBERS - self.flights_found)
-            # request = ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
-            request = self.call_request(date_flight_str, from_station, request, request_flights, to_station)
+            request = ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
+            # request = self.call_request(date_flight_str, from_station, request, request_flights, to_station)
             if not request:
                 self.request_error = True
                 return 'Ошибка запроса Яндекс-Расписания'
@@ -208,13 +208,13 @@ class Bot:
             date_flight += datetime.timedelta(days=1)
         return text_to_send
 
-    def call_request(self, date_flight_str, from_station, request, request_flights, to_station):
-        if str(type(ya_rasp.request_ya_rasp)) == "<class 'unittest.mock.Mock'>":
-            request = next(
-                ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights))
-        else:
-            request = ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
-        return request
+    # def call_request(self, date_flight_str, from_station, request, request_flights, to_station):
+    #     if str(type(ya_rasp.request_ya_rasp)) == "<class 'unittest.mock.Mock'>":
+    #         request = next(
+    #             ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights))
+    #     else:
+    #         request = ya_rasp.request_ya_rasp(date_flight_str, from_station, request, to_station, request_flights)
+    #     return request
 
 
 if __name__ == "__main__":

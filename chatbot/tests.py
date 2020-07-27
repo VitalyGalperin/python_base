@@ -5,6 +5,7 @@ from vk_api.bot_longpoll import VkBotMessageEvent
 from copy import deepcopy
 import ya_rasp
 import requests_answers
+import datetime
 
 from bot import Bot
 
@@ -63,10 +64,10 @@ class Test1(TestCase):
         'Хочу заказать билет',
         'нижний',
         'в анталью',
-        '31082020',
-        '31-08-2019',
-        '31-08-2023',
-        '31-08-2020',
+        datetime.datetime.now().strftime("%d%m%Y"),     # '31082020',
+        (datetime.datetime.now()-datetime.timedelta(days=365)).strftime("%d-%m-%Y"),   #'31-08-2019',
+        (datetime.datetime.now()+datetime.timedelta(days=365)).strftime("%d-%m-%Y"),   #'31-08-2023',
+        (datetime.datetime.now()+datetime.timedelta(days=2)).strftime("%d-%m-%Y"),     #'31-08-2020',
         '5',
         '3',
         'с обедом',
@@ -78,13 +79,13 @@ class Test1(TestCase):
         'лондон',
         'loz',
         'Эйлат',
-        '01-09-2020',
+        (datetime.datetime.now()+datetime.timedelta(days=3)).strftime("%d-%m-%Y"),     #'01-09-2020',
         'Продолжаем',
         '/help',
         'закажи место',
         'ростов',
         'НОРИЛЬСК',
-        '20-07-2020',
+        datetime.datetime.now().strftime("%d-%m-%Y"),     #'20-07-2020',
         '5',
         '2',
         '3',
@@ -133,8 +134,8 @@ class Test1(TestCase):
         api_mock = Mock()
         api_mock.messages.send = send_mock
         ya_mock = Mock()
-        ya_request_mock = Mock(return_value=self.request_answer())
-        # ya_request_mock = Mock(return_value=next(self.request_answer()))
+        # ya_request_mock = Mock(return_value=self.request_answer())
+        ya_request_mock = Mock(return_value=next(self.request_answer()))
         # ya_request_mock = Mock(return_value=self.request_answer)
         ya_mock.request_ya_rasp = ya_request_mock
 
