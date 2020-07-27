@@ -22,18 +22,10 @@ class Test1(TestCase):
                    'Невозможно найти билет на прошедшую дату',
                    'Не можем искать билет более, чем на год вперёд',
                    '1 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
-                   '2 : N4 1879: Нижний Новгород — Анталья \n2020-09-02 06:20:00+03:00\n'
-                   '3 : N4 1879: Нижний Новгород — Анталья \n2020-09-02 06:20:00+03:00\n'
-                   '4 : N4 1879: Нижний Новгород — Анталья \n2020-09-04 06:20:00+03:00\n'
-                   '5 : N4 1879: Нижний Новгород — Анталья \n2020-09-04 06:20:00+03:00\n',
-                   'Найдены следующие города:\nЛондон (LOZ)\nИст-Лондон (ELS)\nНью Лондон (GON)\nУточните выбор',
-                   'Принято:\nЛондон (LOZ)\n',
-                   'Принято:\nЭйлат (VDA)\n',
-                   'Рейсы не найдены',
-                   'Принято:\nРостов-на-Дону (ROV)\n',
-                   'Принято:\nНорильск (NSK)\n',
-                   '1 : Y7 918: Ростов-на-Дону — Норильск \n2020-07-22 06:30:00+07:00\n'
-                   '2 : Y7 918: Ростов-на-Дону — Норильск \n2020-07-24 06:30:00+07:00\n'
+                   '2 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
+                   '3 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
+                   '4 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
+                   '5 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n',
                    ]
 
     REQUESTS_ANSWERS = requests_answers.REQUESTS_ANSWERS
@@ -62,36 +54,19 @@ class Test1(TestCase):
     INPUTS = [
         'Привет',
         'Хочу заказать билет',
-        'нижний',
+        'GOJ',
         'в анталью',
         datetime.datetime.now().strftime("%d%m%Y"),     # '31082020',
         (datetime.datetime.now()-datetime.timedelta(days=365)).strftime("%d-%m-%Y"),   #'31-08-2019',
-        (datetime.datetime.now()+datetime.timedelta(days=365)).strftime("%d-%m-%Y"),   #'31-08-2023',
+        (datetime.datetime.now()+datetime.timedelta(days=366)).strftime("%d-%m-%Y"),   #'31-08-2023',
         (datetime.datetime.now()+datetime.timedelta(days=2)).strftime("%d-%m-%Y"),     #'31-08-2020',
+        '6',
         '5',
         '3',
         'с обедом',
         'принято',
         'да',
         '+972-50-77-777-77',
-        'дальше',
-        '/ticket',
-        'лондон',
-        'loz',
-        'Эйлат',
-        (datetime.datetime.now()+datetime.timedelta(days=3)).strftime("%d-%m-%Y"),     #'01-09-2020',
-        'Продолжаем',
-        '/help',
-        'закажи место',
-        'ростов',
-        'НОРИЛЬСК',
-        datetime.datetime.now().strftime("%d-%m-%Y"),     #'20-07-2020',
-        '5',
-        '2',
-        '3',
-        '2 багажных места',
-        'yes',
-        '89200101010'
     ]
 
     EXPECTED_OUTPUTS = [
@@ -103,30 +78,13 @@ class Test1(TestCase):
         BOT_ANSWERS[2],
         BOT_ANSWERS[3],
         BOT_ANSWERS[4] + settings.SCENARIOS['registration']['steps']['step4']['text'],
+        settings.SCENARIOS['registration']['steps']['step4']['failure_text'],
         settings.SCENARIOS['registration']['steps']['step5']['text'],
         settings.SCENARIOS['registration']['steps']['step6']['text'],
         settings.SCENARIOS['registration']['steps']['step7']['text'],
         settings.SCENARIOS['registration']['steps']['step7']['failure_text'],
         settings.SCENARIOS['registration']['steps']['step8']['text'],
         settings.SCENARIOS['registration']['steps']['last_step']['text'].format(phone='+972-50-77-777-77'),
-        settings.INTENTS[0]['answer'],
-        settings.SCENARIOS['registration']['steps']['step1']['text'],
-        BOT_ANSWERS[5],
-        BOT_ANSWERS[6] + settings.SCENARIOS['registration']['steps']['step2']['text'],
-        BOT_ANSWERS[7] + settings.SCENARIOS['registration']['steps']['step3']['text'],
-        BOT_ANSWERS[8],
-        settings.INTENTS[0]['answer'],
-        settings.INTENTS[1]['answer'],
-        settings.SCENARIOS['registration']['steps']['step1']['text'],
-        BOT_ANSWERS[9] + settings.SCENARIOS['registration']['steps']['step2']['text'],
-        BOT_ANSWERS[10] + settings.SCENARIOS['registration']['steps']['step3']['text'],
-        BOT_ANSWERS[11] + settings.SCENARIOS['registration']['steps']['step4']['text'],
-        settings.SCENARIOS['registration']['steps']['step4']['failure_text'],
-        settings.SCENARIOS['registration']['steps']['step5']['text'],
-        settings.SCENARIOS['registration']['steps']['step6']['text'],
-        settings.SCENARIOS['registration']['steps']['step7']['text'],
-        settings.SCENARIOS['registration']['steps']['step8']['text'],
-        settings.SCENARIOS['registration']['steps']['last_step']['text'].format(phone='89200101010'),
     ]
 
     def test_run_ok(self):
@@ -134,9 +92,7 @@ class Test1(TestCase):
         api_mock = Mock()
         api_mock.messages.send = send_mock
         ya_mock = Mock()
-        # ya_request_mock = Mock(return_value=self.request_answer())
         ya_request_mock = Mock(return_value=next(self.request_answer()))
-        # ya_request_mock = Mock(return_value=self.request_answer)
         ya_mock.request_ya_rasp = ya_request_mock
 
         events = []
@@ -153,9 +109,6 @@ class Test1(TestCase):
             bot.api = api_mock
 
             ya_rasp.request_ya_rasp = ya_request_mock
-            # ya_rasp.request_ya_rasp = self.request_answer         #   несоответствие количества аргументов
-            # ya_rasp.request_ya_rasp = self.request_answer()       #   несоответствие типов
-            # ya_rasp.request_ya_rasp = next(self.request_answer()) #   несоответствие типов
             bot.run()
 
             assert send_mock.call_count == len(self.INPUTS)
@@ -164,10 +117,6 @@ class Test1(TestCase):
         for call in send_mock.call_args_list:
             args, kwargs = call
             real_outputs.append(kwargs['message'])
-        # for c, i in enumerate(real_outputs[7]):
-        #     # print(i, self.EXPECTED_OUTPUTS[7][i], i == self.EXPECTED_OUTPUTS[7][i])
-        #     print(ord(i), i, '|', ord(self.EXPECTED_OUTPUTS[7][c]), self.EXPECTED_OUTPUTS[7][c], i == self.EXPECTED_OUTPUTS[7][c])
-        # print(len(real_outputs[7]), len(self.EXPECTED_OUTPUTS[7]), real_outputs[7] == self.EXPECTED_OUTPUTS[7])
 
         for c, i in enumerate(real_outputs):
             if real_outputs[c] != self.EXPECTED_OUTPUTS[c]:
