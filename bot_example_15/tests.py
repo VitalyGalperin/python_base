@@ -1,10 +1,9 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
-import settings
 from vk_api.bot_longpoll import VkBotMessageEvent
 from copy import deepcopy
-
-from bot_example_15.bot_lesson import Bot
+import settings
+from bot import Bot
 
 
 class Test1(TestCase):

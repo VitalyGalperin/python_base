@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock, ANY
 
-from vk_api.bot_longpoll import VkBotMessageEvent
+from vk_api.bot_longpoll import VkBotMessageEvent, VkBotLongPoll, VkBotEventType
 
 from bot import Bot
 
