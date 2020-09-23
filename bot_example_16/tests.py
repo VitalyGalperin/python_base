@@ -7,6 +7,8 @@ from pony.orm import db_session, rollback
 
 
 from bot import Bot
+from generate_ticket import generate_ticket
+
 
 def isilate_db(test_func):
     def wrapper(*args, ** kwargs):
@@ -35,6 +37,7 @@ class Test1(TestCase):
             with patch('bot.VkBotLongPoll', return_value=long_poller_listen_mock):
                 bot = Bot('', '')
                 bot.on_event = Mock()
+                bot.send_image = Mock()
                 bot.run()
                 bot.on_event.assert_called()
                 bot.on_event.assert_any_call(obj)
@@ -77,6 +80,7 @@ class Test1(TestCase):
         with patch('bot.VkBotLongPoll', return_value=long_poller_mock):
             bot = Bot('', '')
             bot.api = api_mock
+            bot.send_image = Mock()
             bot.run()
 
             assert send_mock.call_count == len(self.INPUTS)
@@ -86,6 +90,20 @@ class Test1(TestCase):
             args, kwargs = call
             real_outputs.append(kwargs['message'])
         assert real_outputs == self.EXPECTED_OUTPUTS
+
+    def test_image_generation(self):
+        with open("files/avatar.png", "rb") as avatar_file:
+            avatar_mock = Mock()
+            avatar_mock.content = avatar_file.read()
+
+        with patch('requests.get', return_value=avatar_mock):
+            ticket_file = generate_ticket('Vasily', 'vasily@ghj.kjn')
+
+        with open('files/ticket_example.png', 'rb') as expected_file:
+            expected_bytes = expected_file.read()
+
+        assert ticket_file.read() == expected_bytes
+
 
 if __name__ == '__main__':
     unittest.main()

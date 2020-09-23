@@ -40,6 +40,7 @@ SCENARIOS = {
             },
             'step3': {
                 'text': '{name}  {email}',
+                'image': 'generate_ticket_handler',
                 'failure_text': None,
                 'handler': None,
                 'next_step': None

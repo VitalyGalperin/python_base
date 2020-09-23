@@ -23,15 +23,18 @@ def generate_ticket(name, email):
     draw.text(EMAIL_OFFSET, email, font=font, fill=BLACK)
 
     response = requests.get(url=f'https://api.adorable.io/avatars/{AVATAR_SIZE}/{email}')
+    # Полученный аватар можно сохранить в файл
+    # with open("files/avatar.png", "wb") as avatar_file:
+    #     avatar_file.write(response.content)
     avatar_file_like = BytesIO(response.content)
     avatar = Image.open(avatar_file_like)
     base.paste(avatar, AVATAR_OFFSET)
 
-    # Пример как сохранять в файл
+    # Результат можно сохранять в файл
     # with open('files/ticket_example.png', 'wb') as file:
     #     base.save(file, 'png')
 
-    # Пример как сохранять в виртуальный файл
+    # Или в виртуальный файл
     temp_file = BytesIO()
     base.save(temp_file, 'png')
     temp_file.seek(0)           # возврат курсора в точку 0
