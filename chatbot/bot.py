@@ -145,15 +145,18 @@ class Bot:
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания'
                     self.end_scenario(user_id)
-                    return text_to_send
+                    self.send_text(text_to_send, user_id)
+                    return
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены'
                     self.end_scenario(user_id)
-                    return text_to_send
+                    self.send_text(text_to_send, user_id)
+                    return
             if str(handler).find('flight') > -1:
                 if not handler(text=text, context=state.context, flights_found=self.flights_found):
-                    return step['failure_text']
+                    self.send_text(step['failure_text'], user_id)
+                    return
             if next_step['next_step']:
                 state.step_name = step['next_step']
                 text_to_send += next_step['text'].format(**state.context)
