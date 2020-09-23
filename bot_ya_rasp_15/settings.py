@@ -82,14 +82,14 @@ SCENARIOS = {
             },
             'step8': {
                 'text': 'Ведите телефон для связи:',
-                'failure_text': 'Некорректный номер, попробуйте снова',
+                'failure_text': 'Некорректный телефонный номер, попробуйте снова',
                 'handler': 'handle_phone',
                 'next_step': 'last_step'
             },
 
             'last_step': {
-                'text': 'Ваш заказ принят, с вами свяжутся по номеру {phone}\n\n' + HELLO_MESSAGE,
-                'failure_text': 'Билет не заказан. \n\n' + HELLO_MESSAGE,
+                'text': 'Ваш заказ принят, с вами свяжутся по номеру {phone}\n\n',
+                'failure_text': 'Билет не заказан. \n\n',
                 'handler': None,
                 'next_step': None
             }
