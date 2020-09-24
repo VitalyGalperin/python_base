@@ -1,5 +1,5 @@
 GROUP_ID = 194114072
-TOKEN = ''
+TOKEN = '6f29220c9eba6519f7b048cd0398e0bcaae4419a30e477daddda01abee415a2bcd2b2813dd52bd7d32b0f'
 YA_TOKEN = 'fc086f98-3349-42c6-b490-9b34bc85d83c'
 YA_URL = 'https://api.rasp.yandex.net/v3.0/search/?'
 
