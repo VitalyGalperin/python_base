@@ -166,13 +166,13 @@ class Bot:
                 if self.request_error:
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания'
-                    self.end_scenario(user_id)
+                    self.end_scenario(state)
                     self.send_text(text_to_send, user_id)
                     return
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены'
-                    self.end_scenario(user_id)
+                    self.end_scenario(state)
                     self.send_text(text_to_send, user_id)
                     return
             if str(handler).find('flight') > -1:
@@ -185,7 +185,7 @@ class Bot:
             elif next_step == steps['last_step']:
                 log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
                 text_to_send = steps['last_step']['text'].format(**state.context)
-                self.end_scenario(user_id)
+                self.end_scenario(state)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
                 log.info('Заказ не подтверждён')
@@ -230,6 +230,7 @@ class Bot:
                                     (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
+        state.context['date'] = state.context['date'].strftime("%d-%m-%Y")
         return text_to_send
 
 
