@@ -15,6 +15,10 @@ class UserState(db.Entity):
 
 class Registration(db.Entity):
     """Заявка на регистрацию"""
+    departure_city = Required(str)
+    arrival_city = Required(str)
+    departure_date = Required(str)
+    name = Required(str)
     phone = Required(str)
 
 
