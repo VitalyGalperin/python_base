@@ -5,7 +5,9 @@ import logging
 import random
 import json
 import datetime
+import requests
 
+import settings
 import ya_rasp
 import handlers
 try:
@@ -63,6 +65,7 @@ class Bot:
         self.first_event = True
         self.flights_found = 0
 
+
     def run(self):
         """
         Запуск бота
@@ -90,33 +93,52 @@ class Bot:
         user_id = event.object.peer_id
         text = event.object.text
         if self.first_event:
-            self.send_vk_message(event, HELLO_MESSAGE)
+            self.send_text(HELLO_MESSAGE, user_id)
             self.first_event = False
             return
         if user_id in self.user_states:
             text_to_send = self.continue_scenario(user_id, text)
         else:
-            # search intevt
             for intent in INTENTS:
                 log.debug(f'user get {intent}')
                 if any(token in text.lower() for token in intent['tokens']):
                     if intent['answer']:
-                        text_to_send = intent['answer']
+                        self.send_text(intent['answer'], user_id)
                     else:
-                        text_to_send = self.start_scenario(user_id, intent['scenario'])
+                        self.start_scenario(user_id, intent['scenario'], text)
                     break
             else:
-                text_to_send = DEFAULT_ANSWER
+                self.send_text(settings.DEFAULT_ANSWER, user_id)
 
-        self.send_vk_message(event, text_to_send)
-
-    def send_vk_message(self, event, text_to_send):
+    def send_text(self, text_to_send, user_id):
         self.api.messages.send(
             message=text_to_send,
             random_id=random.randint(0, 2 ** 20),
-            peer_id=event.object.peer_id, )
+            peer_id=user_id, )
 
-    def start_scenario(self, user_id, scenario_name):
+    def send_image(self, image, user_id):
+        upload_url = self.api.photos.getMessagesUploadServer()['upload_url']
+        upload_data = requests.post(url=upload_url, files={'photo': ('image.png', image, 'image/png')}).json()
+        image_data = self.api.photos.saveMessagesPhoto(**upload_data)
+
+        owner_id = image_data[0]['owner_id']
+        media_id = image_data[0]['id']
+        attachment = f'photo{owner_id}_{media_id}'
+
+        self.api.messages.send(
+            attachment=attachment,
+            random_id=random.randint(0, 2 ** 20),
+            peer_id=user_id, )
+
+    def send_step(self, step, user_id, text, context):
+        if 'text' in step:
+            self.send_text(step['text'].format(**context), user_id)
+        if 'image' in step:
+            handler = getattr(handlers, step['image'])
+            image = handler(text, context)
+            self.send_image(image, user_id)
+
+    def start_scenario(self, user_id, scenario_name, text):
         scenario = SCENARIOS[scenario_name]
         first_step = scenario['first_step']
         step = scenario['steps'][first_step]
@@ -176,7 +198,7 @@ class Bot:
                 state.context.pop('search_warning')
             else:
                 text_to_send = step['failure_text']
-        return text_to_send
+        self.send_text(text_to_send, user_id)
 
     def end_scenario(self, user_id):
         self.user_states.pop(user_id)
