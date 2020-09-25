@@ -18,7 +18,10 @@ class Registration(db.Entity):
     departure_city = Required(str)
     arrival_city = Required(str)
     departure_date = Required(str)
-    name = Required(str)
+    departure_time = Required(str)
+    first_name = Required(str)
+    last_name = Required(str)
+    email = Required(str)
     phone = Required(str)
 
 

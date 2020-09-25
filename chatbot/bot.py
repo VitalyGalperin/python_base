@@ -160,7 +160,7 @@ class Bot:
             if state.context.get('city_message'):
                 text_to_send = state.context['city_message']
                 state.context.pop('city_message')
-            if state.context.get('date') and not state.context.get('flight'):
+            if state.context.get('date') and not state.context.get('flight_to_print'):
                 text_to_send = self.get_flights(state, user_id)
                 if self.request_error:
                     log.error('Ошибка запроса Яндекс-Расписания')
@@ -235,7 +235,7 @@ class Bot:
 
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
-            state.context['flights_found'] = self.flights_found
+        state.context['flights_found'] = self.flights_found
         return text_to_send
 
 

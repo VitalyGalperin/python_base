@@ -83,9 +83,10 @@ def handle_flight(text, context):
     if text.isdigit() and 0 < int(text) <= context['flights_found']:
         context['date_flight_to_print'] = context['date_flight' + str(text)]
         context['time_flight_to_print'] = context['time_flight' + str(text)]
-        context['thread_to_print'] = context['thread' + str(text)]
+        context['flight_to_print'] = context['thread' + str(text)]
         return True
     else:
+        context['flight_to_print'] = None
         return False
 
 
