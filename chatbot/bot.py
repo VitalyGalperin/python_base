@@ -65,7 +65,6 @@ class Bot:
         self.first_event = True
         self.flights_found = 0
 
-
     def run(self):
         """
         Запуск бота
@@ -176,7 +175,7 @@ class Bot:
                     self.send_text(text_to_send, user_id)
                     return
             if str(handler).find('flight') > -1:
-                if not handler(text=text, context=state.context, flights_found=self.flights_found):
+                if not handler(text=text, context=state.context):
                     self.send_text(step['failure_text'], user_id)
                     return
             if next_step['next_step']:
@@ -210,7 +209,8 @@ class Bot:
         request = None
         from_station = list(state.context['departure_city'].values())[0]
         to_station = list(state.context['arrival_city'].values())[0]
-        date_flight = state.context['date']
+        date_flight = datetime.date(day=int(state.context['date'][:2]), month=int(state.context['date'][3:5]),
+                                    year=int(state.context['date'][6:10]))
         last_iso_date = date_flight + datetime.timedelta(days=FLIGHTS_DAYS)
         while self.flights_found < FLIGHTS_NUMBERS and date_flight < last_iso_date:
             date_flight_str = date_flight.strftime("%Y-%m-%d")
@@ -227,10 +227,15 @@ class Bot:
                     text_to_send += str(self.flights_found + 1) + ' : ' + self.ya_answer['segments'][i]['thread'][
                         'number'] + ': ' + \
                                     self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n' + \
-                                    (self.ya_answer['segments'][i]['arrival']).replace('T', ' ') + '\n'
+                                    (self.ya_answer['segments'][i]['departure']).replace('T', ' ') + '\n'
+                    get_date = self.ya_answer['segments'][i]['departure']
+                    state.context['date_flight' + str(i + 1)] = get_date[8:10] + get_date[4:7] + '-' + get_date[0:4]
+                    state.context['time_flight' + str(i + 1)] = get_date[11:25]
+                    state.context['thread' + str(i + 1)] = self.ya_answer['segments'][i]['thread']['number']
+
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
-        state.context['date'] = state.context['date'].strftime("%d-%m-%Y")
+            state.context['flights_found'] = self.flights_found
         return text_to_send
 
 

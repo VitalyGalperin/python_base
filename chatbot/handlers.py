@@ -4,7 +4,8 @@ import datetime
 
 from models import Registration
 
-re_city = re.compile(r'^[\w\-\s\.]{3,40}$')
+re_city = re_first_name = re_last_name = re.compile(r'^[\w\-\s\.]{3,40}$')
+re_email = re.compile(r"\b^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$\b")
 re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$')
 re_date = re.compile(r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
 
@@ -72,18 +73,19 @@ def handle_date(text, context):
         if departure_date > datetime.date.today() + datetime.timedelta(365):
             context['search_warning'] = 'Не можем искать билет более, чем на год вперёд'
             return False
-        context['date'] = departure_date
+        context['date'] = text
         return True
     else:
         return False
 
 
-def handle_flight(text, context, flights_found=FLIGHTS_NUMBERS):
-    if text.isdigit() and 0 < int(text) <= int(flights_found):
-        context['flight'] = text
+def handle_flight(text, context):
+    if text.isdigit() and 0 < int(text) <= context['flights_found']:
+        context['date_flight_to_print'] = context['date_flight' + str(text)]
+        context['time_flight_to_print'] = context['time_flight' + str(text)]
+        context['thread_to_print'] = context['thread' + str(text)]
         return True
     else:
-        context['flight'] = None
         return False
 
 
@@ -106,6 +108,33 @@ def handle_comment(text, context):
 def handle_confirm(text, context):
     if text.lower().find('yes') > -1 or text.lower().find('да') > -1:
         context['confirm'] = True
+        return True
+    else:
+        return False
+
+
+def handle_first_name(text, context):
+    match = re.match(re_first_name, text)
+    if match:
+        context['first_name'] = text
+        return True
+    else:
+        return False
+
+
+def handle_last_name(text, context):
+    match = re.match(re_last_name, text)
+    if match:
+        context['last_name'] = text
+        return True
+    else:
+        return False
+
+
+def handle_email(text, context):
+    matches = re.findall(re_email, text)
+    if len(matches) > 0:
+        context['email'] = matches[0]
         return True
     else:
         return False

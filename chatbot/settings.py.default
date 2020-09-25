@@ -70,23 +70,41 @@ SCENARIOS = {
             },
             'step6': {
                 'text': 'Напишите дополнительные пожелания, комментарий (до 500 символов):',
-                'failure_text': 'Такой город нам не известен',
+                'failure_text': '',
                 'handler': 'handle_comment',
                 'next_step': 'step7'
             },
             'step7': {
-                'text': 'Подтверждаете ли Вы правильность введенных данных? ( ДА / НЕТ):',
-                'failure_text': 'Ответ непонятен, ответьте Да или Нет ',
-                'handler': 'handle_confirm',
+                'text': 'Введите Ваше Имя:',
+                'failure_text': 'Некорректное Имя',
+                'handler': 'handle_first_name',
                 'next_step': 'step8'
             },
             'step8': {
+                'text': 'Введите Вашу Фамилию:',
+                'failure_text': 'Некорректная фамилия',
+                'handler': 'handle_last_name',
+                'next_step': 'step9'
+            },
+            'step9': {
+                'text': 'Введите Ваш e-mail',
+                'failure_text': 'Некорректный e-mail, попробуйте снова',
+                'handler': 'handle_email',
+                'next_step': 'step10'
+            },
+            'step10': {
                 'text': 'Ведите телефон для связи:',
                 'failure_text': 'Некорректный телефонный номер, попробуйте снова',
                 'handler': 'handle_phone',
-                'next_step': 'last_step'
+                'next_step': 'step11'
             },
 
+            'step11': {
+                'text': 'Подтверждаете ли Вы правильность введенных данных? ( ДА / НЕТ):',
+                'failure_text': 'Ответ непонятен, ответьте Да или Нет ',
+                'handler': 'handle_confirm',
+                'next_step': 'last_step'
+            },
             'last_step': {
                 'text': 'Ваш заказ принят, с вами свяжутся по номеру {phone}\n\n',
                 'failure_text': 'Билет не заказан. \n\n',
