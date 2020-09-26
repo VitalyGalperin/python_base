@@ -10,6 +10,7 @@ import requests
 import settings
 import ya_rasp
 import handlers
+
 try:
     from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
         FLIGHTS_DAYS, FLIGHTS_NUMBERS
@@ -17,6 +18,7 @@ except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
 
 log = logging.getLogger('bot')
+
 
 
 def config_log():
@@ -142,6 +144,7 @@ class Bot:
         first_step = scenario['first_step']
         step = scenario['steps'][first_step]
         text_to_send = step['text']
+        self.send_step(step, user_id, text_to_send, context={})
         self.flights_found = 0
         self.request_error = False
         self.user_states[user_id] = UserState(scenario_name=scenario_name, step_name=first_step)
@@ -185,7 +188,7 @@ class Bot:
                 text_to_send = steps['last_step']['text'].format(**state.context)
                 self.send_step(next_step, user_id, text_to_send, state.context)
                 text_to_send = ''
-                self.end_scenario(state)
+                self.end_scenario(user_id)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
                 log.info('Заказ не подтверждён')
