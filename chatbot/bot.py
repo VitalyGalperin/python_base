@@ -6,7 +6,6 @@ import random
 import json
 import datetime
 import requests
-
 import settings
 import ya_rasp
 import handlers
@@ -16,25 +15,20 @@ try:
         FLIGHTS_DAYS, FLIGHTS_NUMBERS
 except ImportError:
     exit('Do cp settings.py.default settings.py and set token')
-
 log = logging.getLogger('bot')
-
 
 
 def config_log():
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
-
     file_handler = logging.FileHandler('bot.log')
     file_handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%d-%m-%Y %H:%M'))
-
     log.addHandler(handler)
     log.addHandler(file_handler)
     log.setLevel(logging.DEBUG)
 
 
 class UserState:
-
     def __init__(self, scenario_name, step_name, context=None):
         self.scenario_name = scenario_name
         self.step_name = step_name
@@ -56,11 +50,9 @@ class Bot:
         self.token = TOKEN
         self.ya_token = YA_TOKEN
         self.cities_file = 'cities.json'
-
         self.vk = vk_api.VkApi(token=TOKEN)
         self.long_poller = VkBotLongPoll(self.vk, self.group_id)
         self.api = self.vk.get_api()
-
         self.cities_json = self.ya_answer = None
         self.user_states = dict()
         self.request_error = False
@@ -121,11 +113,9 @@ class Bot:
         upload_url = self.api.photos.getMessagesUploadServer()['upload_url']
         upload_data = requests.post(url=upload_url, files={'photo': ('image.png', image, 'image/png')}).json()
         image_data = self.api.photos.saveMessagesPhoto(**upload_data)
-
         owner_id = image_data[0]['owner_id']
         media_id = image_data[0]['id']
         attachment = f'photo{owner_id}_{media_id}'
-
         self.api.messages.send(
             attachment=attachment,
             random_id=random.randint(0, 2 ** 20),
@@ -236,7 +226,6 @@ class Bot:
                     state.context['date_flight' + str(i + 1)] = get_date[8:10] + get_date[4:7] + '-' + get_date[0:4]
                     state.context['time_flight' + str(i + 1)] = get_date[11:16] + get_date[19:]
                     state.context['thread' + str(i + 1)] = self.ya_answer['segments'][i]['thread']['number']
-
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
         state.context['flights_found'] = self.flights_found
