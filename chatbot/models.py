@@ -23,6 +23,7 @@ class Registration(db.Entity):
     last_name = Required(str)
     email = Required(str)
     phone = Required(str)
+    flight = Required(str)
 
 
 db.generate_mapping(create_tables=True)

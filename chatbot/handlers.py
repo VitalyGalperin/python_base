@@ -1,3 +1,4 @@
+from generate_ticket import generate_ticket
 from settings import FLIGHTS_NUMBERS
 import re
 import datetime
@@ -7,7 +8,8 @@ from models import Registration
 re_city = re_first_name = re_last_name = re.compile(r'^[\w\-\s\.]{3,40}$')
 re_email = re.compile(r"\b^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$\b")
 re_phone = re.compile(r'^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$')
-re_date = re.compile(r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
+re_date = re.compile(
+    r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
 
 
 def handle_departure_city(text, context):
@@ -148,3 +150,13 @@ def handle_phone(text, context):
         return True
     else:
         return False
+
+
+def generate_ticket_handler(text, context):
+    return generate_ticket(first_name=context['first_name'], last_name=context['last_name'],
+                           departure_city=context['departure_city_to_print'],
+                           departure_date=context['date_flight_to_print'],
+                           departure_time=context['time_flight_to_print'],
+                           arrival_city=context['arrival_city_to_print'],
+                           flight=context['flight_to_print'])
+

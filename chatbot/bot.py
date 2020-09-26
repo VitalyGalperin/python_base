@@ -131,7 +131,7 @@ class Bot:
 
     def send_step(self, step, user_id, text, context):
         if 'text' in step:
-            self.send_text(step['text'].format(**context), user_id)
+            self.send_text(text, user_id)
         if 'image' in step:
             handler = getattr(handlers, step['image'])
             image = handler(text, context)
@@ -152,7 +152,6 @@ class Bot:
         state.context['cities_json'] = self.cities_json
         steps = SCENARIOS[state.scenario_name]['steps']
         step = steps[state.step_name]
-
         handler = getattr(handlers, step['handler'])
         text_to_send = ''
         if handler(text=text, context=state.context):
@@ -166,17 +165,17 @@ class Bot:
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания'
                     self.end_scenario(state)
-                    self.send_text(text_to_send, user_id)
+                    self.send_step(step, user_id, text_to_send, state.context)
                     return
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены'
                     self.end_scenario(state)
-                    self.send_text(text_to_send, user_id)
+                    self.send_step(step, user_id, text_to_send, state.context)
                     return
             if str(handler).find('flight') > -1:
                 if not handler(text=text, context=state.context):
-                    self.send_text(step['failure_text'], user_id)
+                    self.send_step(step, user_id, text_to_send, state.context)
                     return
             if next_step['next_step']:
                 state.step_name = step['next_step']
@@ -184,6 +183,8 @@ class Bot:
             elif next_step == steps['last_step']:
                 log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
                 text_to_send = steps['last_step']['text'].format(**state.context)
+                self.send_step(next_step, user_id, text_to_send, state.context)
+                text_to_send = ''
                 self.end_scenario(state)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
@@ -197,7 +198,7 @@ class Bot:
                 state.context.pop('search_warning')
             else:
                 text_to_send = step['failure_text']
-        self.send_text(text_to_send, user_id)
+        self.send_step(step, user_id, text_to_send, state.context)
 
     def end_scenario(self, user_id):
         self.user_states.pop(user_id)
@@ -230,7 +231,7 @@ class Bot:
                                     (self.ya_answer['segments'][i]['departure']).replace('T', ' ') + '\n'
                     get_date = self.ya_answer['segments'][i]['departure']
                     state.context['date_flight' + str(i + 1)] = get_date[8:10] + get_date[4:7] + '-' + get_date[0:4]
-                    state.context['time_flight' + str(i + 1)] = get_date[11:25]
+                    state.context['time_flight' + str(i + 1)] = get_date[11:16] + get_date[19:]
                     state.context['thread' + str(i + 1)] = self.ya_answer['segments'][i]['thread']['number']
 
                     self.flights_found += 1
