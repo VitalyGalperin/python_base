@@ -23,5 +23,6 @@ def handle_email(text, context):
     else:
         return False
 
+
 def generate_ticket_handler(text, context):
     return generate_ticket(name=context['name'], email=context['email'])

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import bot_example_15.settings as settings
+
 try:
     from bot_example_15.settings import TOKEN, GROUP_ID
 except ImportError:
@@ -24,12 +25,14 @@ def config_log():
     log.addHandler(file_handler)
     log.setLevel(logging.DEBUG)
 
+
 class UserState:
 
     def __init__(self, scenario_name, step_name, context=None):
         self.scenario_name = scenario_name
         self.step_name = step_name
         self.context = context or {}
+
 
 class Bot:
     """
@@ -99,7 +102,7 @@ class Bot:
         first_step = scenario['first_step']
         step = scenario['steps'][first_step]
         text_to_send = step['text']
-        self.user_states[user_id] =UserState(scenario_name=scenario_name, step_name=first_step)
+        self.user_states[user_id] = UserState(scenario_name=scenario_name, step_name=first_step)
         return text_to_send
 
     def continue_scenario(self, user_id, text):
@@ -112,14 +115,14 @@ class Bot:
             next_step = steps[step['next_step']]
             text_to_send = next_step['text'].format(**state.context)
             if next_step['next_step']:
-                #swith to next step
+                # swith to next step
                 state.step_name = step['next_step']
             else:
-                #finish scenario
+                # finish scenario
                 self.user_states.pop(user_id)
                 log.info('зарегистрирован: {name} {email}'.format(**state.context))
         else:
-            #retry current step
+            # retry current step
             text_to_send = step['failure_text']
 
         return text_to_send
