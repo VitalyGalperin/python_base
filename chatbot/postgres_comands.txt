@@ -1,0 +1,5 @@
+chcp 1251
+psql -U postgres -d vk_chat_bot
+
+drop table registration;
+drop table userstate;

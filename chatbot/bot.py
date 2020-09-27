@@ -90,7 +90,7 @@ class Bot:
             self.first_event = False
             return
         if user_id in self.user_states:
-            text_to_send = self.continue_scenario(user_id, text)
+            self.continue_scenario(user_id, text)
         else:
             for intent in INTENTS:
                 log.debug(f'user get {intent}')
@@ -122,7 +122,7 @@ class Bot:
             peer_id=user_id, )
 
     def send_step(self, step, user_id, text, context):
-        if 'text' in step:
+        if 'text' in step and text:
             self.send_text(text, user_id)
         if 'image' in step:
             handler = getattr(handlers, step['image'])
@@ -174,7 +174,7 @@ class Bot:
                 state.step_name = step['next_step']
                 text_to_send += next_step['text'].format(**state.context)
             elif next_step == steps['last_step']:
-                log.info('Заказ принят, с Вами свяжутся по телефону {phone}'.format(**state.context))
+                log.info('Заказ принят, с Вами свяжутся по телефону {phone} или e-mail {email}'.format(**state.context))
                 text_to_send = steps['last_step']['text'].format(**state.context)
                 self.send_step(next_step, user_id, text_to_send, state.context)
                 text_to_send = ''

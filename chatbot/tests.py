@@ -9,6 +9,8 @@ import datetime
 
 from bot import Bot
 
+from generate_ticket import generate_ticket
+
 
 class Test1(TestCase):
     RAW_EVENT = {'type': 'message_new',
@@ -18,14 +20,14 @@ class Test1(TestCase):
                  'event_id': '42aff60c0a9e7fd9f563ca8b6231b15ab8f3045c'}
 
     BOT_ANSWERS = ['Принято:\nНижний Новгород (GOJ)\n',
-                   'Принято:\nАнталья (AYT)\n',
+                   'Принято:\nМосква (MOW)\n',
                    'Невозможно найти билет на прошедшую дату',
                    'Не можем искать билет более, чем на год вперёд',
-                   '1 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
-                   '2 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
-                   '3 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
-                   '4 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n'
-                   '5 : N4 1879: Нижний Новгород — Анталья \n2020-08-31 06:20:00+03:00\n',
+                   '1 : SU 1223: Нижний Новгород — Москва \n2020-12-01 04:40:00+03:00\n'
+                   '2 : S7 1094: Нижний Новгород — Москва \n2020-12-01 10:05:00+03:00\n'
+                   '3 : SU 1221: Нижний Новгород — Москва \n2020-12-01 11:40:00+03:00\n'
+                   '4 : S7 1096: Нижний Новгород — Москва \n2020-12-01 14:55:00+03:00\n'
+                   '5 : SU 1227: Нижний Новгород — Москва \n2020-12-01 15:20:00+03:00\n',
                    ]
 
     REQUESTS_ANSWERS = requests_answers.REQUESTS_ANSWERS
@@ -46,6 +48,7 @@ class Test1(TestCase):
             with patch('bot.VkBotLongPoll', return_value=long_poller_listen_mock):
                 bot = Bot()
                 bot.on_event = Mock()
+
                 bot.run()
                 bot.on_event.assert_called()
                 bot.on_event.assert_any_call(obj)
@@ -56,10 +59,10 @@ class Test1(TestCase):
         'Хочу заказать билет',
         'GOJ',
         'в москву',
-        datetime.datetime.now().strftime("%d%m%Y"),     # '31082020',
-        (datetime.datetime.now()-datetime.timedelta(days=365)).strftime("%d-%m-%Y"),
-        (datetime.datetime.now()+datetime.timedelta(days=366)).strftime("%d-%m-%Y"),
-        (datetime.datetime.now()+datetime.timedelta(days=2)).strftime("%d-%m-%Y"),
+        datetime.datetime.now().strftime("%d%m%Y"),  # '31082020',
+        (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%d-%m-%Y"),
+        (datetime.datetime.now() + datetime.timedelta(days=366)).strftime("%d-%m-%Y"),
+        (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%d-%m-%Y"),
         '6',
         '4',
         '3',
@@ -68,6 +71,7 @@ class Test1(TestCase):
         'Гальперин',
         'vitalygl@yandex.ru',
         '+7972507678975',
+        'принято',
         'да',
     ]
 
@@ -84,9 +88,13 @@ class Test1(TestCase):
         settings.SCENARIOS['registration']['steps']['step5']['text'],
         settings.SCENARIOS['registration']['steps']['step6']['text'],
         settings.SCENARIOS['registration']['steps']['step7']['text'],
-        settings.SCENARIOS['registration']['steps']['step7']['failure_text'],
         settings.SCENARIOS['registration']['steps']['step8']['text'],
-        settings.SCENARIOS['registration']['steps']['last_step']['text'].format(phone='+972-50-77-777-77'),
+        settings.SCENARIOS['registration']['steps']['step9']['text'],
+        settings.SCENARIOS['registration']['steps']['step10']['text'],
+        settings.SCENARIOS['registration']['steps']['step11']['text'],
+        settings.SCENARIOS['registration']['steps']['step11']['failure_text'],
+        settings.SCENARIOS['registration']['steps']['last_step']['text'].format(phone='+7972507678975',
+                                                                                email='vitalygl@yandex.ru'),
     ]
 
     def test_run_ok(self):
@@ -109,7 +117,7 @@ class Test1(TestCase):
         with patch('bot.VkBotLongPoll', return_value=long_poller_mock):
             bot = Bot()
             bot.api = api_mock
-
+            bot.send_image = Mock()
             ya_rasp.request_ya_rasp = ya_request_mock
             bot.run()
 
@@ -126,6 +134,19 @@ class Test1(TestCase):
                 print(self.EXPECTED_OUTPUTS[c])
 
         assert real_outputs == self.EXPECTED_OUTPUTS
+
+    def test_image_generation(self):
+        with open("sourсes/avatar.png", "rb") as avatar_file:
+            avatar_mock = Mock()
+            avatar_mock.content = avatar_file.read()
+
+        with patch('requests.get', return_value=avatar_mock):
+            ticket_file = generate_ticket('Виталий', 'Гальперин', 'Нижний Новгород (GOJ)', '01-12-2020', '14:55+03:00',
+                                          'Москва (MOW)', 'S7 1096')
+        with open('sourсes/ticket_to_test.png', 'rb') as expected_file:
+            expected_bytes = expected_file.read()
+
+        assert ticket_file.read() == expected_bytes
 
 
 if __name__ == '__main__':

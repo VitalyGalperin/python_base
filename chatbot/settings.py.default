@@ -106,7 +106,7 @@ SCENARIOS = {
                 'next_step': 'last_step'
             },
             'last_step': {
-                'text': 'Заказ принят, с Вами свяжутся по телефону {phone} или e-mail {email}\n\nВаш билет готов',
+                'text': 'Заказ принят, с Вами свяжутся по телефону {phone} или e-mail {email}\nВаш билет готов',
                 'image': 'generate_ticket_handler',
                 'failure_text': 'Билет не заказан. \n\n',
                 'handler': None,
@@ -115,3 +115,4 @@ SCENARIOS = {
         }
     }
 }
+
