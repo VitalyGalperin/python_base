@@ -67,7 +67,7 @@ def get_city(search_str, context):
 
 def handle_date(text, context):
     match = re.match(re_date, text)
-    if match:
+    if match and len(text) == 10:
         departure_date = datetime.date(day=int(text[:2]), month=int(text[3:5]), year=int(text[6:10]))
         if departure_date < datetime.date.today():
             context['search_warning'] = 'Невозможно найти билет на прошедшую дату'

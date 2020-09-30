@@ -245,13 +245,14 @@ class Bot:
             else:
                 for i, flight in enumerate(self.ya_answer['segments']):
                     text_to_send += str(self.flights_found + 1) + ' : ' + self.ya_answer['segments'][i]['thread'][
-                        'number'] + ': ' + \
-                                    self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n' + \
-                                    (self.ya_answer['segments'][i]['departure']).replace('T', ' ') + '\n'
+                        'number'] + ': ' + self.ya_answer['segments'][i]['thread']['title'] + ' ' + '\n' + (
+                                        self.ya_answer['segments'][i]['departure']).replace('T', ' ') + '\n'
                     get_date = self.ya_answer['segments'][i]['departure']
-                    state.context['date_flight' + str(i + 1)] = get_date[8:10] + get_date[4:7] + '-' + get_date[0:4]
-                    state.context['time_flight' + str(i + 1)] = get_date[11:16] + get_date[19:]
-                    state.context['thread' + str(i + 1)] = self.ya_answer['segments'][i]['thread']['number']
+                    state.context['date_flight' + str(self.flights_found + 1)] = get_date[8:10] + \
+                                                                                 get_date[4:7] + '-' + get_date[0:4]
+                    state.context['time_flight' + str(self.flights_found + 1)] = get_date[11:16] + get_date[19:]
+                    state.context['thread' + str(self.flights_found + 1)] = \
+                        self.ya_answer['segments'][i]['thread']['number']
                     self.flights_found += 1
             date_flight += datetime.timedelta(days=1)
         state.context['flights_found'] = self.flights_found
