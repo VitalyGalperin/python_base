@@ -2,6 +2,15 @@ GROUP_ID = 194114072
 TOKEN = ''
 YA_TOKEN = ''
 YA_URL = 'https://api.rasp.yandex.net/v3.0/search/?'
+
+DB_CONFIG = dict(
+    provider='postgres',
+    user='postgres',
+    password='q',
+    host='localhost',
+    database='vk_chat_bot'
+    )
+
 SEARCH_PERIOD = 180
 FLIGHTS_DAYS = 7
 FLIGHTS_NUMBERS = 5

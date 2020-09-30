@@ -6,10 +6,19 @@ from copy import deepcopy
 import ya_rasp
 import requests_answers
 import datetime
+from pony.orm import db_session, rollback
 
 from bot import Bot
 
 from generate_ticket import generate_ticket
+
+
+def isilate_db(test_func):
+    def wrapper(*args, ** kwargs):
+        with db_session:
+            test_func(*args, ** kwargs)
+            rollback()
+    return wrapper
 
 
 class Test1(TestCase):
@@ -59,7 +68,7 @@ class Test1(TestCase):
         'Хочу заказать билет',
         'GOJ',
         'в москву',
-        datetime.datetime.now().strftime("%d%m%Y"),  # '31082020',
+        datetime.datetime.now().strftime("%d%m%Y"),
         (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%d-%m-%Y"),
         (datetime.datetime.now() + datetime.timedelta(days=366)).strftime("%d-%m-%Y"),
         (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%d-%m-%Y"),
@@ -97,6 +106,7 @@ class Test1(TestCase):
                                                                                 email='vitalygl@yandex.ru'),
     ]
 
+    @isilate_db
     def test_run_ok(self):
         send_mock = Mock()
         api_mock = Mock()
@@ -130,8 +140,8 @@ class Test1(TestCase):
 
         for c, i in enumerate(real_outputs):
             if real_outputs[c] != self.EXPECTED_OUTPUTS[c]:
-                print(real_outputs[c])
-                print(self.EXPECTED_OUTPUTS[c])
+                print(real_outputs[c], ' real')
+                print(self.EXPECTED_OUTPUTS[c], ' expected')
 
         assert real_outputs == self.EXPECTED_OUTPUTS
 

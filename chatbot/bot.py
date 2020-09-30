@@ -9,6 +9,8 @@ import requests
 import settings
 import ya_rasp
 import handlers
+from pony.orm import db_session
+from models import UserState, Registration
 
 try:
     from settings import TOKEN, GROUP_ID, YA_TOKEN, YA_URL, HELLO_MESSAGE, DEFAULT_ANSWER, INTENTS, SCENARIOS, \
@@ -26,13 +28,6 @@ def config_log():
     log.addHandler(handler)
     log.addHandler(file_handler)
     log.setLevel(logging.DEBUG)
-
-
-class UserState:
-    def __init__(self, scenario_name, step_name, context=None):
-        self.scenario_name = scenario_name
-        self.step_name = step_name
-        self.context = context or {}
 
 
 class Bot:
@@ -74,6 +69,7 @@ class Bot:
         with open(cities_file, "r", encoding="utf-8") as read_file:
             self.cities_json = json.load(read_file)
 
+    @db_session
     def on_event(self, event):
         """
         Обработка события:
@@ -85,12 +81,14 @@ class Bot:
             return
         user_id = event.object.peer_id
         text = event.object.text
+        state = UserState.get(user_id=str(user_id))
+
         if self.first_event:
             self.send_text(HELLO_MESSAGE, user_id)
             self.first_event = False
             return
-        if user_id in self.user_states:
-            self.continue_scenario(user_id, text)
+        if state is not None:
+            self.continue_scenario(text, state, user_id)
         else:
             for intent in INTENTS:
                 log.debug(f'user get {intent}')
@@ -137,11 +135,10 @@ class Bot:
         self.send_step(step, user_id, text_to_send, context={})
         self.flights_found = 0
         self.request_error = False
-        self.user_states[user_id] = UserState(scenario_name=scenario_name, step_name=first_step)
-        return text_to_send
+        UserState(user_id=str(user_id), scenario_name=scenario_name, step_name=first_step,
+                  context=self.get_empty_context())
 
-    def continue_scenario(self, user_id, text):
-        state = self.user_states[user_id]
+    def continue_scenario(self, text, state, user_id):
         state.context['cities_json'] = self.cities_json
         steps = SCENARIOS[state.scenario_name]['steps']
         step = steps[state.step_name]
@@ -153,18 +150,18 @@ class Bot:
                 text_to_send = state.context['city_message']
                 state.context.pop('city_message')
             if state.context.get('date') and not state.context.get('flight_to_print'):
-                text_to_send = self.get_flights(state, user_id)
+                text_to_send = self.get_flights(state)
                 if self.request_error:
                     log.error('Ошибка запроса Яндекс-Расписания')
                     text_to_send = 'Ошибка запроса Яндекс-Расписания'
-                    self.end_scenario(state)
                     self.send_step(step, user_id, text_to_send, state.context)
+                    self.end_scenario(state)
                     return
                 if self.flights_found < 1:
                     log.info('Рейсы не найдены')
                     text_to_send = 'Рейсы не найдены'
-                    self.end_scenario(state)
                     self.send_step(step, user_id, text_to_send, state.context)
+                    self.end_scenario(state)
                     return
             if str(handler).find('flight') > -1:
                 if not handler(text=text, context=state.context):
@@ -178,12 +175,12 @@ class Bot:
                 text_to_send = steps['last_step']['text'].format(**state.context)
                 self.send_step(next_step, user_id, text_to_send, state.context)
                 text_to_send = ''
-                self.end_scenario(user_id)
+                self.end_scenario(state)
         else:
             if str(handler).find('confirm') > -1 and text.lower().find('no') > -1 or text.lower().find('нет') > -1:
                 log.info('Заказ не подтверждён')
                 text_to_send = 'Заказ не подтверждён\n\n'
-                self.end_scenario(user_id)
+                self.end_scenario(state)
                 return text_to_send
             # retry current step
             if state.context.get('search_warning'):
@@ -193,11 +190,40 @@ class Bot:
                 text_to_send = step['failure_text']
         self.send_step(step, user_id, text_to_send, state.context)
 
-    def end_scenario(self, user_id):
-        self.user_states.pop(user_id)
+    def end_scenario(self, state):
+        if self.check_state(state):
+            Registration(departure_city_to_print=state.context['departure_city_to_print'],
+                         arrival_city_to_print=state.context['arrival_city_to_print'],
+                         departure_date=state.context['date_flight_to_print'],
+                         departure_time=state.context['time_flight_to_print'],
+                         first_name=state.context['first_name'],
+                         last_name=state.context['last_name'],
+                         phone=state.context['phone'],
+                         flight=state.context['flight_to_print'],
+                         email=state.context['email'],
+                         number_of_seats=state.context['seats'],
+                         comment=state.context['comment'])
+        state.delete()
         self.first_event = True
 
-    def get_flights(self, state, user_id):
+    @staticmethod
+    def check_state(state):
+        if state.context['first_name'] == '' or state.context['last_name'] == '' or \
+                state.context['departure_city_to_print'] == '' or state.context['date_flight_to_print'] == '' or \
+                state.context['time_flight_to_print'] == '' or state.context['arrival_city_to_print'] == '' or \
+                state.context['phone'] == '' or state.context['flight_to_print'] == '' or \
+                state.context['email'] == '' or state.context['first_name'] == '':
+            return False
+        else:
+            return True
+
+    def get_empty_context(self):
+        context = {'first_name': '', 'last_name': '', 'departure_city_to_print': '', 'date_flight_to_print': '',
+                   'time_flight_to_print': '', 'arrival_city_to_print': '', 'phone': '', 'flight_to_print': '',
+                   'email': ''}
+        return context
+
+    def get_flights(self, state):
         self.flights_found = 0
         text_to_send = ''
         request = None

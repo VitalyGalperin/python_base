@@ -15,8 +15,8 @@ class UserState(db.Entity):
 
 class Registration(db.Entity):
     """Заявка на регистрацию"""
-    departure_city = Required(str)
-    arrival_city = Required(str)
+    departure_city_to_print = Required(str)
+    arrival_city_to_print = Required(str)
     departure_date = Required(str)
     departure_time = Required(str)
     first_name = Required(str)
@@ -24,6 +24,8 @@ class Registration(db.Entity):
     email = Required(str)
     phone = Required(str)
     flight = Required(str)
+    number_of_seats = Required(str)
+    comment = Required(str)
 
 
 db.generate_mapping(create_tables=True)
