@@ -14,9 +14,9 @@ from generate_ticket import generate_ticket
 
 
 def isilate_db(test_func):
-    def wrapper(*args, ** kwargs):
+    def wrapper(*args, **kwargs):
         with db_session:
-            test_func(*args, ** kwargs)
+            test_func(*args, **kwargs)
             rollback()
     return wrapper
 
