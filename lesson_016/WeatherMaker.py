@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from geopy import GoogleV3
+# from geopy import Nominatim
 import bs4
 import requests
 import re
@@ -10,7 +10,6 @@ class WeatherMaker:
 
     def __init__(self):
         self.weather_dict = {}
-
 
     def darksky_parsing(self, location, date):
 
@@ -58,9 +57,11 @@ class WeatherMaker:
         if cloudiness_values:
             cloudiness = max(list(cloudiness_values), key=lambda x: cloudiness_values.count(x))
 
-        self.weather_dict = {'MaxTemp': max(temperature_values), 'MinTemp': min(temperature_values), 'pressures': pressures,
-                        'humidity': humidity, 'wind_speed': wind_speed, 'cloud_cover': cloud_cover, 'cloudiness': cloudiness,
-                        'precipitation': precipitation, 'precipitation_hours': precipitation_hours}
+        self.weather_dict = {'MaxTemp': max(temperature_values), 'MinTemp': min(temperature_values),
+                             'pressures': pressures,
+                             'humidity': humidity, 'wind_speed': wind_speed, 'cloud_cover': cloud_cover,
+                             'cloudiness': cloudiness,
+                             'precipitation': precipitation, 'precipitation_hours': precipitation_hours}
         return self.weather_dict
 
 
@@ -68,8 +69,5 @@ if __name__ == "__main__":
     weather = WeatherMaker()
     nn_weather = weather.darksky_parsing('56.3268,44.0058', '2019-11-14')  # NN
     # weather.darksky_parsing('29.5563,34.9525', '2020-10-5')   # Eilat
-
-    a = 1
-
 
 
