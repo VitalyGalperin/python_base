@@ -1,9 +1,12 @@
 import os
 import cv2
 
+FONT_COLOR = (20, 20, 0)
+
 
 class ImageMaker:
-    def __init__(self, recipient_file='card.jpg', source_file='blank.jpg', image_dir='image_data'):
+    def __init__(self, weather_dict, recipient_file='card.jpg', source_file='blank.jpg', image_dir='image_data'):
+        self.weather_dict = weather_dict
         self.image_dir = image_dir
         self.source_file = source_file
         self.recipient_file = recipient_file
@@ -40,11 +43,15 @@ class ImageMaker:
             #          color=(255, 255, 255 - i),
             #          thickness=int(image_size[0] / 255)) #cyan
 
-        cv2.putText(self.image, "Здрасте", (20, 20), cv2.FONT_HERSHEY_COMPLEX, 1, color, 2)
+        cv2.putText(self.image, self.weather_dict['location_name'], (20, 30), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['coordinates'], (20, 50), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['date'], (340, 30), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['max_temp'], (150, 130), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['min_temp'], (60, 130), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
         # cv2.imshow("Image", self.image)
         # cv2.waitKey(0)
         cv2.imwrite(self.recipient_path, self.image)
 
 
-image = ImageMaker()
-image.run()
+# image = ImageMaker()
+# image.run()

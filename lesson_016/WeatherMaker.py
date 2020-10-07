@@ -1,18 +1,43 @@
 # -*- coding: utf-8 -*-
 
-# from geopy import Nominatim
+from geopy.geocoders import OpenMapQuest
 import bs4
 import requests
 import re
 
+OpenMapQuest_API_KEY = 'kvDuJJUTE50Ax5XG8mxbCVDGnQqHFdvL'
+
 
 class WeatherMaker:
 
-    def __init__(self):
-        self.weather_dict = {}
+    def __init__(self, location, date):
+        self.location_name = location
+        self.coordinates = ''
+        self.date = date
 
-    def darksky_parsing(self, location, date):
+    def run(self):
+        if self.get_coordinates():
+            return self.dark_sky_parsing()
+        else:
+            return False
 
+    def get_coordinates(self):
+        try:
+            location_request = OpenMapQuest(api_key=OpenMapQuest_API_KEY).geocode(self.location_name)
+        except Exception:
+            print('Ошибка запроса места')
+            return False
+        if not location_request:
+            print('Такое место не найдено')
+            return False
+
+        location_latitude = str(round(location_request.latitude, 4))
+        location_longitude = str(round(location_request.longitude, 4))
+        self.coordinates = location_latitude + ',' + location_longitude
+        return True
+
+    def dark_sky_parsing(self):
+        weather_dict = {}
         re_pressure = r'"pressure":(\d+\.\d)'
         re_cloud_cover = r'"cloudCover":(\d+\.\d)'
         re_temperature = r'"temperature":(-?\d+\.\d+)'
@@ -21,11 +46,13 @@ class WeatherMaker:
         re_cloudiness = r'"summary":"([A-Za-z ]+)"'
         re_precipitation = r'"precipType":"([A-Za-z ]+)"'
 
-        response = requests.get(f'https://darksky.net/details/{location}/{date}/ca12/en').text
+        try:
+            response = requests.get(f'https://darksky.net/details/{self.coordinates}/{self.date}/ca12/en').text
+        except Exception:
+            print('Ошибка запроса прогноза погоды')
+            return False
 
         soup = bs4.BeautifulSoup(response, 'html.parser')
-
-        spans = soup.find_all('span')
         scripts = soup.find_all('script')
 
         pressures_values = re.findall(re_pressure, str(scripts[1]))
@@ -57,17 +84,13 @@ class WeatherMaker:
         if cloudiness_values:
             cloudiness = max(list(cloudiness_values), key=lambda x: cloudiness_values.count(x))
 
-        self.weather_dict = {'MaxTemp': max(temperature_values), 'MinTemp': min(temperature_values),
-                             'pressures': pressures,
-                             'humidity': humidity, 'wind_speed': wind_speed, 'cloud_cover': cloud_cover,
-                             'cloudiness': cloudiness,
-                             'precipitation': precipitation, 'precipitation_hours': precipitation_hours}
-        return self.weather_dict
+        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
+                        'max_temp': str(max(temperature_values)), 'min_temp': str(min(temperature_values)),
+                        'pressures': pressures, 'cloudiness': cloudiness,
+                        'humidity': humidity, 'wind_speed': wind_speed, 'cloud_cover': cloud_cover,
+                        'precipitation': precipitation, 'precipitation_hours': precipitation_hours}
+        return weather_dict
 
-
-if __name__ == "__main__":
-    weather = WeatherMaker()
-    nn_weather = weather.darksky_parsing('56.3268,44.0058', '2019-11-14')  # NN
-    # weather.darksky_parsing('29.5563,34.9525', '2020-10-5')   # Eilat
-
-
+# if __name__ == "__main__":
+#     weather = WeatherMaker('Нижний Новгород', '2020-10-5')
+#     weather.run()
