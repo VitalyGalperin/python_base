@@ -25,7 +25,7 @@ class ImageMaker:
         self.image = cv2.imread(self.source_path)
         color = (255, 255, 0)
         image_size = self.image.shape
-        line_step = int(image_size[0]/255)
+        line_step = int(image_size[0] / 255)
         for i in range(0, 256):
             # cv2.line(self.image, pt1=(0, i * line_step), pt2=(image_size[1], i * line_step),
             #          color=(255-i/2, 255-i/2, 255-i/2),
@@ -33,7 +33,7 @@ class ImageMaker:
 
             cv2.line(self.image, pt1=(0, i * line_step), pt2=(image_size[1], i * line_step),
                      color=(255, 255 - i, 255 - i),
-                     thickness=int(image_size[0] / 255)) #blue
+                     thickness=int(image_size[0] / 255))  # blue
 
             # cv2.line(self.image, pt1=(0, i * line_step), pt2=(image_size[1], i * line_step),
             #          color=(255 - i, 255, 255),
@@ -43,15 +43,18 @@ class ImageMaker:
             #          color=(255, 255, 255 - i),
             #          thickness=int(image_size[0] / 255)) #cyan
 
-        cv2.putText(self.image, self.weather_dict['location_name'], (20, 30), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['coordinates'], (20, 50), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['date'], (340, 30), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['max_temp'], (150, 130), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['min_temp'], (60, 130), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['location_name'], (20, 30), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR,
+                    2)
+        cv2.putText(self.image, self.weather_dict['coordinates'], (20, 50), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR,
+                    2)
+        cv2.putText(self.image, 'Дата: ' + self.weather_dict['date'], (20, 100), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+                    FONT_COLOR, 2)
+        cv2.putText(self.image, 'Температура: ', (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['max_temp'], (20, 180), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['min_temp'], (100, 180), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
         # cv2.imshow("Image", self.image)
         # cv2.waitKey(0)
         cv2.imwrite(self.recipient_path, self.image)
-
 
 # image = ImageMaker()
 # image.run()

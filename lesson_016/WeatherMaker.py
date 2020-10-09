@@ -84,11 +84,21 @@ class WeatherMaker:
         if cloudiness_values:
             cloudiness = max(list(cloudiness_values), key=lambda x: cloudiness_values.count(x))
 
+        if max(temperature_values) > 0:
+            max_temperature = '+' + str(max(temperature_values))
+        else:
+            max_temperature = str(max(temperature_values))
+
+        if min(temperature_values) > 0:
+            min_temperature = '+' + str(min(temperature_values))
+        else:
+            min_temperature = str(min(temperature_values))
+
         weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
-                        'max_temp': str(max(temperature_values)), 'min_temp': str(min(temperature_values)),
-                        'pressures': pressures, 'cloudiness': cloudiness,
-                        'humidity': humidity, 'wind_speed': wind_speed, 'cloud_cover': cloud_cover,
-                        'precipitation': precipitation, 'precipitation_hours': precipitation_hours}
+                        'max_temp': max_temperature, 'min_temp': min_temperature, 'pressures': pressures,
+                        'cloudiness': cloudiness, 'humidity': humidity, 'wind_speed': wind_speed,
+                        'cloud_cover': cloud_cover, 'precipitation': precipitation,
+                        'precipitation_hours': precipitation_hours}
         return weather_dict
 
 # if __name__ == "__main__":
