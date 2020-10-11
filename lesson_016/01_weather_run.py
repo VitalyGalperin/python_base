@@ -11,7 +11,8 @@ class WeatherHandler:
 
 
 if __name__ == "__main__":
-    weather = WeatherMaker('Нижний Новгород', '2020-1-5')
+    # weather = WeatherMaker('Нижний Новгород', '2020-1-15')
+    weather = WeatherMaker('Эйлат', '2020-11-10')
     weather_dict = weather.run()
     image = ImageMaker(weather_dict)
     image.run()

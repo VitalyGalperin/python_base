@@ -71,18 +71,18 @@ class WeatherMaker:
         pressures = humidity = wind_speed = cloud_cover = precipitation = cloudiness = precipitation_hours = ''
 
         if pressures_values:
-            pressures = round(sum(pressures_values) / len(pressures_values), 1)
+            pressures = str(round(sum(pressures_values) / len(pressures_values), 1))
         if humidity_values:
-            humidity = round(sum(humidity_values) / len(humidity_values), 2)
+            humidity = str(round(sum(humidity_values) / len(humidity_values), 2))
         if wind_speed_values:
-            wind_speed = round(sum(wind_speed_values) / len(wind_speed_values), 2)
+            wind_speed = str(round(sum(wind_speed_values) / len(wind_speed_values), 2))
         if cloud_cover_values:
-            cloud_cover = round(sum(cloud_cover_values) / len(cloud_cover_values), 1)
+            cloud_cover = str(round(sum(cloud_cover_values) / len(cloud_cover_values), 1))
         if precipitation_values:
             precipitation = max(list(precipitation_values), key=lambda x: precipitation_values.count(x))
             precipitation_hours = len(precipitation_values)
         if cloudiness_values:
-            cloudiness = max(list(cloudiness_values), key=lambda x: cloudiness_values.count(x))
+            cloudiness = str(max(list(cloudiness_values), key=lambda x: cloudiness_values.count(x)))
 
         if max(temperature_values) > 0:
             max_temperature = '+' + str(max(temperature_values))
@@ -93,6 +93,9 @@ class WeatherMaker:
             min_temperature = '+' + str(min(temperature_values))
         else:
             min_temperature = str(min(temperature_values))
+
+        year, month, day = self.date.split('-')
+        self.date = day + '/' + month + '/' + year
 
         weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
                         'max_temp': max_temperature, 'min_temp': min_temperature, 'pressures': pressures,

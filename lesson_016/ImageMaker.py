@@ -10,7 +10,7 @@ class ImageMaker:
         self.image_dir = image_dir
         self.source_file = source_file
         self.recipient_file = recipient_file
-        self.source_path = self.recipient_path = ''
+        self.source_full_path = self.recipient_full_path = ''
         self.image = None
 
     def run(self):
@@ -18,14 +18,16 @@ class ImageMaker:
         self.card_maker()
 
     def path_maker(self):
-        self.source_path = os.path.join(os.getcwd(), self.image_dir, self.source_file)
-        self.recipient_path = os.path.join(os.getcwd(), self.image_dir, self.recipient_file)
+        self.source_full_path = os.path.join(os.getcwd(), self.image_dir, self.source_file)
+        self.recipient_full_path = os.path.join(os.getcwd(), self.image_dir, self.recipient_file)
 
     def card_maker(self):
-        self.image = cv2.imread(self.source_path)
-        color = (255, 255, 0)
+        self.image = cv2.imread(self.source_full_path)
+        if self.image is None:
+            return False
         image_size = self.image.shape
         line_step = int(image_size[0] / 255)
+
         for i in range(0, 256):
             # cv2.line(self.image, pt1=(0, i * line_step), pt2=(image_size[1], i * line_step),
             #          color=(255-i/2, 255-i/2, 255-i/2),
@@ -43,18 +45,32 @@ class ImageMaker:
             #          color=(255, 255, 255 - i),
             #          thickness=int(image_size[0] / 255)) #cyan
 
+        icon_image = cv2.imread(os.path.join(os.getcwd(), self.image_dir, 'sun.jpg'))
+        icon_size = icon_image.shape
+        self.image[0:icon_size[0], 400: 400 + icon_size[1]] = icon_image
+
+        # cv2.imshow("Image", self.image)
+        # cv2.waitKey(0)
+
         cv2.putText(self.image, self.weather_dict['location_name'], (20, 30), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR,
                     2)
         cv2.putText(self.image, self.weather_dict['coordinates'], (20, 50), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR,
                     2)
-        cv2.putText(self.image, 'Дата: ' + self.weather_dict['date'], (20, 100), cv2.FONT_HERSHEY_COMPLEX, 0.8,
+        cv2.putText(self.image, 'Дата: ' + self.weather_dict['date'], (20, 80), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                     FONT_COLOR, 2)
-        cv2.putText(self.image, 'Температура: ', (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['max_temp'], (20, 180), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['min_temp'], (100, 180), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        # cv2.imshow("Image", self.image)
-        # cv2.waitKey(0)
-        cv2.imwrite(self.recipient_path, self.image)
+        cv2.putText(self.image, 'Температура: ', (20, 120), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['max_temp'], (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['min_temp'], (100, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, 'Давление: ', (20, 190), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['pressures'], (180, 190), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, 'Влажность: ', (20, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['humidity'], (180, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, ' : ', (20, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, 'Ветер: ', (260, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, 'км/ч', (270, 244), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['wind_speed'], (380, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+
+        cv2.imwrite(self.recipient_full_path, self.image)
 
 # image = ImageMaker()
 # image.run()
