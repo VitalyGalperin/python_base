@@ -59,16 +59,16 @@ class ImageMaker:
         cv2.putText(self.image, 'Дата: ' + self.weather_dict['date'], (20, 80), cv2.FONT_HERSHEY_COMPLEX, 0.8,
                     FONT_COLOR, 2)
         cv2.putText(self.image, 'Температура: ', (20, 120), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['max_temp'], (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['min_temp'], (100, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['min_temp'], (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['max_temp'], (115, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
         cv2.putText(self.image, 'Давление: ', (20, 190), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
         cv2.putText(self.image, self.weather_dict['pressures'], (180, 190), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
         cv2.putText(self.image, 'Влажность: ', (20, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['humidity'], (180, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['humidity'], (190, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
         cv2.putText(self.image, ' : ', (20, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
-        cv2.putText(self.image, 'Ветер: ', (260, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
-        cv2.putText(self.image, 'км/ч', (270, 244), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR, 2)
-        cv2.putText(self.image, self.weather_dict['wind_speed'], (380, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, 'Ветер: ', (290, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
+        cv2.putText(self.image, 'км/ч', (300, 244), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR, 2)
+        cv2.putText(self.image, self.weather_dict['wind_speed'], (390, 230), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
 
         cv2.imwrite(self.recipient_full_path, self.image)
 

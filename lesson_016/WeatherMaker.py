@@ -37,7 +37,6 @@ class WeatherMaker:
         return True
 
     def dark_sky_parsing(self):
-        weather_dict = {}
         re_pressure = r'"pressure":(\d+\.\d)'
         re_cloud_cover = r'"cloudCover":(\d+\.\d)'
         re_temperature = r'"temperature":(-?\d+\.\d+)'
