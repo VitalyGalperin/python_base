@@ -4,6 +4,7 @@ from geopy.geocoders import OpenMapQuest
 import bs4
 import requests
 import re
+import datetime
 
 OpenMapQuest_API_KEY = 'kvDuJJUTE50Ax5XG8mxbCVDGnQqHFdvL'
 
@@ -44,9 +45,10 @@ class WeatherMaker:
         re_wind_speed = r'"windSpeed":(\d+\.\d+)'
         re_cloudiness = r'"summary":"([A-Za-z ]+)"'
         re_precipitation = r'"precipType":"([A-Za-z ]+)"'
+        requests_date = self.date.strftime("%Y-%m-%d")
 
         try:
-            response = requests.get(f'https://darksky.net/details/{self.coordinates}/{self.date}/ca12/en').text
+            response = requests.get(f'https://darksky.net/details/{self.coordinates}/{requests_date}/ca12/en').text
         except Exception:
             print('Ошибка запроса прогноза погоды')
             return False
@@ -93,10 +95,9 @@ class WeatherMaker:
         else:
             min_temperature = str(min(temperature_values))
 
-        year, month, day = self.date.split('-')
-        self.date = day + '/' + month + '/' + year
+        print_date = self.date.strftime("%d/%m/%Y")
 
-        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
+        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': print_date,
                         'max_temp': max_temperature, 'min_temp': min_temperature, 'pressures': pressures,
                         'cloudiness': cloudiness, 'humidity': humidity, 'wind_speed': wind_speed,
                         'cloud_cover': cloud_cover, 'precipitation': precipitation,
