@@ -14,14 +14,14 @@ class ImageMaker:
         self.image = None
 
     def run(self):
-        self.path_maker()
-        self.card_maker()
+        self.path_create()
+        self.card_create()
 
-    def path_maker(self):
+    def path_create(self):
         self.source_full_path = os.path.join(os.getcwd(), self.image_dir, self.source_file)
         self.recipient_full_path = os.path.join(os.getcwd(), self.image_dir, self.recipient_file)
 
-    def card_maker(self):
+    def card_create(self):
         self.image = cv2.imread(self.source_full_path)
         if self.image is None:
             return False
@@ -51,13 +51,13 @@ class ImageMaker:
 
         # cv2.imshow("Image", self.image)
         # cv2.waitKey(0)
+        print_date = self.weather_dict['date'].strftime("%d/%m/%Y")
 
         cv2.putText(self.image, self.weather_dict['location_name'], (20, 30), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR,
                     2)
         cv2.putText(self.image, self.weather_dict['coordinates'], (20, 50), cv2.FONT_HERSHEY_COMPLEX, 0.5, FONT_COLOR,
                     2)
-        cv2.putText(self.image, 'Дата: ' + self.weather_dict['date'], (20, 80), cv2.FONT_HERSHEY_COMPLEX, 0.8,
-                    FONT_COLOR, 2)
+        cv2.putText(self.image, 'Дата: ' + print_date, (20, 80), cv2.FONT_HERSHEY_COMPLEX, 0.8, FONT_COLOR, 2)
         cv2.putText(self.image, 'Температура: ', (20, 120), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
         cv2.putText(self.image, self.weather_dict['min_temp'], (20, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)
         cv2.putText(self.image, self.weather_dict['max_temp'], (115, 150), cv2.FONT_HERSHEY_COMPLEX, 0.9, FONT_COLOR, 2)

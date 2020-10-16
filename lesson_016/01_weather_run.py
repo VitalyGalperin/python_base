@@ -10,8 +10,8 @@ re_date = re.compile(
 
 
 class WeatherHandler:
-    def __init__(self, location, start_date, final_date=None, is_write_db=False, is_read_db=False, is_card=True,
-                 is_console=False):
+    def __init__(self, location, start_date, final_date=None, is_write_db=False, is_read_db=False,
+                 is_card=True, is_console=False):
         self.location = location
         self.start_date = start_date
         self.is_card = is_card
@@ -23,14 +23,20 @@ class WeatherHandler:
     def run(self):
         if not self.get_dates():
             return False
-        weather_dict = WeatherMaker(self.location, self.start_date).run()
-        if not weather_dict:
-            return False
+        weather_dict = {}
+        db = DatabaseUpdater()
+        for day in range((self.final_date - self.start_date).days + 1):
+            if self.is_read_db:
+                weather_dict = db.select_row(self.location, self.start_date + datetime.timedelta(days=day))
+            if not weather_dict:
+                weather_dict = WeatherMaker(self.location, self.start_date + datetime.timedelta(days=day)).run()
+            if not weather_dict:
+                return False
+            if self.is_write_db:
+                db.insert_row(weather_dict)
         if self.is_card:
             ImageMaker(weather_dict).run()
-        if self.is_write_db:
-            a = DatabaseUpdater()
-            a.insert_row(weather_dict)
+        # db.delete_all_data()
         return True
 
     def get_dates(self):
@@ -58,5 +64,9 @@ class WeatherHandler:
 
 
 if __name__ == "__main__":
-    WeatherHandler('Нижний Новгород', '01-10-2020').run()
-    WeatherHandler('Эйлат', '01-10-2020', is_write_db=True, is_card=False).run()
+    # WeatherHandler('Нижний Новгород', '01-10-2020').run()
+    # WeatherHandler('Нижний Новгород', '01-10-2020', is_write_db=True).run()
+    # WeatherHandler('Эйлат', '02-10-2020', is_write_db=True, is_card=False).run()
+    WeatherHandler('Эйлат', '02-10-2020', is_write_db=False, is_read_db=True, is_card=True).run()
+    # WeatherHandler('Эйлат', '02-10-2020', '05-10-2020', is_write_db=True).run()
+    # WeatherHandler('Эйлат', '02-10-2020', '05-10-2020', is_write_db=True, is_card=False).run()

@@ -95,9 +95,7 @@ class WeatherMaker:
         else:
             min_temperature = str(min(temperature_values))
 
-        print_date = self.date.strftime("%d/%m/%Y")
-
-        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': print_date,
+        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
                         'max_temp': max_temperature, 'min_temp': min_temperature, 'pressures': pressures,
                         'cloudiness': cloudiness, 'humidity': humidity, 'wind_speed': wind_speed,
                         'cloud_cover': cloud_cover, 'precipitation': precipitation,
