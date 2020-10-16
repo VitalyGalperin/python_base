@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import sqlite3
+# import sqlite3
 import peewee
+# import os
+from playhouse.db_url import connect
 
 database = peewee.SqliteDatabase("database/weather.db")
 
@@ -19,21 +21,22 @@ class Weather(BaseTable):
     min_temp = peewee.CharField()
     pressures = peewee.CharField()
     cloudiness = peewee.CharField()
-    cloud_cover = peewee.CharField()
-    precipitation = peewee.CharField()
     humidity = peewee.CharField()
     wind_speed = peewee.CharField()
-    precipitation_hours = peewee.CharField()
 
 
 class DatabaseUpdater:
-    def __init__(self):
+    def __init__(self, db_url):
         self.connection = None
-        database.create_tables([Weather])
+        self.db_url = db_url
+
+    def run(self):
         try:
-            self.connection = sqlite3.connect("database/weather.db")
+            self.connection = connect(self.db_url)
+            # self.connection = sqlite3.connect()
         except Exception:
             print('Ошибка открытия базы данных')
+        database.create_tables([Weather])
 
     def select_row(self, location, date):
         try:
@@ -48,18 +51,16 @@ class DatabaseUpdater:
         return weather_dict
 
     def insert_row(self, weather_dict):
-        Weather.create(location_name=weather_dict['location_name'],
-                       coordinates=weather_dict['coordinates'],
-                       date=weather_dict['date'],
-                       max_temp=weather_dict['max_temp'],
-                       min_temp=weather_dict['min_temp'],
-                       pressures=weather_dict['pressures'],
-                       cloudiness=weather_dict['cloudiness'],
-                       cloud_cover=weather_dict['cloud_cover'],
-                       precipitation=weather_dict['precipitation'],
-                       humidity=weather_dict['humidity'],
-                       wind_speed=weather_dict['wind_speed'],
-                       precipitation_hours=weather_dict['precipitation_hours'])
+        if not self.select_row(weather_dict['location_name'], weather_dict['date']):
+            Weather.create(location_name=weather_dict['location_name'],
+                           coordinates=weather_dict['coordinates'],
+                           date=weather_dict['date'],
+                           max_temp=weather_dict['max_temp'],
+                           min_temp=weather_dict['min_temp'],
+                           pressures=weather_dict['pressures'],
+                           cloudiness=weather_dict['cloudiness'],
+                           humidity=weather_dict['humidity'],
+                           wind_speed=weather_dict['wind_speed'])
 
     def delete_all_data(self):
         Weather.delete().execute()

@@ -1,17 +1,15 @@
 from WeatherMaker import WeatherMaker
 from DatabaseUpdater import DatabaseUpdater
 from ImageMaker import ImageMaker
+from set import DB_URL, re_date
 
 import datetime
 import re
 
-re_date = re.compile(
-    r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
-
 
 class WeatherHandler:
     def __init__(self, location, start_date, final_date=None, is_write_db=False, is_read_db=False,
-                 is_card=True, is_console=False):
+                 is_card=True, is_console=False, db_url=DB_URL):
         self.location = location
         self.start_date = start_date
         self.is_card = is_card
@@ -19,24 +17,27 @@ class WeatherHandler:
         self.is_read_db = is_read_db
         self.is_console = is_console
         self.final_date = final_date
+        self.db_url = db_url
+        self.weather_dict = None
 
     def run(self):
         if not self.get_dates():
             return False
-        weather_dict = {}
-        db = DatabaseUpdater()
+        db = DatabaseUpdater(db_url=self.db_url)
+        db.run()
+        db.delete_all_data()
         for day in range((self.final_date - self.start_date).days + 1):
+            self.weather_dict = None
             if self.is_read_db:
-                weather_dict = db.select_row(self.location, self.start_date + datetime.timedelta(days=day))
-            if not weather_dict:
-                weather_dict = WeatherMaker(self.location, self.start_date + datetime.timedelta(days=day)).run()
-            if not weather_dict:
+                self.weather_dict = db.select_row(self.location, self.start_date + datetime.timedelta(days=day))
+            if not self.weather_dict:
+                self.weather_dict = WeatherMaker(self.location, self.start_date + datetime.timedelta(days=day)).run()
+            if not self.weather_dict:
                 return False
             if self.is_write_db:
-                db.insert_row(weather_dict)
+                db.insert_row(self.weather_dict)
         if self.is_card:
-            ImageMaker(weather_dict).run()
-        # db.delete_all_data()
+            ImageMaker(self.weather_dict).run()
         return True
 
     def get_dates(self):
@@ -67,6 +68,7 @@ if __name__ == "__main__":
     # WeatherHandler('Нижний Новгород', '01-10-2020').run()
     # WeatherHandler('Нижний Новгород', '01-10-2020', is_write_db=True).run()
     # WeatherHandler('Эйлат', '02-10-2020', is_write_db=True, is_card=False).run()
-    WeatherHandler('Эйлат', '02-10-2020', is_write_db=False, is_read_db=True, is_card=True).run()
+    # WeatherHandler('Эйлат', '02-10-2020', is_write_db=False, is_read_db=True, is_card=True).run()
     # WeatherHandler('Эйлат', '02-10-2020', '05-10-2020', is_write_db=True).run()
-    # WeatherHandler('Эйлат', '02-10-2020', '05-10-2020', is_write_db=True, is_card=False).run()
+    # WeatherHandler('Эйлат', '15-10-2020', '17-10-2020', is_write_db=True, is_card=False).run()
+    WeatherHandler('Нижний Новгород', '01-10-2020', '03-10-2020', is_write_db=True, is_card=True).run()
