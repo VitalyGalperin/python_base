@@ -6,7 +6,7 @@ import peewee
 from playhouse.db_url import connect
 
 database = peewee.SqliteDatabase("database/weather.db")
-
+# database_proxy = DatabaseProxy()
 
 class BaseTable(peewee.Model):
     class Meta:
@@ -21,19 +21,23 @@ class Weather(BaseTable):
     min_temp = peewee.CharField()
     pressures = peewee.CharField()
     cloudiness = peewee.CharField()
+    cloud_cover = peewee.CharField()
+    precipitation = peewee.CharField()
     humidity = peewee.CharField()
     wind_speed = peewee.CharField()
+    precipitation_hours = peewee.CharField()
 
 
 class DatabaseUpdater:
     def __init__(self, db_url):
         self.connection = None
         self.db_url = db_url
+        self.proxy = peewee.DatabaseProxy()
 
     def run(self):
         try:
             self.connection = connect(self.db_url)
-            # self.connection = sqlite3.connect()
+            self.proxy.initialize(self.connection)
         except Exception:
             print('Ошибка открытия базы данных')
         database.create_tables([Weather])
@@ -59,8 +63,11 @@ class DatabaseUpdater:
                            min_temp=weather_dict['min_temp'],
                            pressures=weather_dict['pressures'],
                            cloudiness=weather_dict['cloudiness'],
+                           cloud_cover=weather_dict['cloud_cover'],
+                           precipitation=weather_dict['precipitation'],
                            humidity=weather_dict['humidity'],
-                           wind_speed=weather_dict['wind_speed'])
+                           wind_speed=weather_dict['wind_speed'],
+                           precipitation_hours=weather_dict['precipitation_hours'])
 
     def delete_all_data(self):
         Weather.delete().execute()

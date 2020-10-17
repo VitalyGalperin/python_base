@@ -1,15 +1,19 @@
+# -*- coding: utf-8 -*-
+
 import os
 import cv2
+
+from set import BLANK_FILE, RESULT_FILE, IMAGE_DIR
 
 FONT_COLOR = (20, 20, 0)
 
 
 class ImageMaker:
-    def __init__(self, weather_dict, recipient_file='card.jpg', source_file='blank.jpg', image_dir='image_data'):
+    def __init__(self, weather_dict):
         self.weather_dict = weather_dict
-        self.image_dir = image_dir
-        self.source_file = source_file
-        self.recipient_file = recipient_file
+        self.image_dir = IMAGE_DIR
+        self.source_file = BLANK_FILE
+        self.recipient_file = RESULT_FILE
         self.source_full_path = self.recipient_full_path = ''
         self.image = None
 
