@@ -69,7 +69,8 @@ class WeatherMaker:
         humidity_values = [float(item) for item in humidity_values]
         wind_speed_values = [float(item) for item in wind_speed_values]
         cloud_cover_values = [float(item) for item in cloud_cover_values]
-        pressures = humidity = wind_speed = cloud_cover = precipitation = cloudiness = precipitation_hours = ''
+        pressures = humidity = wind_speed = cloud_cover = precipitation = cloudiness = ''
+        precipitation_hours = 0
 
         if pressures_values:
             pressures = str(round(sum(pressures_values) / len(pressures_values), 1))

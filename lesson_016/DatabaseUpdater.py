@@ -16,7 +16,7 @@ class BaseTable(peewee.Model):
 class Weather(BaseTable):
     location_name = peewee.CharField()
     coordinates = peewee.CharField()
-    date = peewee.DateTimeField()
+    date = peewee.DateField()
     max_temp = peewee.CharField()
     min_temp = peewee.CharField()
     pressures = peewee.CharField()
@@ -25,7 +25,7 @@ class Weather(BaseTable):
     precipitation = peewee.CharField()
     humidity = peewee.CharField()
     wind_speed = peewee.CharField()
-    precipitation_hours = peewee.CharField()
+    precipitation_hours = peewee.IntegerField()
 
 
 class DatabaseUpdater:
@@ -44,7 +44,7 @@ class DatabaseUpdater:
 
     def select_row(self, location, date):
         try:
-            row = Weather.select().where(Weather.location_name == location and Weather.date == date).get()
+            row = Weather.select().where((Weather.location_name == location) & (Weather.date == date)).get()
         except Exception:
             return False
         weather_dict = {'location_name': row.location_name, 'coordinates': row.coordinates, 'date': row.date,
