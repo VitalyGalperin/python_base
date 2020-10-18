@@ -14,10 +14,9 @@ class ConsolePrinter:
         print('Атмосферное давление: ' + self.weather_dict['pressures'] + ' Влажность: ' + self.weather_dict[
             'humidity'] + ' Скорость ветра: ' + self.weather_dict['wind_speed'] + ' км/ч')
         print(self.weather_dict['cloudiness'])
-        if self.weather_dict['precipitation_hours'] and self.weather_dict['precipitation_hours'] > 3:
+        if self.weather_dict['precipitation_hours'] and self.weather_dict['precipitation_hours'] < 4:
             precipitation_text = 'Возможен '
         if self.weather_dict['precipitation']:
             precipitation_text += self.weather_dict['precipitation']
         if precipitation_text:
             print(precipitation_text)
-

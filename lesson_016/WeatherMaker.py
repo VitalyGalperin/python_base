@@ -4,9 +4,7 @@ from geopy.geocoders import OpenMapQuest
 import bs4
 import requests
 import re
-import datetime
-
-OpenMapQuest_API_KEY = 'kvDuJJUTE50Ax5XG8mxbCVDGnQqHFdvL'
+from set import OpenMapQuest_API_KEY
 
 
 class WeatherMaker:
@@ -115,7 +113,7 @@ class WeatherMaker:
             text = 'Солнечно'
         elif text.upper() == 'FOGGY':
             text = 'Туман'
-        elif text.upper() == 'OVERCAST':
+        elif text.find('Overcast') != -1:
             text = 'Пасмурно'
         elif text.find('Cloudy') != -1:
             text = 'Облачно'
@@ -124,11 +122,9 @@ class WeatherMaker:
         elif text.find('Drizzle') != -1:
             text = 'Морось'
         elif text.find('Sleet') != -1:
-            text = 'Мокрый снег'
+            text = 'Мокрый Снег'
         return text
-
 
 # if __name__ == "__main__":
 #     weather = WeatherMaker('Нижний Новгород', '2020-10-5')
 #     weather.run()
-

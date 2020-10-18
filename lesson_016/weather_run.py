@@ -31,7 +31,6 @@ class WeatherHandler:
             return False
         db = DatabaseUpdater(db_url=self.db_url)
         db.run()
-        # db.delete_all_data()
         for day in range((self.final_date - self.start_date).days + 1):
             self.weather_dict = None
             if self.is_read_db:
@@ -64,6 +63,9 @@ class WeatherHandler:
                 if self.final_date is None:
                     print('Финальная дата должна быть указана в формате DD-MM-YYYY')
                     return False
+            if self.final_date < self.start_date:
+                print('Дата окончания не должна быть раныше даты начала')
+                return False
         return True
 
     def convert_date(self, date):
@@ -103,12 +105,14 @@ class WeatherHandler:
         return is_card, is_console_out, is_read_db, is_write_db
 
 
+# Для запуска в этом файле
 if __name__ == "__main__":
-
-    # WeatherHandler('Нижний Новгород', '10-10-2020', '15-10-2020', is_write_db=True, is_card=True, is_read_db=True, is_console_out=True).run()
-    WeatherHandler('Эйлат', '10-10-2020', '15-10-2020', is_write_db=True, is_card=True, is_read_db=True, is_console_out=True).run()
+    WeatherHandler('Нижний Новгород', '01-09-2020', '05-09-2020', is_write_db=True, is_card=True, is_read_db=True,
+                   is_console_out=True).run()
+    # WeatherHandler('Эйлат', '22-05-2020', '10-10-2020', is_write_db=True, is_card=True, is_read_db=True,
+    #                is_console_out=True).run()
     # WeatherHandler('Эйлат').run()
-    # WeatherHandler('Нижний Новгород', '01-10-2020', is_write_db=True).run()
+    # WeatherHandler('Эйлат', '13-10-2020', is_write_db=True, is_read_db=True).run()
     # WeatherHandler('Нижний Новгород', '01-10-2020').run()
 
 # Для запуска с консоли
@@ -121,7 +125,7 @@ if __name__ == "__main__":
 #     weather_run.add_argument('--is_write_db', dest='is_write_db', help='Сохранять ли резулшьтаты в БД. Y(Да)/N(Нет)')
 #     weather_run.add_argument('--is_read_db', dest='is_read_db', help='Брать ли резулшьтаты из БД. Y(Да)/N(Нет)')
 #     weather_run.add_argument('--is_card', dest='is_card',
-#                              help='Рисовать ли открытку Y(Да)/N (Нет). Открытка формируется для последнего дня периода')
+#                              help='Рисовать открытку Y(Да)/N(Нет). Открытка формируется для последнего дня периода')
 #     weather_run.add_argument('--is_console_out', dest='is_console_out',
 #                              help='Печатать ли результат на консоль Y(Да)/N(Нет).')
 #     args = weather_run.parse_args()

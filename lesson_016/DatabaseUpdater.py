@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# import sqlite3
 import peewee
-# import os
 from playhouse.db_url import connect
 
 database = peewee.SqliteDatabase("database/weather.db")
-# database_proxy = DatabaseProxy()
+
 
 class BaseTable(peewee.Model):
     class Meta:
@@ -42,18 +40,6 @@ class DatabaseUpdater:
             print('Ошибка открытия базы данных')
         database.create_tables([Weather])
 
-    def select_row(self, location, date):
-        try:
-            row = Weather.select().where((Weather.location_name == location) & (Weather.date == date)).get()
-        except Exception:
-            return False
-        weather_dict = {'location_name': row.location_name, 'coordinates': row.coordinates, 'date': row.date,
-                        'max_temp': row.max_temp, 'min_temp': row.min_temp, 'pressures': row.pressures,
-                        'cloudiness': row.cloudiness, 'humidity': row.humidity, 'wind_speed': row.wind_speed,
-                        'cloud_cover': row.cloud_cover, 'precipitation': row.precipitation,
-                        'precipitation_hours': row.precipitation_hours}
-        return weather_dict
-
     def insert_row(self, weather_dict):
         if not self.select_row(weather_dict['location_name'], weather_dict['date']):
             Weather.create(location_name=weather_dict['location_name'],
@@ -69,8 +55,17 @@ class DatabaseUpdater:
                            wind_speed=weather_dict['wind_speed'],
                            precipitation_hours=weather_dict['precipitation_hours'])
 
+    def select_row(self, location, date):
+        try:
+            row = Weather.select().where((Weather.location_name == location) & (Weather.date == date)).get()
+        except Exception:
+            return False
+        weather_dict = {'location_name': row.location_name, 'coordinates': row.coordinates, 'date': row.date,
+                        'max_temp': row.max_temp, 'min_temp': row.min_temp, 'pressures': row.pressures,
+                        'cloudiness': row.cloudiness, 'humidity': row.humidity, 'wind_speed': row.wind_speed,
+                        'cloud_cover': row.cloud_cover, 'precipitation': row.precipitation,
+                        'precipitation_hours': row.precipitation_hours}
+        return weather_dict
+
     def delete_all_data(self):
         Weather.delete().execute()
-
-
-
