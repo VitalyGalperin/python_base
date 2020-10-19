@@ -40,7 +40,8 @@ class ImageMaker:
         print_date = self.weather_dict['date'].strftime("%d/%m/%Y")
 
         self.make_legend(print_date)
-
+        # TODO изображение хорошо бы сохранять в папку
+        # TODO перед этим проверять - есть ли такая папка и, если нет, создавать её
         cv2.imwrite(self.recipient_full_path, self.image)
         # cv2.imshow("Image", self.image)
         # cv2.waitKey(0)
@@ -68,7 +69,8 @@ class ImageMaker:
                 icon = SNOW_ICON
         elif self.weather_dict['cloudiness'].find('Морось') != -1:
             self.blue_gradient(image_size, line_step)
-            icon = DRIZZLE_ICON
+            icon = DRIZZLE_ICON  # TODO много дублирования получается
+            # TODO объедините условия, которые ведут к одним и тем же действиям
         elif self.weather_dict['cloudiness'].find('Облачно') != -1:
             self.gray_gradient(image_size, line_step)
             icon = CLOUDY_ICON
@@ -83,6 +85,8 @@ class ImageMaker:
             icon = SUNNY_ICON
         return icon
 
+    # TODO есть ли идеи как из 4 разных методов сделать один
+    # TODO который будет рисовать градиент указанного параметром цвета?
     def blue_gradient(self, image_size, line_step):
         for i in range(0, 257):
             cv2.line(self.image, pt1=(0, 256 - i * line_step), pt2=(image_size[1], 256 - i * line_step),
