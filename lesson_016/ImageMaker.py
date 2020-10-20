@@ -3,14 +3,15 @@
 import os
 import cv2
 
-from set import BLANK_FILE, RESULT_FILE, IMAGE_DIR, RAIN_ICON, SNOW_ICON, DRIZZLE_ICON, CLOUDY_ICON, OVERCAST_ICON, \
-    FOGGY_ICON, SUNNY_ICON, SLEET_ICON, FONT_COLOR
+from set import BLANK_FILE, RESULT_FILE, IMAGE_DIR, CARD_DIR, RAIN_ICON, SNOW_ICON, DRIZZLE_ICON, CLOUDY_ICON, \
+    OVERCAST_ICON, FOGGY_ICON, SUNNY_ICON, SLEET_ICON, FONT_COLOR, YELLOW, CYAN, BLUE, GRAY
 
 
 class ImageMaker:
     def __init__(self, weather_dict):
         self.weather_dict = weather_dict
         self.image_dir = IMAGE_DIR
+        self.card_dir = CARD_DIR
         self.source_file = BLANK_FILE
         self.recipient_file = RESULT_FILE
         self.source_full_path = self.recipient_full_path = ''
@@ -22,7 +23,9 @@ class ImageMaker:
 
     def path_create(self):
         self.source_full_path = os.path.join(os.getcwd(), self.image_dir, self.source_file)
-        self.recipient_full_path = os.path.join(os.getcwd(), self.image_dir, self.recipient_file)
+        if not os.path.exists(self.card_dir):
+            os.mkdir(self.card_dir)
+        self.recipient_full_path = os.path.join(os.getcwd(), self.card_dir, self.recipient_file)
 
     def card_create(self):
         self.image = cv2.imread(self.source_full_path)
@@ -40,75 +43,47 @@ class ImageMaker:
         print_date = self.weather_dict['date'].strftime("%d/%m/%Y")
 
         self.make_legend(print_date)
-        # TODO изображение хорошо бы сохранять в папку
-        # TODO перед этим проверять - есть ли такая папка и, если нет, создавать её
         cv2.imwrite(self.recipient_full_path, self.image)
-        # cv2.imshow("Image", self.image)
-        # cv2.waitKey(0)
+        # Вывод открытки на экран
+        cv2.imshow("Image", self.image)
+        cv2.waitKey(0)
 
     def gradient_and_icon_choose(self, image_size, line_step):
         icon = SUNNY_ICON
-        if self.weather_dict['precipitation_hours'] and self.weather_dict['precipitation_hours'] > 4:
-            if self.weather_dict['precipitation'].find('Дождь') != -1:
-                self.blue_gradient(image_size, line_step)
-                icon = RAIN_ICON
-            elif self.weather_dict['precipitation'].find('Снег') != -1:
-                self.cyan_gradient(image_size, line_step)
-                icon = SNOW_ICON
-        elif self.weather_dict['cloudiness'].find('Дождь') != -1:
-            self.blue_gradient(image_size, line_step)
+        if self.weather_dict['cloudiness'].find('Дождь') != -1 or (
+                self.weather_dict['precipitation'].find('Дождь') != -1 and
+                self.weather_dict['precipitation_hours'] and self.weather_dict['precipitation_hours'] > 4):
+            self.gradient(image_size, line_step, BLUE)
             icon = RAIN_ICON
-        elif self.weather_dict['cloudiness'].find('Морось') != -1:
-            self.blue_gradient(image_size, line_step)
-            icon = DRIZZLE_ICON
-        elif self.weather_dict['cloudiness'].find('Снег') != -1:
-            self.cyan_gradient(image_size, line_step)
+        elif self.weather_dict['cloudiness'].find('Снег') != -1 or (
+                self.weather_dict['precipitation'].find('Снег') != -1 and
+                self.weather_dict['precipitation_hours'] and self.weather_dict['precipitation_hours'] > 4):
+            self.gradient(image_size, line_step, CYAN)
             if self.weather_dict['cloudiness'] == 'Мокрый Снег':
                 icon = SLEET_ICON
             else:
                 icon = SNOW_ICON
         elif self.weather_dict['cloudiness'].find('Морось') != -1:
-            self.blue_gradient(image_size, line_step)
-            icon = DRIZZLE_ICON  # TODO много дублирования получается
-            # TODO объедините условия, которые ведут к одним и тем же действиям
+            self.gradient(image_size, line_step, BLUE)
+            icon = DRIZZLE_ICON
         elif self.weather_dict['cloudiness'].find('Облачно') != -1:
-            self.gray_gradient(image_size, line_step)
+            self.gradient(image_size, line_step, GRAY)
             icon = CLOUDY_ICON
         elif self.weather_dict['cloudiness'].find('Пасмурно') != -1:
-            self.gray_gradient(image_size, line_step)
+            self.gradient(image_size, line_step, GRAY)
             icon = OVERCAST_ICON
         elif self.weather_dict['cloudiness'].find('Туман') != -1:
-            self.yellow_gradient(image_size, line_step)
+            self.gradient(image_size, line_step, YELLOW)
             icon = FOGGY_ICON
         elif self.weather_dict['cloudiness'].find('Солнечно') != -1:
-            self.yellow_gradient(image_size, line_step)
+            self.gradient(image_size, line_step, YELLOW)
             icon = SUNNY_ICON
         return icon
 
-    # TODO есть ли идеи как из 4 разных методов сделать один
-    # TODO который будет рисовать градиент указанного параметром цвета?
-    def blue_gradient(self, image_size, line_step):
+    def gradient(self, image_size, line_step, color_tuple):
         for i in range(0, 257):
             cv2.line(self.image, pt1=(0, 256 - i * line_step), pt2=(image_size[1], 256 - i * line_step),
-                     color=(255, 255 - i, 255 - i),
-                     thickness=int(image_size[0] / 255))
-
-    def yellow_gradient(self, image_size, line_step):
-        for i in range(0, 257):
-            cv2.line(self.image, pt1=(0, 256 - i * line_step), pt2=(image_size[1], 256 - i * line_step),
-                     color=(255 - i, 255, 255),
-                     thickness=int(image_size[0] / 255))
-
-    def gray_gradient(self, image_size, line_step):
-        for i in range(0, 257):
-            cv2.line(self.image, pt1=(0, 256 - i * line_step), pt2=(image_size[1], 256 - i * line_step),
-                     color=(255 - i / 2, 255 - i / 2, 255 - i / 2),
-                     thickness=int(image_size[0] / 255))
-
-    def cyan_gradient(self, image_size, line_step):
-        for i in range(0, 257):
-            cv2.line(self.image, pt1=(0, 256 - i * line_step), pt2=(image_size[1], 256 - i * line_step),
-                     color=(255, 255, 255 - i),
+                     color=(255 - i * color_tuple[0], 255 - i * color_tuple[1], 255 - i * color_tuple[2]),
                      thickness=int(image_size[0] / 255))
 
     def make_legend(self, print_date):

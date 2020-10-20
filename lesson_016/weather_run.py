@@ -43,8 +43,11 @@ class WeatherHandler:
                 db.insert_row(self.weather_dict)
             if self.is_console:
                 ConsolePrinter(self.weather_dict).run()
-        if self.is_card:
-            ImageMaker(self.weather_dict).run()
+            # Если надо формировать открытку для каждого дня
+            if self.is_card:
+                ImageMaker(self.weather_dict).run()
+        # if self.is_card:
+        #     ImageMaker(self.weather_dict).run()
         return True
 
     def get_dates(self):
@@ -107,12 +110,12 @@ class WeatherHandler:
 
 # Для запуска в этом файле
 if __name__ == "__main__":
-    WeatherHandler('Нижний Новгород', '01-09-2020', '05-09-2020', is_write_db=True, is_card=True, is_read_db=True,
+    WeatherHandler('Нижний Новгород', '01-09-2020', '07-09-2020', is_write_db=True, is_card=True, is_read_db=True,
                    is_console_out=True).run()
     # WeatherHandler('Эйлат', '22-05-2020', '10-10-2020', is_write_db=True, is_card=True, is_read_db=True,
     #                is_console_out=True).run()
     # WeatherHandler('Эйлат').run()
-    # WeatherHandler('Эйлат', '13-10-2020', is_write_db=True, is_read_db=True).run()
+    WeatherHandler('Эйлат', '13-10-2020', is_write_db=True, is_read_db=True).run()
     # WeatherHandler('Нижний Новгород', '01-10-2020').run()
 
 # Для запуска с консоли

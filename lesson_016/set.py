@@ -8,6 +8,7 @@ OpenMapQuest_API_KEY = 'kvDuJJUTE50Ax5XG8mxbCVDGnQqHFdvL'
 DB_URL = "sqlite:///weather.db"
 
 IMAGE_DIR = 'image_data'
+CARD_DIR = 'card'
 BLANK_FILE = 'blank.jpg'
 RESULT_FILE = 'card.jpg'
 
@@ -21,3 +22,8 @@ SUNNY_ICON = 'sun.jpg'
 SLEET_ICON = 'sleet.jpg'
 
 FONT_COLOR = (20, 20, 0)
+
+YELLOW = (1, 0, 0)
+CYAN = (0, 0, 1)
+BLUE = (0, 1, 1)
+GRAY = (0.5, 0.5, 0.5)
