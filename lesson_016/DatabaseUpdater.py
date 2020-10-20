@@ -13,6 +13,7 @@ class BaseTable(peewee.Model):
 
 class Weather(BaseTable):
     location_name = peewee.CharField()
+    location_en = peewee.CharField()
     coordinates = peewee.CharField()
     date = peewee.DateField()
     max_temp = peewee.CharField()
@@ -51,6 +52,7 @@ class DatabaseUpdater:
     def insert_row(self, weather_dict):
         if not self.select_row(weather_dict['location_name'], weather_dict['date']):
             Weather.create(location_name=weather_dict['location_name'],
+                           location_en=weather_dict['location_en'],
                            coordinates=weather_dict['coordinates'],
                            date=weather_dict['date'],
                            max_temp=weather_dict['max_temp'],
@@ -68,7 +70,8 @@ class DatabaseUpdater:
             row = Weather.select().where((Weather.location_name == location) & (Weather.date == date)).get()
         except Exception:
             return False
-        weather_dict = {'location_name': row.location_name, 'coordinates': row.coordinates, 'date': row.date,
+        weather_dict = {'location_name': row.location_name, 'location_en': row.location_en,
+                        'coordinates': row.coordinates, 'date': row.date,
                         'max_temp': row.max_temp, 'min_temp': row.min_temp, 'pressures': row.pressures,
                         'cloudiness': row.cloudiness, 'humidity': row.humidity, 'wind_speed': row.wind_speed,
                         'cloud_cover': row.cloud_cover, 'precipitation': row.precipitation,

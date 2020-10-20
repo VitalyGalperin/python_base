@@ -43,11 +43,8 @@ class WeatherHandler:
                 db.insert_row(self.weather_dict)
             if self.is_console:
                 ConsolePrinter(self.weather_dict).run()
-            # Если надо формировать открытку для каждого дня. Вторую аналогичую проверку закомментировать
-            # if self.is_card:
-            #     ImageMaker(self.weather_dict).run()
-        if self.is_card:
-            ImageMaker(self.weather_dict).run()
+            if self.is_card:
+                ImageMaker(self.weather_dict).run()
         return True
 
     def get_dates(self):
@@ -109,33 +106,32 @@ class WeatherHandler:
 
 
 # Для запуска в этом файле
-# if __name__ == "__main__":
-#     WeatherHandler('Нижний Новгород', '01-09-2020', '07-09-2020', is_write_db=True, is_card=True, is_read_db=True,
-#                    is_console_out=True).run()
-#     # WeatherHandler('Эйлат', '22-05-2020', '10-10-2020', is_write_db=True, is_card=True, is_read_db=True,
-#     #                is_console_out=True).run()
-#     # WeatherHandler('Эйлат').run()
-#     WeatherHandler('Эйлат', '13-10-2020', is_write_db=True, is_read_db=True).run()
-#     # WeatherHandler('Нижний Новгород', '01-10-2020').run()
+if __name__ == "__main__":
+    WeatherHandler('Нижний Новгород', '01-12-2019', '10-12-2019', is_write_db=True, is_card=True, is_read_db=False,
+                   is_console_out=True).run()
+    # WeatherHandler('Эйлат', '22-05-2020', '10-10-2020', is_write_db=True, is_card=True, is_read_db=True,
+    #                is_console_out=True).run()
+    # WeatherHandler('Эйлат').run()
+    WeatherHandler('Эйлат', '13-10-2020', is_write_db=True, is_read_db=True).run()
+    # WeatherHandler('Нижний Новгород', '01-10-2020').run()
 
-# Для запуска с консоли
-if __name__ == '__main__':
-    weather_run = argparse.ArgumentParser()
-    weather_run.add_argument('--location', dest='location', required=True,
-                             help='Место, для которого делается прогноз погоды')
-    weather_run.add_argument('--start_date', dest='start_date', help='Дата начала периода в формате DD-MM-YYYY')
-    weather_run.add_argument('--final_date', dest='final_date', help='Дата конца периода в формате DD-MM-YYYY')
-    weather_run.add_argument('--is_write_db', dest='is_write_db', help='Сохранять ли резулшьтаты в БД. Y(Да)/N(Нет)')
-    weather_run.add_argument('--is_read_db', dest='is_read_db', help='Брать ли резулшьтаты из БД. Y(Да)/N(Нет)')
-    weather_run.add_argument('--is_card', dest='is_card',
-                             help='Рисовать открытку Y(Да)/N(Нет). Открытка формируется для последнего дня периода')
-    weather_run.add_argument('--is_console_out', dest='is_console_out',
-                             help='Печатать ли результат на консоль Y(Да)/N(Нет).')
-    args = weather_run.parse_args()
-    weather_run = WeatherHandler(location=args.location, start_date=args.start_date, final_date=args.final_date,
-                                 is_write_db=args.is_write_db, is_read_db=args.is_read_db, is_card=args.is_card,
-                                 is_console_out=args.is_console_out)
-    weather_run.run()
-
+# # Для запуска с консоли
+# if __name__ == '__main__':
+#     weather_run = argparse.ArgumentParser()
+#     weather_run.add_argument('--location', dest='location', required=True,
+#                              help='Место, для которого делается прогноз погоды')
+#     weather_run.add_argument('--start_date', dest='start_date', help='Дата начала периода в формате DD-MM-YYYY')
+#     weather_run.add_argument('--final_date', dest='final_date', help='Дата конца периода в формате DD-MM-YYYY')
+#     weather_run.add_argument('--is_write_db', dest='is_write_db', help='Сохранять ли резулшьтаты в БД. Y(Да)/N(Нет)')
+#     weather_run.add_argument('--is_read_db', dest='is_read_db', help='Брать ли резулшьтаты из БД. Y(Да)/N(Нет)')
+#     weather_run.add_argument('--is_card', dest='is_card', help='Рисовать открытку Y(Да)/N(Нет).')
+#     weather_run.add_argument('--is_console_out', dest='is_console_out',
+#                              help='Печатать ли результат на консоль Y(Да)/N(Нет).')
+#     args = weather_run.parse_args()
+#     weather_run = WeatherHandler(location=args.location, start_date=args.start_date, final_date=args.final_date,
+#                                  is_write_db=args.is_write_db, is_read_db=args.is_read_db, is_card=args.is_card,
+#                                  is_console_out=args.is_console_out)
+#     weather_run.run()
+#
 # Командная строка Для вызова с консоли
 # python weather_run.py --location "Нижний Новгород" --start_date 10-10-2020 --final_date 15-10-2020 --is_write_db Y --is_read_db Y --is_card Y --is_console_out Y

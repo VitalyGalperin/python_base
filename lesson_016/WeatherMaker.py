@@ -11,6 +11,7 @@ class WeatherMaker:
 
     def __init__(self, location, date):
         self.location_name = location
+        self.location_en = location
         self.coordinates = ''
         self.date = date
 
@@ -23,6 +24,7 @@ class WeatherMaker:
     def get_coordinates(self):
         try:
             location_request = OpenMapQuest(api_key=OpenMapQuest_API_KEY).geocode(self.location_name)
+            location_en = OpenMapQuest(api_key=OpenMapQuest_API_KEY).geocode(self.location_name, language='en')
         except Exception:
             print('Ошибка запроса места')
             return False
@@ -33,6 +35,7 @@ class WeatherMaker:
         location_latitude = str(round(location_request.latitude, 4))
         location_longitude = str(round(location_request.longitude, 4))
         self.coordinates = location_latitude + ',' + location_longitude
+        self.location_en = str(location_en).split(',')[0]
         return True
 
     def dark_sky_parsing(self):
@@ -97,7 +100,8 @@ class WeatherMaker:
         else:
             min_temperature = str(min(temperature_values))
 
-        weather_dict = {'location_name': self.location_name, 'coordinates': self.coordinates, 'date': self.date,
+        weather_dict = {'location_name': self.location_name, 'location_en': self.location_en,
+                        'coordinates': self.coordinates, 'date': self.date,
                         'max_temp': max_temperature, 'min_temp': min_temperature, 'pressures': pressures,
                         'cloudiness': cloudiness, 'humidity': humidity, 'wind_speed': wind_speed,
                         'cloud_cover': cloud_cover, 'precipitation': precipitation,

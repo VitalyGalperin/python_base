@@ -3,8 +3,8 @@
 import os
 import cv2
 
-from set import BLANK_FILE, RESULT_FILE, IMAGE_DIR, CARD_DIR, RAIN_ICON, SNOW_ICON, DRIZZLE_ICON, CLOUDY_ICON, \
-    OVERCAST_ICON, FOGGY_ICON, SUNNY_ICON, SLEET_ICON, FONT_COLOR, YELLOW, CYAN, BLUE, GRAY
+from set import BLANK_FILE, IMAGE_DIR, CARD_DIR, RAIN_ICON, SNOW_ICON, DRIZZLE_ICON, CLOUDY_ICON, OVERCAST_ICON, \
+    FOGGY_ICON, SUNNY_ICON, SLEET_ICON, FONT_COLOR, YELLOW, CYAN, BLUE, GRAY
 
 
 class ImageMaker:
@@ -13,7 +13,6 @@ class ImageMaker:
         self.image_dir = IMAGE_DIR
         self.card_dir = CARD_DIR
         self.source_file = BLANK_FILE
-        self.recipient_file = RESULT_FILE
         self.source_full_path = self.recipient_full_path = ''
         self.image = None
 
@@ -25,7 +24,8 @@ class ImageMaker:
         self.source_full_path = os.path.join(os.getcwd(), self.image_dir, self.source_file)
         if not os.path.exists(self.card_dir):
             os.mkdir(self.card_dir)
-        self.recipient_full_path = os.path.join(os.getcwd(), self.card_dir, self.recipient_file)
+        file_name = self.weather_dict['location_en'] + ' ' + self.weather_dict['date'].strftime("%d-%m-%Y") + '.jpg'
+        self.recipient_full_path = os.path.join(os.getcwd(), self.card_dir, file_name)
 
     def card_create(self):
         self.image = cv2.imread(self.source_full_path)
@@ -44,13 +44,6 @@ class ImageMaker:
 
         self.make_legend(print_date)
         cv2.imwrite(self.recipient_full_path, self.image)
-        # TODO Похоже что название открыток никак не изменяется
-        # TODO и каждая новая просто перезаписывает старую
-        # TODO Это не очень функционально
-        # TODO я бы посоветовал использовать дату в качестве названия (можно с городом)
-        # Вывод открытки на экран
-        # cv2.imshow("Image", self.image)
-        # cv2.waitKey(0)
 
     def gradient_and_icon_choose(self, image_size, line_step):
         icon = SUNNY_ICON

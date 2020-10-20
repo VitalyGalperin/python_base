@@ -10,7 +10,6 @@ DB_URL = "sqlite:///weather.db"
 IMAGE_DIR = 'image_data'
 CARD_DIR = 'card'
 BLANK_FILE = 'blank.jpg'
-RESULT_FILE = 'card.jpg'
 
 RAIN_ICON = 'rain.jpg'
 SNOW_ICON = 'snow.jpg'
