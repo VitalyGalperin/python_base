@@ -44,6 +44,10 @@ class ImageMaker:
 
         self.make_legend(print_date)
         cv2.imwrite(self.recipient_full_path, self.image)
+        # TODO Похоже что название открыток никак не изменяется
+        # TODO и каждая новая просто перезаписывает старую
+        # TODO Это не очень функционально
+        # TODO я бы посоветовал использовать дату в качестве названия (можно с городом)
         # Вывод открытки на экран
         # cv2.imshow("Image", self.image)
         # cv2.waitKey(0)

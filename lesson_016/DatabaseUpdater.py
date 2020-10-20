@@ -30,7 +30,15 @@ class DatabaseUpdater:
     def __init__(self, db_url):
         self.connection = None
         self.db_url = db_url
-        self.proxy = peewee.DatabaseProxy()
+        self.proxy = peewee.DatabaseProxy()  # TODO сейчас этим инструментом вы не пользуетесь
+        # TODO его идея в том, что он заменит строку peewee.SqliteDatabase("database/weather.db")
+        # TODO и в зависимости от того, какой db_url ему передадут - он создаст объект нужной БД
+        # TODO если передать "sqlite:///weather.db", то будет создана как раз SqliteDatabase
+        # TODO однако, чтобы это работало - надо будет указать self.proxy в
+        #     class Meta:
+        #         database = database
+        # TODO либо просто можно пока убрать это, т.к. в нашем случае нам не нужно гарантировать работу
+        # TODO с разными типами БД
 
     def run(self):
         try:
