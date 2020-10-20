@@ -3,12 +3,12 @@
 import peewee
 from playhouse.db_url import connect
 
-database = peewee.SqliteDatabase("database/weather.db")
+database_proxy = peewee.DatabaseProxy()
 
 
 class BaseTable(peewee.Model):
     class Meta:
-        database = database
+        database = database_proxy
 
 
 class Weather(BaseTable):
@@ -31,23 +31,14 @@ class DatabaseUpdater:
     def __init__(self, db_url):
         self.connection = None
         self.db_url = db_url
-        self.proxy = peewee.DatabaseProxy()  # TODO сейчас этим инструментом вы не пользуетесь
-        # TODO его идея в том, что он заменит строку peewee.SqliteDatabase("database/weather.db")
-        # TODO и в зависимости от того, какой db_url ему передадут - он создаст объект нужной БД
-        # TODO если передать "sqlite:///weather.db", то будет создана как раз SqliteDatabase
-        # TODO однако, чтобы это работало - надо будет указать self.proxy в
-        #     class Meta:
-        #         database = database
-        # TODO либо просто можно пока убрать это, т.к. в нашем случае нам не нужно гарантировать работу
-        # TODO с разными типами БД
 
     def run(self):
         try:
             self.connection = connect(self.db_url)
-            self.proxy.initialize(self.connection)
+            database_proxy.initialize(self.connection)
         except Exception:
             print('Ошибка открытия базы данных')
-        database.create_tables([Weather])
+        database_proxy.create_tables([Weather])
 
     def insert_row(self, weather_dict):
         if not self.select_row(weather_dict['location_name'], weather_dict['date']):

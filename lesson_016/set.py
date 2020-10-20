@@ -5,7 +5,7 @@ re_date = re.compile(
 
 OpenMapQuest_API_KEY = 'kvDuJJUTE50Ax5XG8mxbCVDGnQqHFdvL'
 
-DB_URL = "sqlite:///weather.db"
+DB_URL = "sqlite:///database/weather.db"
 
 IMAGE_DIR = 'image_data'
 CARD_DIR = 'card'
