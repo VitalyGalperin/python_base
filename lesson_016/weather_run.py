@@ -43,11 +43,11 @@ class WeatherHandler:
                 db.insert_row(self.weather_dict)
             if self.is_console:
                 ConsolePrinter(self.weather_dict).run()
-            # Если надо формировать открытку для каждого дня
-            if self.is_card:
-                ImageMaker(self.weather_dict).run()
-        # if self.is_card:
-        #     ImageMaker(self.weather_dict).run()
+            # Если надо формировать открытку для каждого дня. Вторую аналогичую проверку закомментировать
+            # if self.is_card:
+            #     ImageMaker(self.weather_dict).run()
+        if self.is_card:
+            ImageMaker(self.weather_dict).run()
         return True
 
     def get_dates(self):

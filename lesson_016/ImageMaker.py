@@ -45,8 +45,8 @@ class ImageMaker:
         self.make_legend(print_date)
         cv2.imwrite(self.recipient_full_path, self.image)
         # Вывод открытки на экран
-        cv2.imshow("Image", self.image)
-        cv2.waitKey(0)
+        # cv2.imshow("Image", self.image)
+        # cv2.waitKey(0)
 
     def gradient_and_icon_choose(self, image_size, line_step):
         icon = SUNNY_ICON
