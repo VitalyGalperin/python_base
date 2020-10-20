@@ -135,3 +135,4 @@ if __name__ == '__main__':
 # Командная строка Для вызова с консоли
 # python weather_run.py --location "Нижний Новгород" --start_date 10-10-2020 --final_date 15-10-2020 --is_write_db Y --is_read_db Y --is_card Y --is_console_out Y
 # python weather_run.py --location "אילת" --start_date 10-10-2020 --is_write_db Y --is_read_db Y --is_card Y --is_console_out Y
+#зачёт!
